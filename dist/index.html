@@ -456,7 +456,7 @@ function genFake(uuid){
 
 /* ── API ── */
 async function fetchP(){
-  try{const r=await fetch('/api/public');const d=await r.json();
+  try{const r=await fetch('/api/public');const j=await r.json();const d=j.data||j;
     S.sitename=d.sitename||'KOMARI';S.themeSettings=d.theme_settings||{};
     $('siteName').textContent=S.sitename;$('footerSite').textContent=S.sitename+' MONITOR';
     if(S.themeSettings.version_tag)S.VER=S.themeSettings.version_tag;
@@ -464,14 +464,14 @@ async function fetchP(){
   }catch(e){console.warn('fetchP:',e)}
 }
 async function fetchN(){
-  try{const r=await fetch('/api/nodes');const d=await r.json();
-    S.nodes=(d||[]).sort((a,b)=>(a.weight||0)-(b.weight||0));
+  try{const r=await fetch('/api/nodes');const j=await r.json();const d=j.data||j;
+    S.nodes=(Array.isArray(d)?d:[]).sort((a,b)=>(a.weight||0)-(b.weight||0));
     const gs=new Set();S.nodes.forEach(n=>{if(n.group)gs.add(n.group)});
     S.groups=['ALL',...gs];
   }catch(e){console.warn('fetchN:',e)}
 }
 async function fetchMe(){
-  try{const r=await fetch('/api/me');const d=await r.json();S.loggedIn=!!d.logged_in}catch(e){}
+  try{const r=await fetch('/api/me');const j=await r.json();const d=j.data||j;S.loggedIn=!!d.logged_in}catch(e){}
 }
 function conWS(){
   try{
