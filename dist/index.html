@@ -426,6 +426,24 @@ function mColor(v){if(v>=80)return'red';if(v>=60)return'amber';if(v>=30)return'g
 function mH(label,value,isOff){const c=isOff?'red':mColor(value);const v=isOff?value:Math.min(100,value);return`<div class="nc-m"><span class="nc-ml">${label}</span><div class="nc-mt"><div class="nc-mf ${c}" style="width:${v}%"></div></div><span class="nc-mv"${v>=80?' style="color:var(--r)"':''}>${Math.round(v)}%</span></div>`}
 function uMt(card,label,value){const rows=card.querySelectorAll('.nc-m');for(const r of rows){if(r.querySelector('.nc-ml').textContent===label){const bar=r.querySelector('.nc-mf');const vEl=r.querySelector('.nc-mv');const v=Math.min(100,value);const c=mColor(v);bar.className='nc-mf '+c;bar.style.width=v+'%';vEl.textContent=Math.round(v)+'%';vEl.style.color=v>=80?'var(--r)':'';break}}}
 function varHash(uuid){let h=0;for(let i=0;i<uuid.length;i++){h=((h<<5)-h)+uuid.charCodeAt(i);h|=0}return Math.abs(h)}
+/* ── flatLive: convert nested WS/recent data → flat format for rendering ── */
+function flatLive(r){
+  if(!r||typeof r!=='object')return r;
+  // Already flat? (has 'cpu' as number) — return as-is
+  if(typeof r.cpu==='number')return r;
+  return{
+    cpu:r.cpu?.usage||0,
+    memory_used:r.ram?.used||0, memory_total:r.ram?.total||0,
+    swap_used:r.swap?.used||0, swap_total:r.swap?.total||0,
+    disk_used:r.disk?.used||0, disk_total:r.disk?.total||0,
+    network_tx:r.network?.up||0, network_rx:r.network?.down||0,
+    network_total_up:r.network?.totalUp||0, network_total_down:r.network?.totalDown||0,
+    tcp:r.connections?.tcp||0, udp:r.connections?.udp||0,
+    load1:r.load?.load1||0, load5:r.load?.load5||0, load15:r.load?.load15||0,
+    uptime:r.uptime||0, process:r.process||0,
+    os:r.os||'', message:r.message||'', updated_at:r.updated_at||''
+  };
+}
 /* Stub functions — must keep */
 function varDecoHTML(vr,on){return''}
 function offlineDecoHTML(atk){return''}
@@ -478,15 +496,16 @@ function conWS(){
   try{
     const p=location.protocol==='https:'?'wss:':'ws:';
     S.ws=new WebSocket(p+'//'+location.host+'/api/clients');
-    S.ws.onopen=()=>{S.wsRetries=0;$('wsStatus').textContent='UPDATING ...';$('sysLink').textContent='ACTIVE';$('rightStatus').textContent='STATUS — ACTIVE'};
+    S.ws.onopen=()=>{S.wsRetries=0;S.ws.send('get');$('wsStatus').textContent='UPDATING ...';$('sysLink').textContent='ACTIVE';$('rightStatus').textContent='STATUS — ACTIVE'};
     S.ws.onmessage=e=>{
-      try{const d=JSON.parse(e.data);
-        console.log('[NanoMuse WS]',Object.keys(d),'online:',d.online?.length,'data keys:',d.data?Object.keys(d.data).length:0);
+      try{const raw=JSON.parse(e.data);
+        // Unwrap {status,data:{online,data}} format
+        const d=raw.data||raw;
         if(d.online)S.onlineSet=new Set(d.online);
-        if(d.data){for(const[k,v]of Object.entries(d.data))S.liveData[k]=v}
+        if(d.data){for(const[k,v]of Object.entries(d.data))S.liveData[k]=flatLive(v)}
         uCards();rSum();
         if(S.detailUUID)uDetLive();
-      }catch(er){console.error('[NanoMuse WS err]',er)}
+      }catch(er){console.error('[NM]',er)}
     };
     S.ws.onclose=()=>{$('wsStatus').textContent='RECONNECT ...';reWS()};
     S.ws.onerror=()=>{S.ws.close()};
@@ -569,8 +588,8 @@ function rCards(fl){
     const netUp=on?fS(d.network_tx||0):'--';
     const netDn=on?fS(d.network_rx||0):'--';
     const uptime=on&&d.uptime?fUs(d.uptime):'--';
-    const hw=on?[d.cpu_cores||'?',fB(d.memory_total||0,0),fB(d.disk_total||0,0)].join(' / '):(fake?fB(fake.mem,0)+' / '+fB(fake.dsk,0):'--');
-    const osStr=on?(d.os||''):(fake?fake.os:'');
+    const hw=on?[(n.cpu_cores||'?')+'C',fB(d.memory_total||n.mem_total||0,0),fB(d.disk_total||n.disk_total||0,0)].join(' / '):(fake?fB(fake.mem,0)+' / '+fB(fake.dsk,0):'--');
+    const osStr=on?(d.os||n.os||''):(fake?fake.os:'');
     const region=n.region||'';const group=n.group||'';
     const chips=['region','group','os'].map(k=>{const v=k==='region'?region:k==='group'?group:osStr;return v?`<span class="nc-chip">${esc(v)}</span>`:''}).join('');
     const offCls=on?'':'off';
@@ -655,7 +674,7 @@ function rDetInfo(node,uuid){
   html+=`<div class="det-info">
     <div class="det-card"><div class="det-label">REGION</div><div class="det-val">${esc(node.region||'--')}</div></div>
     <div class="det-card"><div class="det-label">GROUP</div><div class="det-val">${esc(node.group||'--')}</div></div>
-    <div class="det-card"><div class="det-label">OS</div><div class="det-val">${esc(d.os||'--')}</div></div>
+    <div class="det-card"><div class="det-label">OS</div><div class="det-val">${esc(d.os||node.os||'--')}</div></div>
     <div class="det-card"><div class="det-label">UPTIME</div><div class="det-val">${on?fUs(d.uptime):'--'}</div></div>
     <div class="det-card"><div class="det-label">CPU</div><div class="det-val">${on?(d.cpu||0)+'%':'--'}</div></div>
     <div class="det-card"><div class="det-label">RAM</div><div class="det-val">${on?fB(d.memory_used||0)+' / '+fB(d.memory_total||0):'--'}</div></div>
@@ -689,11 +708,11 @@ async function ldDetData(){
   cc.innerHTML='<div style="text-align:center;padding:40px;color:var(--t4)">Loading...</div>';
   try{
     if(S.detailTab==='load'){
-      const r=await fetch(`/api/records/load?uuid=${uuid}&hours=${hours}`);const d=await r.json();
-      rLoadCharts(d.records||d||[]);
+      const r=await fetch(`/api/records/load?uuid=${uuid}&hours=${hours}`);const j=await r.json();const dd=j.data||j;
+      rLoadCharts(dd.records||[]);
     }else{
-      const r=await fetch(`/api/records/ping?uuid=${uuid}&hours=${hours}`);const d=await r.json();
-      rPingCharts(d);
+      const r=await fetch(`/api/records/ping?uuid=${uuid}&hours=${hours}`);const j=await r.json();const dd=j.data||j;
+      rPingCharts(dd);
     }
   }catch(e){cc.innerHTML='<div style="text-align:center;padding:40px;color:var(--r)">Failed to load data</div>'}
 }
@@ -702,20 +721,19 @@ function rLoadCharts(records){
   cc.innerHTML=`<div class="chart-wrap"><div class="chart-label">CPU %</div><canvas id="chCpu"></canvas></div>
     <div class="chart-wrap"><div class="chart-label">RAM %</div><canvas id="chRam"></canvas></div>
     <div class="chart-wrap"><div class="chart-label">NETWORK</div><canvas id="chNet"></canvas></div>`;
-  const labels=records.map(r=>fT(r.timestamp||r.ts));
+  const labels=records.map(r=>{const t=r.time||r.timestamp;if(!t)return'--';const d=new Date(t);return d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})});
   dCh('chCpu',{labels,data:records.map(r=>r.cpu||0),color:'#2563eb',max:100});
-  dCh('chRam',{labels,data:records.map(r=>r.memory_used&&r.memory_total?pc(r.memory_used,r.memory_total):0),color:'#22c55e',max:100});
-  dCh('chNet',{labels,data:records.map(r=>(r.network_tx||0)/1048576),color:'#00d2ff',label:'TX MB/s'});
+  dCh('chRam',{labels,data:records.map(r=>r.ram||0),color:'#22c55e',max:100});
+  dCh('chNet',{labels,data:records.map(r=>(r.net_out||0)/1048576),color:'#00d2ff',label:'TX MB/s'});
 }
 function rPingCharts(pd){
   const cc=$('detCharts');if(!cc)return;
-  const records=pd.records||pd||[];
+  const records=pd.records||[];
+  const tasks=pd.tasks||[];
   if(!records.length){cc.innerHTML='<div style="text-align:center;padding:40px;color:var(--t4)">No ping data</div>';return}
-  cc.innerHTML=`<div class="chart-wrap"><div class="chart-label">LATENCY (ms)</div><canvas id="chPing"></canvas></div>
-    <div class="chart-wrap"><div class="chart-label">PACKET LOSS %</div><canvas id="chLoss"></canvas></div>`;
-  const labels=records.map(r=>fT(r.timestamp||r.ts));
-  dCh('chPing',{labels,data:records.map(r=>r.latency||r.avg_latency||0),color:'#2563eb'});
-  dCh('chLoss',{labels,data:records.map(r=>r.loss||r.packet_loss||0),color:'#ef4444',max:100});
+  cc.innerHTML=`<div class="chart-wrap"><div class="chart-label">LATENCY (ms)</div><canvas id="chPing"></canvas></div>`;
+  const labels=records.map(r=>{const t=r.time;if(!t)return'--';const d=new Date(t);return d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})});
+  dCh('chPing',{labels,data:records.map(r=>r.value>=0?r.value:0),color:'#2563eb'});
 }
 function uDetLive(){
   if(!S.detailUUID||document.querySelector('#pg-detail').style.display==='none')return;
@@ -778,7 +796,7 @@ async function fetchStabTasks(){
   try{
     if(!S.nodes.length)return;
     const uuid=S.nodes[0].uuid;
-    const r=await fetch(`/api/records/ping?uuid=${uuid}&hours=1`);const d=await r.json();
+    const r=await fetch(`/api/records/ping?uuid=${uuid}&hours=1`);const j=await r.json();const d=j.data||j;
     if(d.tasks&&d.tasks.length){STAB.tasks=d.tasks;STAB._tasksFromApi=true;renderStabTasks()}
   }catch(e){}
 }
@@ -794,10 +812,13 @@ async function fetchStability(hours){
   }
 }
 function extractTasksFromData(data){
-  if(!data||!data.records)return;
-  const ts=new Map();
-  data.records.forEach(r=>{if(r.task_id&&r.task_name&&!ts.has(r.task_id))ts.set(r.task_id,r.task_name)});
-  if(ts.size)STAB.tasks=[...ts].map(([id,name])=>({id,name}));
+  if(!data)return;
+  // RPC2 ping results have basic_info array but no task names per record
+  // Tasks from /api/records/ping?uuid=X are more reliable, so only fallback here
+  if(data.basic_info&&data.basic_info.length){
+    const ts=new Map();
+    data.basic_info.forEach(b=>{if(b.client&&!ts.has(b.client))ts.set(b.client,b.client.slice(0,8))});
+  }
   renderStabTasks();
 }
 function renderStabTasks(){
@@ -813,10 +834,10 @@ function stabAggByDay(records){
   const byNode={};
   records.forEach(r=>{
     if(STAB.taskId!==null&&r.task_id!==STAB.taskId)return;
-    const uuid=r.uuid||r.node_uuid;if(!uuid)return;
+    const uuid=r.client||r.uuid||r.node_uuid;if(!uuid)return;
     if(!byNode[uuid])byNode[uuid]={total:0,loss:0};
     byNode[uuid].total++;
-    if(r.loss||r.packet_loss)byNode[uuid].loss++;
+    if(r.value<0)byNode[uuid].loss++;
   });
   return byNode;
 }
