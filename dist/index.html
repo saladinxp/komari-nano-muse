@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Komari Monitor — NanoMuse</title>
+<title>Komari Monitor</title>
+<meta name="description" content="A simple server monitor tool.">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <!-- NanoMuse v0.1.0 — Komari Monitor Theme -->
 <style>
@@ -480,11 +481,12 @@ function conWS(){
     S.ws.onopen=()=>{S.wsRetries=0;$('wsStatus').textContent='UPDATING ...';$('sysLink').textContent='ACTIVE';$('rightStatus').textContent='STATUS — ACTIVE'};
     S.ws.onmessage=e=>{
       try{const d=JSON.parse(e.data);
+        console.log('[NanoMuse WS]',Object.keys(d),'online:',d.online?.length,'data keys:',d.data?Object.keys(d.data).length:0);
         if(d.online)S.onlineSet=new Set(d.online);
         if(d.data){for(const[k,v]of Object.entries(d.data))S.liveData[k]=v}
         uCards();rSum();
         if(S.detailUUID)uDetLive();
-      }catch(er){}
+      }catch(er){console.error('[NanoMuse WS err]',er)}
     };
     S.ws.onclose=()=>{$('wsStatus').textContent='RECONNECT ...';reWS()};
     S.ws.onerror=()=>{S.ws.close()};
