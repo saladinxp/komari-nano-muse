@@ -1564,6 +1564,44 @@ function initHeartbeat(){
 }
 
 /* ── Init ── */
+/* ── Character parallax: fade + drift on scroll ── */
+function initCharParallax(){
+  const char=document.querySelector('.anime-bg');
+  const veil=document.querySelector('.char-veil');
+  if(!char)return;
+  const hero=document.querySelector('.hero-top');
+  if(!hero)return;
+  let ticking=false;
+  window.addEventListener('scroll',()=>{
+    if(ticking)return;ticking=true;
+    requestAnimationFrame(()=>{
+      const sy=window.scrollY;
+      const hH=hero.offsetHeight||600;
+      const t40=hH*0.35, t80=hH*0.75;
+      /* Parallax drift: very subtle */
+      const drift=sy*0.06;
+      /* Opacity: 1 → 0.12 between 35%-75% of hero, then → 0.03 */
+      let op=1;
+      if(sy>t40){
+        const prog=Math.min(1,(sy-t40)/(t80-t40));
+        op=1-prog*0.88; /* 1 → 0.12 */
+      }
+      if(sy>t80){
+        const prog2=Math.min(1,(sy-t80)/(hH*0.3));
+        op=0.12-prog2*0.09; /* 0.12 → 0.03 */
+      }
+      op=Math.max(0.03,op);
+      /* Blur: 0 → 2px as she fades */
+      const blur=Math.min(2,(1-op)*2.5);
+      char.style.transform=`translateX(-50%) translateY(${drift.toFixed(1)}px)`;
+      char.style.opacity=op.toFixed(3);
+      char.style.filter=`brightness(1.02) blur(${blur.toFixed(1)}px)`;
+      if(veil)veil.style.opacity=op.toFixed(3);
+      ticking=false;
+    });
+  },{passive:true});
+}
+
 /* ── Terminal Link: visitor IP geolocation ── */
 async function fetchTermLink(){
   try{
@@ -1597,6 +1635,8 @@ async function init(){
     await Promise.all([fetchP(),fetchN(),fetchMe()]);
     rGF();render();conWS();hRoute();
     initParticles();initHeartbeat();fetchTermLink();
+    /* Character parallax fade on scroll */
+    initCharParallax();
     /* Wait for boot to finish */
     await bootPromise;
     if(!booted){
