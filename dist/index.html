@@ -386,16 +386,32 @@ body{
 .chart-pulse{position:absolute;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--blue);transform:translate(-50%,-50%);pointer-events:none;animation:chart-pulse-ring 2.5s ease-in-out infinite;z-index:2}
 @keyframes chart-pulse-ring{0%,100%{opacity:.3;transform:translate(-50%,-50%) scale(1)}50%{opacity:.7;transform:translate(-50%,-50%) scale(1.6)}}
 
-/* ═══ STABILITY PAGE ═══ */
-.stab-ov{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
-.stab-ov-card{background:rgba(255,255,255,0.9);border:1px solid rgba(226,232,240,0.5);border-radius:14px;padding:14px 18px}
-.stab-node{background:rgba(255,255,255,0.9);border:1px solid rgba(226,232,240,0.5);border-radius:14px;padding:14px 18px;margin-bottom:8px;display:flex;align-items:center;gap:14px}
-.stab-node-name{font-weight:700;font-size:13px;width:120px;flex-shrink:0}
-.stab-node-bar{flex:1;height:20px;background:rgba(148,163,184,0.06);border-radius:4px;overflow:hidden;display:flex}
-.stab-bar-seg{height:100%;transition:width .3s ease}
-.stab-bar-seg.up{background:var(--g)}.stab-bar-seg.down{background:var(--r)}
-.stab-node-pct{font-family:var(--fm);font-size:12px;font-weight:700;width:60px;text-align:right}
+/* ═══ STABILITY PAGE — Heatmap Matrix ═══ */
+.stab-ov{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0}
+.stab-ov-card{background:rgba(255,255,255,0.42);border:1px solid rgba(255,255,255,0.5);border-radius:14px;padding:16px 20px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
 .stab-tasks{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+/* Heatmap matrix */
+.stab-matrix{display:flex;flex-direction:column;gap:6px}
+.stab-row{display:flex;align-items:center;gap:10px;padding:8px 14px;background:rgba(255,255,255,0.38);border:1px solid rgba(255,255,255,0.4);border-radius:10px;backdrop-filter:blur(4px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.5)}
+.stab-row:hover{background:rgba(255,255,255,0.5);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6),0 2px 8px rgba(59,130,246,0.06)}
+.stab-row-name{font-weight:700;font-size:12px;width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.stab-heatmap{display:flex;gap:2px;flex:1;align-items:center}
+.stab-cell{width:9px;height:18px;border-radius:2px;transition:transform .15s,box-shadow .15s;position:relative;cursor:default}
+.stab-cell:hover{transform:scaleY(1.3);z-index:2}
+.stab-cell.c100{background:#34d399}.stab-cell.c99{background:#6ee7b7}.stab-cell.c95{background:#fbbf24}.stab-cell.c90{background:#f97316}.stab-cell.c0{background:rgba(210,80,80,0.7)}
+.stab-cell.c100:hover{box-shadow:0 0 8px rgba(52,211,153,0.4)}.stab-cell.c99:hover{box-shadow:0 0 8px rgba(110,231,183,0.4)}
+.stab-cell.c95:hover{box-shadow:0 0 8px rgba(251,191,36,0.4)}.stab-cell.c90:hover{box-shadow:0 0 8px rgba(249,115,22,0.4)}
+.stab-cell.c0:hover{box-shadow:0 0 8px rgba(210,80,80,0.4)}
+.stab-cell.empty{background:rgba(148,163,184,0.08)}
+.stab-row-pct{font-family:var(--fm);font-size:12px;font-weight:700;width:65px;text-align:right;flex-shrink:0}
+/* Tooltip */
+.stab-tip{position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:rgba(20,30,42,0.92);color:#fff;font-family:var(--fm);font-size:9px;letter-spacing:0.5px;padding:5px 8px;border-radius:5px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .15s;z-index:10;line-height:1.4}
+.stab-cell:hover .stab-tip{opacity:1}
+/* Date header row */
+.stab-date-row{display:flex;align-items:center;gap:10px;padding:0 14px;margin-bottom:2px}
+.stab-date-row .stab-row-name{opacity:0}
+.stab-date-labels{display:flex;gap:2px;flex:1}
+.stab-date-lbl{width:9px;font-family:var(--fm);font-size:6px;color:var(--t5);text-align:center;overflow:hidden}
 
 /* ═══ ALERT ATMOSPHERE SYSTEM — 3 layers ═══ */
 
@@ -1335,13 +1351,18 @@ function renderStabTasks(){
 }
 function stabAggByDay(records){
   if(!records)return{};
+  /* Build per-node per-day aggregation */
   const byNode={};
   records.forEach(r=>{
     if(STAB.taskId!==null&&r.task_id!==STAB.taskId)return;
     const uuid=r.client||r.uuid||r.node_uuid;if(!uuid)return;
-    if(!byNode[uuid])byNode[uuid]={total:0,loss:0};
+    const t=r.time||r.created_at||r.timestamp;if(!t)return;
+    const day=new Date(t).toISOString().slice(0,10); /* YYYY-MM-DD */
+    if(!byNode[uuid])byNode[uuid]={days:{},total:0,loss:0};
+    if(!byNode[uuid].days[day])byNode[uuid].days[day]={total:0,loss:0};
+    byNode[uuid].days[day].total++;
     byNode[uuid].total++;
-    if(r.value<0)byNode[uuid].loss++;
+    if(r.value<0){byNode[uuid].days[day].loss++;byNode[uuid].loss++}
   });
   return byNode;
 }
@@ -1349,38 +1370,68 @@ function renderStability(){
   const c=$('stabContent');if(!c||!STAB.data)return;
   const records=STAB.data.records||[];
   const agg=stabAggByDay(records);
-  /* Overview */
-  let totalNodes=Object.keys(agg).length,perfect=0,worstPct=100;
+
+  /* Generate date range for heatmap columns */
+  const days=[];
+  const now=new Date();
+  const numDays=STAB.hours<=24?1:STAB.hours<=168?7:30;
+  for(let i=numDays-1;i>=0;i--){
+    const d=new Date(now);d.setDate(d.getDate()-i);
+    days.push(d.toISOString().slice(0,10));
+  }
+
+  /* Overview stats */
+  let totalNodes=Object.keys(agg).length,perfect=0;
   Object.values(agg).forEach(v=>{
     const pct=v.total?((v.total-v.loss)/v.total*100):100;
     if(pct>=99.99)perfect++;
-    if(pct<worstPct)worstPct=pct;
   });
   const fleetUp=totalNodes?Object.values(agg).reduce((s,v)=>s+(v.total?(v.total-v.loss)/v.total*100:100),0)/totalNodes:0;
   const targetName=STAB.taskId?STAB.tasks.find(t=>t.id===STAB.taskId)?.name||'--':'ALL';
+
   let html=`<div class="stab-ov">
     <div class="stab-ov-card"><div class="det-label">FLEET UPTIME</div><div class="det-val" style="color:var(--g)">${fleetUp.toFixed(2)}%</div></div>
     <div class="stab-ov-card"><div class="det-label">TOTAL NODES</div><div class="det-val">${totalNodes}</div></div>
     <div class="stab-ov-card"><div class="det-label">PERFECT</div><div class="det-val" style="color:var(--g)">${perfect}</div></div>
     <div class="stab-ov-card"><div class="det-label">CURRENT TARGET</div><div class="det-val">${esc(targetName)}</div></div>
   </div>`;
-  /* Node list */
+
+  /* Date header */
+  if(numDays>1){
+    html+=`<div class="stab-date-row"><div class="stab-row-name"></div><div class="stab-date-labels">`;
+    days.forEach((d,i)=>{
+      const show=i===0||i===days.length-1||i%7===0;
+      html+=`<div class="stab-date-lbl">${show?d.slice(5).replace('-','/'):'  '}</div>`;
+    });
+    html+=`</div><div style="width:65px"></div></div>`;
+  }
+
+  /* Heatmap matrix */
+  html+=`<div class="stab-matrix">`;
   const sorted=S.nodes.filter(n=>agg[n.uuid]).map(n=>{
     const a=agg[n.uuid];const pct=a.total?((a.total-a.loss)/a.total*100):100;
-    return{node:n,pct,loss:a.loss,total:a.total};
+    return{node:n,pct,agg:a};
   });
   if(STAB.sort==='uptime')sorted.sort((a,b)=>a.pct-b.pct);
-  else if(STAB.sort==='loss')sorted.sort((a,b)=>b.loss-a.loss);
+  else if(STAB.sort==='loss')sorted.sort((a,b)=>b.agg.loss-a.agg.loss);
   else sorted.sort((a,b)=>(a.node.name||'').localeCompare(b.node.name||''));
-  sorted.forEach(({node,pct})=>{
-    const c2=pct>=99.9?'var(--g)':pct>=95?'var(--am)':'var(--r)';
-    html+=`<div class="stab-node">
-      <div class="stab-node-name">${esc(node.name||node.uuid)}</div>
-      <div class="stab-node-bar"><div class="stab-bar-seg up" style="width:${pct}%"></div><div class="stab-bar-seg down" style="width:${100-pct}%"></div></div>
-      <div class="stab-node-pct" style="color:${c2}">${pct.toFixed(2)}%</div>
-    </div>`;
+
+  sorted.forEach(({node,pct,agg:a})=>{
+    const pctColor=pct>=99.9?'var(--g)':pct>=95?'var(--am)':'var(--r)';
+    html+=`<div class="stab-row"><div class="stab-row-name">${esc(node.name||node.uuid)}</div><div class="stab-heatmap">`;
+    days.forEach(day=>{
+      const dd=a.days[day];
+      if(!dd){html+=`<div class="stab-cell empty"></div>`;return}
+      const dayPct=dd.total?((dd.total-dd.loss)/dd.total*100):100;
+      const cls=dayPct>=99.99?'c100':dayPct>=99?'c99':dayPct>=95?'c95':dayPct>=90?'c90':'c0';
+      const lostMin=dd.loss>0?Math.round(dd.loss*5)+'min':'0';
+      html+=`<div class="stab-cell ${cls}" title="${day}: ${dayPct.toFixed(1)}%"><div class="stab-tip">${day.slice(5)}<br>${dayPct.toFixed(1)}%${dd.loss?' · '+lostMin+' down':''}</div></div>`;
+    });
+    html+=`</div><div class="stab-row-pct" style="color:${pctColor}">${pct.toFixed(2)}%</div></div>`;
   });
+  html+=`</div>`;
   c.innerHTML=html;
+
   /* Time & sort buttons */
   const tr=$('stabTime');
   if(tr){
