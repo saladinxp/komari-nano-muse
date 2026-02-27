@@ -386,6 +386,23 @@ body{
 .chart-pulse{position:absolute;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--blue);transform:translate(-50%,-50%);pointer-events:none;animation:chart-pulse-ring 2.5s ease-in-out infinite;z-index:2}
 @keyframes chart-pulse-ring{0%,100%{opacity:.3;transform:translate(-50%,-50%) scale(1)}50%{opacity:.7;transform:translate(-50%,-50%) scale(1.6)}}
 
+/* ═══ TERMINAL LINK — Visitor connection info ═══ */
+.term-link{display:flex;align-items:center;gap:18px;padding:14px 22px;margin-bottom:20px;
+  background:rgba(255,255,255,0.35);border:1px solid rgba(255,255,255,0.45);border-radius:12px;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);position:relative;overflow:hidden}
+.term-link::before{content:'';position:absolute;top:0;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6) 30%,rgba(0,216,255,0.08) 50%,rgba(255,255,255,0.6) 70%,transparent)}
+.tl-dot{width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 8px rgba(34,197,94,0.5);flex-shrink:0;animation:dot-breathe 2.5s ease-in-out infinite}
+.tl-title{font-family:var(--fm);font-size:9px;letter-spacing:3px;color:var(--t4);font-weight:600}
+.tl-sep{width:1px;height:28px;background:rgba(148,163,184,0.15);flex-shrink:0}
+.tl-flag{font-size:16px;line-height:1}
+.tl-loc{font-family:var(--fd);font-weight:700;font-size:15px;color:var(--t);letter-spacing:0.5px}
+.tl-meta{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)}
+.tl-meta b{font-weight:700;color:var(--t2)}
+.tl-status{font-family:var(--fm);font-size:8px;letter-spacing:2.5px;color:var(--t5);margin-left:auto}
+.tl-core-dot{width:6px;height:6px;border-radius:50%;background:rgba(0,216,255,0.4);box-shadow:0 0 8px rgba(0,216,255,0.3);flex-shrink:0;animation:dot-breathe 3s ease-in-out infinite 0.5s}
+@media(max-width:768px){.tl-status{display:none}.term-link{flex-wrap:wrap;gap:10px}}
+
 /* ═══ STABILITY PAGE — Heatmap Matrix ═══ */
 .stab-ov{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0}
 .stab-ov-card{background:rgba(255,255,255,0.42);border:1px solid rgba(255,255,255,0.5);border-radius:14px;padding:16px 20px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
@@ -683,6 +700,18 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
     </div>
 
     <div class="content-area">
+      <!-- Terminal Link: visitor connection info -->
+      <div class="term-link an d4" id="termLink">
+        <div class="tl-dot"></div>
+        <div class="tl-title">TERMINAL LINK</div>
+        <div class="tl-sep"></div>
+        <span class="tl-flag" id="tlFlag">🌐</span>
+        <div class="tl-loc" id="tlLoc">RESOLVING ...</div>
+        <div class="tl-sep"></div>
+        <div class="tl-meta" id="tlMeta">ASN -- · RTT --</div>
+        <div class="tl-status">SECURE CHANNEL ESTABLISHED</div>
+        <div class="tl-core-dot"></div>
+      </div>
       <div class="sec-div an d5"><span class="sd-line"></span><span class="sd-label"><span class="sd-dot"></span>NODE ARRAY · 节点列表</span><span class="sd-line r"></span></div>
       <div class="sec-head an d5"><div class="sh-l"><span class="sh-tag">SEC-01</span><span class="sh-title">NODE ARRAY</span></div><div class="pills" id="groupPills"></div></div>
       <div class="cards" id="nodeCards"></div>
@@ -1535,6 +1564,25 @@ function initHeartbeat(){
 }
 
 /* ── Init ── */
+/* ── Terminal Link: visitor IP geolocation ── */
+async function fetchTermLink(){
+  try{
+    const r=await fetch('http://ip-api.com/json/?fields=status,country,countryCode,regionName,city,isp,as,query,lat,lon');
+    const d=await r.json();
+    if(d.status!=='success')return;
+    const flag=countryFlag(d.countryCode);
+    const fl=$('tlFlag');if(fl)fl.textContent=flag;
+    const loc=$('tlLoc');if(loc)loc.textContent=`${d.countryCode} · ${d.city||d.regionName||'--'}`;
+    const asn=d.as?d.as.split(' ')[0]:'--';
+    const meta=$('tlMeta');if(meta)meta.innerHTML=`<b>${asn}</b> · ${esc(d.isp||'--')} · <b>${d.query}</b>`;
+  }catch(e){console.log('[NM] Terminal link failed',e)}
+}
+function countryFlag(cc){
+  if(!cc||cc.length!==2)return'🌐';
+  const f=String.fromCodePoint(...[...cc.toUpperCase()].map(c=>0x1F1E6+c.charCodeAt(0)-65));
+  return f;
+}
+
 async function init(){
   try{
     const booted=sessionStorage.getItem('nm-booted');
@@ -1548,7 +1596,7 @@ async function init(){
     /* Fetch data in parallel */
     await Promise.all([fetchP(),fetchN(),fetchMe()]);
     rGF();render();conWS();hRoute();
-    initParticles();initHeartbeat();
+    initParticles();initHeartbeat();fetchTermLink();
     /* Wait for boot to finish */
     await bootPromise;
     if(!booted){
