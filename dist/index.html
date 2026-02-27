@@ -699,8 +699,8 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">STATUS</span><span class="h-div-l"></span></div>
         <div style="font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--t3)" id="rightStatus">STATUS: ACTIVE</div>
 
-        <!-- Live heartbeat — real WS data -->
-        <div class="hb-box"><svg viewBox="0 0 200 52" preserveAspectRatio="none"><polyline class="hb-line" id="hbL" points="0,26 200,26"/><polyline class="hb-line2" id="hbL2" points="0,28 200,28"/></svg></div>
+        <!-- Live network waveform — canvas -->
+        <div class="hb-box"><canvas id="hbCanvas" width="400" height="104" style="width:100%;height:100%"></canvas></div>
 
         <!-- Bandwidth: INBOUND / OUTBOUND -->
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">BANDWIDTH</span><span class="h-div-l"></span></div>
@@ -1593,39 +1593,71 @@ function initParticles(){
 }
 /* ── Heartbeat ── */
 function initHeartbeat(){
-  const l=$('hbL');const l2=$('hbL2');if(!l)return;
-  /* Store rolling data points */
-  if(!S._hbData)S._hbData=[];
-  if(!S._hbNet)S._hbNet=[];
-  const W=200,H=52,mid=H/2,pts=40;
-  function updateHB(){
-    /* Aggregate current CPU across online nodes */
-    let cpuSum=0,netSum=0,cnt=0;
+  const cv=$('hbCanvas');if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  const pts=50;
+  const txData=[],rxData=[];
+  for(let i=0;i<pts;i++){txData.push(0);rxData.push(0)}
+
+  function sample(){
+    let txSum=0,rxSum=0,cnt=0;
     S.nodes.forEach(n=>{
       if(!S.onlineSet.has(n.uuid))return;
       const d=S.liveData[n.uuid];if(!d)return;
-      cpuSum+=(d.cpu||0);netSum+=(d.network_tx||0)+(d.network_rx||0);cnt++;
+      txSum+=(d.network_tx||0);rxSum+=(d.network_rx||0);cnt++;
     });
-    const avgCpu=cnt?cpuSum/cnt:0;
-    S._hbData.push(avgCpu);if(S._hbData.length>pts)S._hbData.shift();
-    S._hbNet.push(netSum);if(S._hbNet.length>pts)S._hbNet.shift();
-    /* Build polyline points */
-    const stepX=W/(pts-1);
-    const cpuPts=S._hbData.map((v,i)=>{
-      const y=mid-(v/100)*(mid-4);/* 0%=mid, 100%=top */
-      return(i*stepX).toFixed(1)+','+y.toFixed(1);
-    }).join(' ');
-    l.setAttribute('points',cpuPts);
-    /* Net line (secondary) — normalize */
-    const maxNet=Math.max(1,...S._hbNet);
-    const netPts=S._hbNet.map((v,i)=>{
-      const y=mid-(v/maxNet)*(mid-8);
-      return(i*stepX).toFixed(1)+','+y.toFixed(1);
-    }).join(' ');
-    if(l2)l2.setAttribute('points',netPts);
+    txData.push(txSum);if(txData.length>pts)txData.shift();
+    rxData.push(rxSum);if(rxData.length>pts)rxData.shift();
   }
-  setInterval(updateHB,2000);
-  updateHB();
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const allVals=[...txData,...rxData];
+    const maxV=Math.max(1,...allVals);
+    const stepX=W/(pts-1);
+
+    function drawLine(data,color,alpha,fillAlpha){
+      ctx.beginPath();
+      data.forEach((v,i)=>{
+        const x=i*stepX;
+        const y=H-8-(v/maxV)*(H-16);
+        if(i===0)ctx.moveTo(x,y);
+        else{
+          const px=(i-1)*stepX,py=H-8-(data[i-1]/maxV)*(H-16);
+          const cpx=(px+x)/2;
+          ctx.bezierCurveTo(cpx,py,cpx,y,x,y);
+        }
+      });
+      /* Fill under curve */
+      ctx.strokeStyle=color;ctx.lineWidth=1.5*devicePixelRatio/2;ctx.globalAlpha=alpha;ctx.stroke();
+      /* Gradient fill */
+      const last=data.length-1;
+      ctx.lineTo(last*stepX,H);ctx.lineTo(0,H);ctx.closePath();
+      const grad=ctx.createLinearGradient(0,0,0,H);
+      grad.addColorStop(0,color);grad.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.fillStyle=grad;ctx.globalAlpha=fillAlpha;ctx.fill();
+      ctx.globalAlpha=1;
+    }
+
+    /* TX line (upload — green) */
+    drawLine(txData,'rgba(34,197,94,0.8)',0.9,0.08);
+    /* RX line (download — blue) */
+    drawLine(rxData,'rgba(37,99,235,0.7)',0.7,0.06);
+
+    /* Current value dot on TX */
+    if(txData.length>1){
+      const lastV=txData[txData.length-1];
+      const lx=(txData.length-1)*stepX,ly=H-8-(lastV/maxV)*(H-16);
+      ctx.beginPath();ctx.arc(lx,ly,3,0,Math.PI*2);
+      ctx.fillStyle='rgba(34,197,94,0.9)';ctx.fill();
+      ctx.beginPath();ctx.arc(lx,ly,6,0,Math.PI*2);
+      ctx.strokeStyle='rgba(34,197,94,0.3)';ctx.lineWidth=1;ctx.stroke();
+    }
+  }
+
+  setInterval(()=>{sample();draw()},2000);
+  sample();draw();
 }
 
 /* ── Init ── */
