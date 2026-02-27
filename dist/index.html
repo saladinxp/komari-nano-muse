@@ -38,7 +38,7 @@
 }
 .anime-bg{animation:charReveal 4.5s cubic-bezier(0.25,0.46,0.45,0.94) forwards}
 .char-veil{position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(ellipse 65% 75% at 50% 40%,rgba(200,220,248,0.0) 0%,rgba(210,225,245,0.12) 55%,rgba(220,232,248,0.35) 100%);
+  background:radial-gradient(ellipse 65% 75% at 50% 40%,rgba(200,220,248,0.0) 0%,rgba(210,225,245,0.06) 55%,rgba(220,232,248,0.18) 100%);
   border-radius:18px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{
@@ -1275,11 +1275,11 @@ function bootSequence(){
         /* Overlay: girl stays in "cold fog" during boot — NOT fully revealed
            Boot is "preheating", not the climax. Girl should be a silhouette/muted.
            0% → 0.97 (deep fog)
-           50% → 0.55 (silhouette emerging)
-           100% → 0.22 (visible but still veiled — energy stays restrained)
+           50% → 0.60 (silhouette emerging)
+           100% → 0.30 (visible but veiled — restrained, energy stays low)
            Real reveal happens when overlay removes entirely at boot-done */
         if(overlay){
-          const overlayOpacity=Math.max(0.22, 0.97 - progress * 0.78);
+          const overlayOpacity=Math.max(0.30, 0.97 - progress * 0.72);
           overlay.style.background=`rgba(14,26,34,${overlayOpacity.toFixed(3)})`;
           if(progress>0.7){
             const ringFade=1-((progress-0.7)/0.3);
