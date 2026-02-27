@@ -260,10 +260,15 @@ body{
   border-top:1.5px solid rgba(148,163,184,0.2);
   border-radius:0 0 18px 18px;
   box-shadow:0 -3px 10px rgba(100,116,139,0.1),0 -1px 3px rgba(100,116,139,0.06),inset 0 1px 0 rgba(255,255,255,0.45)}
-.footer::before{content:'';position:absolute;top:0;left:8%;right:8%;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(0,216,255,0.25) 30%,rgba(148,163,184,0.12) 50%,rgba(0,216,255,0.25) 70%,transparent)}
+.footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;overflow:hidden;
+  background:linear-gradient(90deg,transparent,rgba(0,216,255,0.15) 30%,rgba(148,163,184,0.12) 50%,rgba(0,216,255,0.15) 70%,transparent)}
+.footer-shimmer{position:absolute;top:-0.5px;left:0;width:100%;height:2px;overflow:hidden;pointer-events:none}
+.footer-shimmer::after{content:'';position:absolute;top:0;left:-30%;width:30%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(0,216,255,0.5),rgba(255,255,255,0.4),rgba(0,216,255,0.5),transparent);
+  animation:footer-glide 4s ease-in-out infinite}
 .footer::after{content:'';position:absolute;bottom:6px;left:50%;transform:translateX(-50%);width:50px;height:2px;border-radius:1px;
   background:linear-gradient(90deg,var(--cyan),var(--blue));opacity:.25}
+@keyframes footer-glide{0%{left:-30%}100%{left:100%}}
 .ft-dot{width:4px;height:4px;background:var(--cyan);border-radius:50%;opacity:.6}
 
 /* ═══ DETAIL PAGE ═══ */
@@ -567,7 +572,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
     </div>
   </div>
 
-  <div class="footer"><span class="ft-dot"></span><span id="footerSite">KOMARI MONITOR</span><span style="opacity:.3">—</span>NanoMuse<span style="opacity:.2">·</span>Secure Channel<span style="opacity:.2">·</span>Encrypted<span style="opacity:.2">|</span><span style="color:var(--cyan)"><a href="https://lol.moe" style="color:inherit;text-decoration:none">Miuler</a></span></div>
+  <div class="footer"><div class="footer-shimmer"></div><span class="ft-dot"></span><span id="footerSite">KOMARI MONITOR</span><span style="opacity:.3">—</span>NanoMuse<span style="opacity:.2">·</span>Secure Channel<span style="opacity:.2">·</span>Encrypted<span style="opacity:.2">|</span><span style="color:var(--cyan)"><a href="https://lol.moe" style="color:inherit;text-decoration:none">Miuler</a></span></div>
 </div>
 
 </div><!-- /mainContent -->
