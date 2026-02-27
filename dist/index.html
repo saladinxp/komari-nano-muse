@@ -6,9 +6,9 @@
 <title>Komari Monitor</title>
 <meta name="description" content="A simple server monitor tool.">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<!-- NanoMuse v0.1.0 — Komari Monitor Theme -->
+<!-- NanoMuse v0.5.3 — Komari Monitor Theme -->
 <style>
-/* ═══ NanoMuse v0.1.0 — CSS ═══ */
+/* ═══ NanoMuse v0.5.3 — CSS ═══ */
 :root{
   --bg:#dfe6ee;
   --cyan:#00d8ff;--cyan-g:rgba(0,216,255,0.5);
@@ -447,7 +447,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       <span class="tb-tab" data-page="detail"><span class="tb-num">02</span>DETAIL</span>
       <span class="tb-tab" data-page="stability"><span class="tb-num">03</span>STABILITY</span>
     </div>
-    <div class="tb-right"><button class="tb-badge" id="verBadge">v0.1.0</button><button class="tb-btn" id="searchBtn">⌕</button></div>
+    <div class="tb-right"><button class="tb-badge" id="verBadge">v0.5.3</button><button class="tb-btn" id="searchBtn">⌕</button></div>
   </div>
 
   <!-- ═══ DASHBOARD PAGE ═══ -->
@@ -558,7 +558,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
 </div><!-- /mainContent -->
 <script>
-/* ═══ NanoMuse v0.1.0 — JS ═══ */
+/* ═══ NanoMuse v0.5.3 — JS ═══ */
 ;(function(){
 'use strict';
 
@@ -570,7 +570,7 @@ const S={
   ws:null,_wsI:null,wsRetries:0,
   _lastF:[],
   detailUUID:null,detailNode:null,detailHours:6,detailTab:'load',detailPingHours:6,detailWsData:[],
-  VER:'0.1.0'
+  VER:'0.5.3'
 };
 const STAB={hours:24,sort:'name',data:null,tasks:[],taskId:null,loading:false,_tasksFromApi:false};
 window.S=S;window.STAB=STAB;
