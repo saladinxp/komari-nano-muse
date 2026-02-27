@@ -32,13 +32,13 @@
 .particles-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:4}
 @keyframes charReveal{
   0%{opacity:0;filter:blur(18px) brightness(1.3) saturate(1.3) contrast(1.1)}
-  25%{opacity:0.5;filter:blur(8px) brightness(1.1) saturate(1.4) contrast(1.12)}
-  60%{opacity:0.8;filter:blur(2px) brightness(1.02) saturate(1.5) contrast(1.15)}
-  100%{opacity:0.95;filter:blur(0.5px) brightness(1.0) saturate(1.5) contrast(1.18)}
+  25%{opacity:0.6;filter:blur(6px) brightness(1.05) saturate(1.5) contrast(1.15)}
+  60%{opacity:0.9;filter:blur(1px) brightness(1.0) saturate(1.6) contrast(1.2)}
+  100%{opacity:1;filter:brightness(0.97) saturate(1.6) contrast(1.22)}
 }
 .anime-bg{animation:charReveal 4.5s cubic-bezier(0.25,0.46,0.45,0.94) forwards}
 .char-veil{position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:radial-gradient(ellipse 65% 75% at 50% 40%,rgba(240,244,248,0.08) 0%,rgba(240,244,248,0.35) 55%,rgba(240,244,248,0.65) 100%);
+  background:radial-gradient(ellipse 65% 75% at 50% 40%,rgba(220,232,248,0.02) 0%,rgba(225,235,248,0.2) 55%,rgba(230,238,248,0.5) 100%);
   border-radius:18px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{
@@ -73,7 +73,7 @@ body{
   background:radial-gradient(circle,rgba(59,130,246,0.1) 0%,rgba(0,210,255,0.04) 40%,transparent 65%)}
 .energy-glow3{position:fixed;left:15%;bottom:20%;width:400px;height:300px;z-index:1;pointer-events:none;
   background:radial-gradient(ellipse,rgba(59,130,246,0.06) 0%,transparent 60%)}
-.mech{width:min(1440px,96vw);background:rgba(230,236,244,0.82);border:1.5px solid rgba(140,160,185,0.5);border-radius:18px;box-shadow:0 8px 32px rgba(59,130,246,0.08),0 2px 12px rgba(100,116,139,0.1),inset 0 1px 0 rgba(255,255,255,0.5);
+.mech{width:min(1440px,96vw);background:rgba(230,236,244,0.7);border:1.5px solid rgba(140,160,185,0.5);border-radius:18px;box-shadow:0 8px 32px rgba(59,130,246,0.08),0 2px 12px rgba(100,116,139,0.1),inset 0 1px 0 rgba(255,255,255,0.5);
   position:relative;z-index:10;display:flex;flex-direction:column}
 .hc{position:absolute;width:8px;height:8px;z-index:20;pointer-events:none;opacity:.6}
 .hc-tl{top:14px;left:14px;border-top:1.5px solid var(--cyan);border-left:1.5px solid var(--cyan);filter:drop-shadow(0 0 3px var(--cyan-g))}
@@ -140,7 +140,7 @@ body{
 .wf{fill:rgba(0,210,255,0.04)}
 .h-ghost{font-family:var(--fm);font-size:7px;letter-spacing:1.5px;color:var(--t5);opacity:.35;line-height:1.8;margin-top:auto}
 /* Center: SYNC CORE */
-.h-center{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.h-center{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:rgba(230,236,244,0.25)}
 .sync-core{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;animation:core-breathe 4s ease-in-out infinite}
 @keyframes core-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.015)}}
 .sync-ring-wrap{position:relative;width:260px;height:260px}
@@ -183,11 +183,11 @@ body{
 .fleet-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1.5px solid rgba(100,116,139,0.2)}
 .fleet-cell{padding:16px 24px;border-right:1px solid rgba(100,116,139,0.12);display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
 .fleet-cell:last-child{border-right:none}
-.fleet-cell::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:24px;height:2px;border-radius:1px}
-.fleet-cell:nth-child(1)::after{background:var(--cyan);box-shadow:0 0 8px var(--cyan-g)}
-.fleet-cell:nth-child(2)::after{background:var(--g);box-shadow:0 0 8px rgba(var(--gr),.4)}
-.fleet-cell:nth-child(3)::after{background:var(--r);box-shadow:0 0 8px rgba(var(--rr),.3)}
-.fleet-cell:nth-child(4)::after{background:var(--am);box-shadow:0 0 8px rgba(var(--amr),.3)}
+.fleet-cell::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:32px;height:3px;border-radius:1.5px}
+.fleet-cell:nth-child(1)::after{background:var(--cyan);box-shadow:0 0 12px var(--cyan-g),0 0 4px rgba(0,216,255,0.3)}
+.fleet-cell:nth-child(2)::after{background:var(--g);box-shadow:0 0 12px rgba(var(--gr),.5)}
+.fleet-cell:nth-child(3)::after{background:var(--r);box-shadow:0 0 12px rgba(var(--rr),.4)}
+.fleet-cell:nth-child(4)::after{background:var(--am);box-shadow:0 0 12px rgba(var(--amr),.4)}
 .fleet-val{font-family:var(--fd);font-weight:800;font-size:28px;color:var(--t);line-height:1}
 .fleet-lbl{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--t4);font-weight:600}
 
@@ -440,10 +440,10 @@ body{
       </div>
       <!-- Fleet Summary Strip -->
       <div class="fleet-strip">
-        <div class="fleet-cell"><div class="fleet-val" id="fTotal">--</div><div class="fleet-lbl">TOTAL NODES</div></div>
-        <div class="fleet-cell"><div class="fleet-val" id="fUprate">--%</div><div class="fleet-lbl">ONLINE RATE</div></div>
-        <div class="fleet-cell"><div class="fleet-val" id="fAlerts">--</div><div class="fleet-lbl">ALERTS</div></div>
-        <div class="fleet-cell"><div class="fleet-val" id="fAvgLoad">--%</div><div class="fleet-lbl">AVG LOAD</div></div>
+        <div class="fleet-cell"><div class="fleet-val" style="color:var(--cyan)" id="fTotal">--</div><div class="fleet-lbl">TOTAL NODES</div></div>
+        <div class="fleet-cell"><div class="fleet-val" style="color:var(--g)" id="fUprate">--%</div><div class="fleet-lbl">ONLINE RATE</div></div>
+        <div class="fleet-cell"><div class="fleet-val" style="color:var(--r)" id="fAlerts">--</div><div class="fleet-lbl">ALERTS</div></div>
+        <div class="fleet-cell"><div class="fleet-val" style="color:var(--am)" id="fAvgLoad">--%</div><div class="fleet-lbl">AVG LOAD</div></div>
       </div>
     </div>
 
