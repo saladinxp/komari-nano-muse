@@ -1031,38 +1031,62 @@ function rDetInfo(node,uuid){
   const grade=statusGrade(health);
   function gaugeColor(v){return v>=80?'var(--r)':v>=50?'var(--am)':'var(--blue)'}
   function gaugeHex(v){return v>=80?'#ff4d4f':v>=50?'#eab308':'#2563eb'}
-  /* Half-arc gauge: 180° arc — LARGE version */
+  /* Half-arc gauge: 180° arc — INSTRUMENT version */
   function halfArc(val,color,hexC,label){
     const v=Math.min(100,val);
-    /* Arc params: viewBox 150x82, center(75,72), r=60, 180° arc */
     const r=60;const cx=75;const cy=72;
-    const arcLen=Math.PI*r; /* half circumference ≈ 188.5 */
+    const arcLen=Math.PI*r;
     const off=arcLen-(arcLen*v/100);
-    /* Tick marks: 11 ticks at 0%,10%,...100% */
+
+    /* === Danger zone background arcs === */
+    /* 70-85%: faint amber zone, 85-100%: faint red zone */
+    const zoneR=60;
+    const a70=Math.PI-(0.70*Math.PI), a85=Math.PI-(0.85*Math.PI), a100=0;
+    const z70x=cx+zoneR*Math.cos(a70), z70y=cy-zoneR*Math.sin(a70);
+    const z85x=cx+zoneR*Math.cos(a85), z85y=cy-zoneR*Math.sin(a85);
+    const z100x=cx+zoneR*Math.cos(a100), z100y=cy-zoneR*Math.sin(a100);
+    const zones=`<path d="M ${z70x.toFixed(1)} ${z70y.toFixed(1)} A ${zoneR} ${zoneR} 0 0 1 ${z85x.toFixed(1)} ${z85y.toFixed(1)}" fill="none" stroke="rgba(234,179,8,0.08)" stroke-width="14" stroke-linecap="butt"/>
+      <path d="M ${z85x.toFixed(1)} ${z85y.toFixed(1)} A ${zoneR} ${zoneR} 0 0 1 ${z100x.toFixed(1)} ${z100y.toFixed(1)}" fill="none" stroke="rgba(239,68,68,0.06)" stroke-width="14" stroke-linecap="butt"/>`;
+
+    /* === Tick marks: every 10%, major every 20% === */
     let ticks='';
     for(let i=0;i<=10;i++){
       const angle=Math.PI-((i/10)*Math.PI);
-      const isMajor=i%5===0;
-      const r1=isMajor?46:50;const r2=56;
+      const pct=i*10;
+      const isMajor=pct%20===0;
+      const inDanger=pct>=85;const inWarn=pct>=70&&pct<85;
+      const r1=isMajor?44:49;const r2=57;
+      const tickColor=inDanger?'rgba(239,68,68,0.35)':inWarn?'rgba(234,179,8,0.3)':'rgba(100,116,139,0.25)';
+      const tickW=isMajor?1.2:0.7;
       const x1=cx+r1*Math.cos(angle),y1=cy-r1*Math.sin(angle);
       const x2=cx+r2*Math.cos(angle),y2=cy-r2*Math.sin(angle);
-      ticks+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" class="det-ga-tick"/>`;
+      ticks+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${tickColor}" stroke-width="${tickW}" fill="none"/>`;
     }
-    /* Small dots between ticks */
+    /* Sub-ticks: small dots between major ticks */
     for(let i=0;i<20;i++){
       const angle=Math.PI-((i/20)*Math.PI);
-      const dx=cx+58*Math.cos(angle),dy=cy-58*Math.sin(angle);
-      ticks+=`<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="0.8" class="det-ga-dot"/>`;
+      const dx=cx+58.5*Math.cos(angle),dy=cy-58.5*Math.sin(angle);
+      ticks+=`<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="0.6" fill="rgba(100,116,139,0.15)"/>`;
     }
-    /* Glow filter for fill arc */
-    const filterId='gf'+label.toLowerCase();
-    const glowDef=`<defs><filter id="${filterId}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur in="SourceGraphic" stdDeviation="3"/></filter></defs>`;
+
+    /* === Needle pointer at current value === */
+    let needle='';
+    if(on&&v>0){
+      const needleAngle=Math.PI-((v/100)*Math.PI);
+      const nInner=cx+36*Math.cos(needleAngle), nInnerY=cy-36*Math.sin(needleAngle);
+      const nOuter=cx+64*Math.cos(needleAngle), nOuterY=cy-64*Math.sin(needleAngle);
+      const needleColor=v>=85?'rgba(239,68,68,0.7)':v>=70?'rgba(234,179,8,0.6)':'rgba(37,99,235,0.5)';
+      needle=`<line x1="${nInner.toFixed(1)}" y1="${nInnerY.toFixed(1)}" x2="${nOuter.toFixed(1)}" y2="${nOuterY.toFixed(1)}" stroke="${needleColor}" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="${nOuter.toFixed(1)}" cy="${nOuterY.toFixed(1)}" r="2" fill="${needleColor}"/>`;
+    }
+
     const warnCls=v>=80?'highlight':v>=60?'warning':'';
     return`<div class="det-gauge ${warnCls}"><div class="det-gauge-arc"><svg viewBox="0 0 150 82">
-      ${glowDef}
+      ${zones}
       ${ticks}
       <path d="M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}" class="det-ga-bg"/>
-      <path d="M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}" class="det-ga-fill" style="stroke:${color};stroke-dasharray:${arcLen.toFixed(1)};stroke-dashoffset:${on?off.toFixed(1):arcLen.toFixed(1)};filter:drop-shadow(0 0 8px ${color.replace('var(--','rgba(').replace('--r)','255,77,79,0.4)').replace('--am)','234,179,8,0.4)').replace('--blue)','37,99,235,0.4)')})"/>
+      <path d="M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}" class="det-ga-fill" style="stroke:${color};stroke-dasharray:${arcLen.toFixed(1)};stroke-dashoffset:${on?off.toFixed(1):arcLen.toFixed(1)};filter:drop-shadow(0 0 6px ${color.replace('var(--','rgba(').replace('--r)','255,77,79,0.3)').replace('--am)','234,179,8,0.3)').replace('--blue)','37,99,235,0.3)')})"/>
+      ${needle}
     </svg></div>
     <div class="det-gauge-val" style="color:${on&&v>=80?'var(--r)':on&&v>=60?'var(--am)':'#1e293b'}">${on?v:'--'}<span class="det-gauge-unit">%</span></div>
     <div class="det-gauge-lbl">${label}</div>
@@ -1081,10 +1105,11 @@ function rDetInfo(node,uuid){
   </div>`;
 
   /* ── Half-Arc Gauges ── */
+  /* ── Half-Arc Gauges (system priority order: CPU > DISK > RAM > SWAP) ── */
   html+=`<div class="det-gauges">
     ${halfArc(cpu,gaugeColor(cpu),gaugeHex(cpu),'CPU')}
-    ${halfArc(ram,gaugeColor(ram),gaugeHex(ram),'RAM')}
     ${halfArc(disk,gaugeColor(disk),gaugeHex(disk),'DISK')}
+    ${halfArc(ram,gaugeColor(ram),gaugeHex(ram),'RAM')}
     ${halfArc(swap,gaugeColor(swap),gaugeHex(swap),'SWAP')}
   </div>`;
   /* Info panels */
@@ -1177,7 +1202,7 @@ function uDetLive(){
   const cpu=Math.round(d.cpu||0),ram=d.memory_total?Math.round(pc(d.memory_used||0,d.memory_total)):0;
   const disk=d.disk_total?Math.round(pc(d.disk_used||0,d.disk_total)):0;
   const swap=d.swap_total?Math.round(pc(d.swap_used||0,d.swap_total)):0;
-  const vals=[cpu,ram,disk,swap];
+  const vals=[cpu,disk,ram,swap]; /* order matches gauge layout: CPU > DISK > RAM > SWAP */
   const r=60;const arcLen=Math.PI*r;
   gauges.forEach((g,i)=>{
     const v=Math.min(100,vals[i]||0);const off=arcLen-(arcLen*v/100);
