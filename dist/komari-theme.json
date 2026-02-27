@@ -1,0 +1,55 @@
+{
+    "name": "Komari NanoMuse Panel",
+    "short": "NanoMuse",
+    "description": "电子二次元监控面板主题 · Anime HUD Light Sci-fi Dashboard。明亮冷白底 + 蓝色科技HUD + 动漫角色融合，内置 Stability 稳定性面板。",
+    "version": "0.6.0",
+    "author": "Miuler",
+    "url": "https://github.com/saladinxp/komari-nano-muse",
+    "preview": "preview.png",
+    "configuration": {
+        "type": "managed",
+        "name": "[ NANOMUSE ] 主题配置",
+        "data": [
+            {
+                "name": "◇ PANEL INFO // 面板标识",
+                "type": "title"
+            },
+            {
+                "key": "version_tag",
+                "name": "[ SYS.VER ] 版本标识",
+                "type": "string",
+                "default": "v0.6.0",
+                "help": "面板版本号 — 显示于导航栏、页脚及HUD面板"
+            },
+            {
+                "key": "footer_text",
+                "name": "[ FOOTER ] 状态栏文字",
+                "type": "string",
+                "default": "SYSTEM MONITORING ACTIVE",
+                "help": "底部状态栏文字"
+            },
+            {
+                "name": "◇ CHARACTER // 角色系统",
+                "type": "title"
+            },
+            {
+                "key": "char_url",
+                "name": "[ CHAR ] 角色图片链接",
+                "type": "string",
+                "default": "",
+                "help": "Hero区域角色图 — 留空使用默认 char.png"
+            },
+            {
+                "name": "◇ ANNOUNCE // 公告系统",
+                "type": "title"
+            },
+            {
+                "key": "announce_text",
+                "name": "[ NOTICE ] 公告内容",
+                "type": "string",
+                "default": "",
+                "help": "首页公告 — 留空隐藏公告栏"
+            }
+        ]
+    }
+}
