@@ -226,6 +226,25 @@ body{
 .det-card:hover{box-shadow:0 4px 16px rgba(59,130,246,0.1),0 2px 6px rgba(0,0,0,0.06);transform:translateY(-1px)}
 .det-label{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--blue);margin-bottom:6px;font-weight:700;opacity:.8}
 .det-val{font-family:var(--fd);font-weight:700;font-size:17px;color:#1e293b}
+/* Gauge strip */
+.det-gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
+.det-gauge{background:rgba(255,255,255,0.95);border:1px solid rgba(148,163,184,0.18);border-radius:14px;padding:20px 16px;text-align:center;position:relative;box-shadow:0 2px 8px rgba(59,130,246,0.05);transition:all .2s}
+.det-gauge:hover{box-shadow:0 4px 16px rgba(59,130,246,0.1);transform:translateY(-1px)}
+.det-gauge-ring{position:relative;width:80px;height:80px;margin:0 auto 10px}
+.det-gauge-ring svg{width:80px;height:80px;transform:rotate(-90deg)}
+.det-gauge-bg{fill:none;stroke:rgba(148,163,184,0.15);stroke-width:5}
+.det-gauge-fill{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset .8s}
+.det-gauge-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--fd);font-size:20px;font-weight:800;color:#1e293b}
+.det-gauge-lbl{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--t3);font-weight:600}
+/* Info panels */
+.det-panels{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.det-panel{background:rgba(255,255,255,0.95);border:1px solid rgba(148,163,184,0.18);border-radius:14px;padding:18px 22px;box-shadow:0 2px 8px rgba(59,130,246,0.05)}
+.det-panel-title{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--blue);font-weight:700;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(59,130,246,0.1);display:flex;align-items:center;gap:6px}
+.det-panel-title::before{content:'';width:8px;height:8px;border-radius:2px;background:var(--blue);opacity:.3}
+.det-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(148,163,184,0.06)}
+.det-row:last-child{border-bottom:none}
+.det-row-k{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)}
+.det-row-v{font-family:var(--fd);font-size:13px;font-weight:600;color:#1e293b;text-align:right}
 .det-tabs{display:flex;gap:8px;margin:16px 0}
 .det-tab{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;padding:6px 16px;border:1px solid rgba(148,163,184,0.25);background:rgba(255,255,255,.4);color:var(--t3);cursor:pointer;border-radius:6px;transition:.2s}
 .det-tab.a{background:var(--blue);color:#fff;border-color:var(--blue)}
@@ -257,7 +276,7 @@ body{
 .d1{animation-delay:.1s}.d2{animation-delay:.15s}.d3{animation-delay:.2s}.d4{animation-delay:.25s}.d5{animation-delay:.3s}.d6{animation-delay:.35s}.d7{animation-delay:.4s}.d8{animation-delay:.45s}.d9{animation-delay:.5s}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:2px}
 @media(max-width:1100px){.hero{grid-template-columns:1fr;min-height:280px}.h-left,.h-right{display:none}}
-@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:16px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}}
+@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:16px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr)}.det-panels{grid-template-columns:1fr}}
 @media(max-width:480px){.stab-ov{grid-template-columns:1fr}}
 </style>
 </head>
@@ -681,20 +700,44 @@ function rDetInfo(node,uuid){
   const on=S.onlineSet.has(uuid);
   const d=S.liveData[uuid]||{};
   const c=$('detContent');if(!c)return;
-  let html=`<div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:18px 24px;background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(0,210,255,0.05));border-radius:14px;border:1px solid rgba(59,130,246,0.12)">
+  const cpu=Math.round(d.cpu||0),ram=d.memory_total?Math.round(pc(d.memory_used||0,d.memory_total)):0;
+  const disk=d.disk_total?Math.round(pc(d.disk_used||0,d.disk_total)):0;
+  const swap=d.swap_total?Math.round(pc(d.swap_used||0,d.swap_total)):0;
+  function gaugeColor(v){return v>=80?'var(--r)':v>=50?'var(--am)':'var(--blue)'}
+  function ring(val,color,label){
+    const circ=2*Math.PI*34;const off=circ-(circ*Math.min(val,100)/100);
+    return`<div class="det-gauge"><div class="det-gauge-ring"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" class="det-gauge-bg"/><circle cx="40" cy="40" r="34" class="det-gauge-fill" style="stroke:${color};stroke-dasharray:${circ.toFixed(1)};stroke-dashoffset:${on?off.toFixed(1):circ.toFixed(1)}"/></svg><div class="det-gauge-val">${on?val:'--'}</div></div><div class="det-gauge-lbl">${label}</div></div>`}
+  let html=`<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding:20px 26px;background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(0,210,255,0.04));border-radius:14px;border:1px solid rgba(59,130,246,0.12)">
     <span class="nc-dot ${on?'on':'off'}" style="width:12px;height:12px"></span>
     <span style="font-family:var(--fd);font-weight:700;font-size:24px;color:#1e293b">${esc(node.name||uuid)}</span>
-    <span class="nc-badge ${on?'on':'off'}">${on?'ONLINE':'OFFLINE'}</span>
+    <span class="nc-badge ${on?'on':'off'}" style="font-size:11px;padding:4px 14px">${on?'ONLINE':'OFFLINE'}</span>
+    <span style="margin-left:auto;font-family:var(--fm);font-size:9px;letter-spacing:1.5px;color:var(--t4)">${esc(uuid.slice(0,8).toUpperCase())}</span>
   </div>`;
-  html+=`<div class="det-info">
-    <div class="det-card"><div class="det-label">REGION</div><div class="det-val">${esc(node.region||'--')}</div></div>
-    <div class="det-card"><div class="det-label">GROUP</div><div class="det-val">${esc(node.group||'--')}</div></div>
-    <div class="det-card"><div class="det-label">OS</div><div class="det-val">${esc(d.os||node.os||'--')}</div></div>
-    <div class="det-card"><div class="det-label">UPTIME</div><div class="det-val">${on?fUs(d.uptime):'--'}</div></div>
-    <div class="det-card"><div class="det-label">CPU</div><div class="det-val">${on?Math.round(d.cpu||0)+'%':'--'}</div></div>
-    <div class="det-card"><div class="det-label">RAM</div><div class="det-val">${on?fB(d.memory_used||0)+' / '+fB(d.memory_total||0):'--'}</div></div>
-    <div class="det-card"><div class="det-label">DISK</div><div class="det-val">${on?fB(d.disk_used||0)+' / '+fB(d.disk_total||0):'--'}</div></div>
-    <div class="det-card"><div class="det-label">NETWORK</div><div class="det-val">${on?'↑'+fS(d.network_tx||0)+' ↓'+fS(d.network_rx||0):'--'}</div></div>
+  /* Gauge strip */
+  html+=`<div class="det-gauges">
+    ${ring(cpu,gaugeColor(cpu),'CPU')}
+    ${ring(ram,gaugeColor(ram),'RAM')}
+    ${ring(disk,gaugeColor(disk),'DISK')}
+    ${ring(swap,gaugeColor(swap),'SWAP')}
+  </div>`;
+  /* Info panels */
+  html+=`<div class="det-panels">
+    <div class="det-panel"><div class="det-panel-title">SYSTEM INFO</div>
+      <div class="det-row"><span class="det-row-k">REGION</span><span class="det-row-v">${esc(node.region||'--')}</span></div>
+      <div class="det-row"><span class="det-row-k">GROUP</span><span class="det-row-v">${esc(node.group||'--')}</span></div>
+      <div class="det-row"><span class="det-row-k">OS</span><span class="det-row-v">${esc(d.os||node.os||'--')}</span></div>
+      <div class="det-row"><span class="det-row-k">UPTIME</span><span class="det-row-v">${on?fUs(d.uptime):'--'}</span></div>
+      <div class="det-row"><span class="det-row-k">CPU MODEL</span><span class="det-row-v">${esc(node.cpu_name||'--')}</span></div>
+      <div class="det-row"><span class="det-row-k">CORES</span><span class="det-row-v">${node.cpu_cores||'--'}</span></div>
+    </div>
+    <div class="det-panel"><div class="det-panel-title">RESOURCES</div>
+      <div class="det-row"><span class="det-row-k">CPU</span><span class="det-row-v">${on?cpu+'%':'--'}</span></div>
+      <div class="det-row"><span class="det-row-k">RAM</span><span class="det-row-v">${on?fB(d.memory_used||0)+' / '+fB(d.memory_total||0):'--'}</span></div>
+      <div class="det-row"><span class="det-row-k">SWAP</span><span class="det-row-v">${on?fB(d.swap_used||0)+' / '+fB(d.swap_total||0):'--'}</span></div>
+      <div class="det-row"><span class="det-row-k">DISK</span><span class="det-row-v">${on?fB(d.disk_used||0)+' / '+fB(d.disk_total||0):'--'}</span></div>
+      <div class="det-row"><span class="det-row-k">NETWORK ↑</span><span class="det-row-v">${on?fS(d.network_tx||0):'--'}</span></div>
+      <div class="det-row"><span class="det-row-k">NETWORK ↓</span><span class="det-row-v">${on?fS(d.network_rx||0):'--'}</span></div>
+    </div>
   </div>`;
   html+=`<div class="det-tabs"><button class="det-tab${S.detailTab==='load'?' a':''}" data-t="load">LOAD</button><button class="det-tab${S.detailTab==='ping'?' a':''}" data-t="ping">PING</button></div>`;
   html+=`<div class="det-time" id="detTimeRow"></div>`;
@@ -754,14 +797,31 @@ function uDetLive(){
   if(!S.detailUUID||document.querySelector('#pg-detail').style.display==='none')return;
   const d=S.liveData[S.detailUUID];
   if(!d)return;
-  /* Update info cards on detail page */
-  const cards=document.querySelectorAll('#pg-detail .det-card');
-  if(cards.length>=8){
-    const on=S.onlineSet.has(S.detailUUID);
-    cards[4].querySelector('.det-val').textContent=on?Math.round(d.cpu||0)+'%':'--';
-    cards[5].querySelector('.det-val').textContent=on?fB(d.memory_used||0)+' / '+fB(d.memory_total||0):'--';
-    cards[6].querySelector('.det-val').textContent=on?fB(d.disk_used||0)+' / '+fB(d.disk_total||0):'--';
-    cards[7].querySelector('.det-val').textContent=on?'↑'+fS(d.network_tx||0)+' ↓'+fS(d.network_rx||0):'--';
+  const on=S.onlineSet.has(S.detailUUID);
+  /* Update gauge rings */
+  const gauges=document.querySelectorAll('#pg-detail .det-gauge');
+  const cpu=Math.round(d.cpu||0),ram=d.memory_total?Math.round(pc(d.memory_used||0,d.memory_total)):0;
+  const disk=d.disk_total?Math.round(pc(d.disk_used||0,d.disk_total)):0;
+  const swap=d.swap_total?Math.round(pc(d.swap_used||0,d.swap_total)):0;
+  const vals=[cpu,ram,disk,swap];
+  const circ=2*Math.PI*34;
+  gauges.forEach((g,i)=>{
+    const v=vals[i]||0;const off=circ-(circ*Math.min(v,100)/100);
+    const fill=g.querySelector('.det-gauge-fill');
+    const vEl=g.querySelector('.det-gauge-val');
+    if(fill){fill.style.strokeDashoffset=on?off.toFixed(1):circ.toFixed(1);fill.style.stroke=v>=80?'var(--r)':v>=50?'var(--am)':'var(--blue)'}
+    if(vEl)vEl.textContent=on?v:'--';
+  });
+  /* Update panel rows */
+  const rows=document.querySelectorAll('#pg-detail .det-row-v');
+  if(rows.length>=12){
+    rows[3].textContent=on?fUs(d.uptime):'--';
+    rows[6].textContent=on?cpu+'%':'--';
+    rows[7].textContent=on?fB(d.memory_used||0)+' / '+fB(d.memory_total||0):'--';
+    rows[8].textContent=on?fB(d.swap_used||0)+' / '+fB(d.swap_total||0):'--';
+    rows[9].textContent=on?fB(d.disk_used||0)+' / '+fB(d.disk_total||0):'--';
+    rows[10].textContent=on?fS(d.network_tx||0):'--';
+    rows[11].textContent=on?fS(d.network_rx||0):'--';
   }
 }
 
