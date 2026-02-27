@@ -276,8 +276,10 @@ body{
 .det-val{font-family:var(--fd);font-weight:700;font-size:17px;color:#1e293b}
 /* Gauge strip */
 .det-gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
-.det-gauge{background:rgba(237,242,250,0.92);border:1.5px solid rgba(140,160,185,0.3);border-radius:14px;padding:20px 16px;text-align:center;position:relative;box-shadow:0 2px 8px rgba(59,130,246,0.05);transition:all .2s}
+.det-gauge{background:rgba(237,242,250,0.92);border:1.5px solid rgba(140,160,185,0.3);border-radius:14px;padding:20px 16px;text-align:center;position:relative;box-shadow:0 2px 8px rgba(59,130,246,0.05);transition:all .3s}
 .det-gauge:hover{box-shadow:0 4px 16px rgba(59,130,246,0.1);transform:translateY(-1px)}
+.det-gauge.highlight{border-color:rgba(239,68,68,0.3);box-shadow:0 2px 12px rgba(239,68,68,0.1),0 0 20px rgba(239,68,68,0.04);background:rgba(255,245,245,0.92)}
+.det-gauge.highlight .det-gauge-lbl{color:var(--r);font-weight:700}
 .det-gauge-ring{position:relative;width:80px;height:80px;margin:0 auto 10px}
 .det-gauge-ring svg{width:80px;height:80px;transform:rotate(-90deg)}
 .det-gauge-bg{fill:none;stroke:rgba(148,163,184,0.15);stroke-width:5}
@@ -299,7 +301,7 @@ body{
 .det-time{display:flex;gap:6px;margin-bottom:16px}
 .det-time button{font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:4px 12px;border:1px solid rgba(148,163,184,0.2);background:rgba(255,255,255,.5);color:var(--t3);cursor:pointer;border-radius:4px;transition:.2s}
 .det-time button.a{background:var(--blue);color:#fff;border-color:var(--blue)}
-.chart-wrap{background:rgba(237,242,250,0.95);border:1.5px solid rgba(140,160,185,0.3);border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 2px 8px rgba(59,130,246,0.05);border-left:3px solid var(--cyan)}
+.chart-wrap{background:rgba(237,242,250,0.95);border:1.5px solid rgba(140,160,185,0.3);border-radius:14px;padding:18px;margin-bottom:20px;box-shadow:0 2px 8px rgba(59,130,246,0.05);border-left:3px solid var(--cyan)}
 .chart-wrap canvas{width:100%;height:180px}
 .chart-label{font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--blue);margin-bottom:8px;font-weight:700}
 
@@ -866,11 +868,20 @@ function rDetInfo(node,uuid){
   function ring(val,color,label){
     const circ=2*Math.PI*34;const off=circ-(circ*Math.min(val,100)/100);
     return`<div class="det-gauge"><div class="det-gauge-ring"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="34" class="det-gauge-bg"/><circle cx="40" cy="40" r="34" class="det-gauge-fill" style="stroke:${color};stroke-dasharray:${circ.toFixed(1)};stroke-dashoffset:${on?off.toFixed(1):circ.toFixed(1)}"/></svg><div class="det-gauge-val">${on?val:'--'}</div></div><div class="det-gauge-lbl">${label}</div></div>`}
-  let html=`<div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding:20px 26px;background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(0,210,255,0.04));border-radius:14px;border:1px solid rgba(59,130,246,0.12)">
+  const health=on?Math.max(0,Math.round(100-(cpu+ram+disk)/3)):0;
+  const healthColor=health>70?'var(--g)':health>40?'var(--am)':'var(--r)';
+  let html=`<div style="display:flex;align-items:center;gap:14px;margin-bottom:8px;padding:20px 26px;background:linear-gradient(135deg,rgba(59,130,246,0.08),rgba(0,210,255,0.04));border-radius:14px 14px 0 0;border:1px solid rgba(59,130,246,0.12);border-bottom:none">
     <span class="nc-dot ${on?'on':'off'}" style="width:12px;height:12px"></span>
     <span style="font-family:var(--fd);font-weight:700;font-size:24px;color:#1e293b">${esc(node.name||uuid)}</span>
     <span class="nc-badge ${on?'on':'off'}" style="font-size:11px;padding:4px 14px">${on?'ONLINE':'OFFLINE'}</span>
     <span style="margin-left:auto;font-family:var(--fm);font-size:9px;letter-spacing:1.5px;color:var(--t4)">${esc(uuid.slice(0,8).toUpperCase())}</span>
+  </div>
+  <div style="display:flex;gap:24px;padding:10px 26px 14px;margin-bottom:16px;background:rgba(237,242,250,0.6);border-radius:0 0 14px 14px;border:1px solid rgba(59,130,246,0.08);border-top:1px solid rgba(59,130,246,0.06)">
+    <span style="font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--t3);display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:${healthColor};box-shadow:0 0 6px ${healthColor}"></span>HEALTH <strong style="color:${healthColor};font-family:var(--fd);font-size:13px">${on?health+'%':'--'}</strong></span>
+    <span style="font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--t3)">CPU <strong style="color:var(--t);font-family:var(--fd);font-size:13px">${on?cpu+'%':'--'}</strong></span>
+    <span style="font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--t3)">RAM <strong style="color:var(--t);font-family:var(--fd);font-size:13px">${on?ram+'%':'--'}</strong></span>
+    <span style="font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--t3)">NET ↑ <strong style="color:var(--g);font-family:var(--fd);font-size:12px">${on?fS(d.network_tx||0):'--'}</strong></span>
+    <span style="font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--t3)">NET ↓ <strong style="color:var(--blue);font-family:var(--fd);font-size:12px">${on?fS(d.network_rx||0):'--'}</strong></span>
   </div>`;
   /* Gauge strip */
   html+=`<div class="det-gauges">
@@ -970,7 +981,10 @@ function uDetLive(){
     const vEl=g.querySelector('.det-gauge-val');
     if(fill){fill.style.strokeDashoffset=on?off.toFixed(1):circ.toFixed(1);fill.style.stroke=v>=80?'var(--r)':v>=50?'var(--am)':'var(--blue)'}
     if(vEl)vEl.textContent=on?v:'--';
+    g.classList.remove('highlight');
   });
+  /* Auto-highlight highest load gauge */
+  if(on){const maxIdx=vals.indexOf(Math.max(...vals));if(vals[maxIdx]>=20)gauges[maxIdx].classList.add('highlight')}
   /* Update panel rows */
   const rows=document.querySelectorAll('#pg-detail .det-row-v');
   if(rows.length>=12){
@@ -1006,7 +1020,9 @@ function dCh(canvasId,opts){
     ctx.fillStyle='#64748b';ctx.font='9px JetBrains Mono';ctx.textAlign='right';
     ctx.fillText(Math.round(max*(1-i/4)),pad.l-6,y+3);
   }
-  /* Line */
+  /* Line with glow */
+  ctx.save();
+  ctx.shadowColor=opts.color||'#2563eb';ctx.shadowBlur=8;ctx.shadowOffsetY=2;
   ctx.beginPath();ctx.strokeStyle=opts.color||'#2563eb';ctx.lineWidth=2.5;ctx.lineJoin='round';
   data.forEach((v,i)=>{
     const x=pad.l+(i/(data.length-1||1))*cw;
@@ -1014,11 +1030,20 @@ function dCh(canvasId,opts){
     i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
   });
   ctx.stroke();
-  /* Fill gradient */
+  ctx.restore();
+  /* Peak dot */
+  const peakVal=Math.max(...data);const peakIdx=data.indexOf(peakVal);
+  if(peakIdx>=0&&data.length>1){
+    const px=pad.l+(peakIdx/(data.length-1))*cw;
+    const py=pad.t+ch*(1-peakVal/max);
+    ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);ctx.fillStyle=opts.color||'#2563eb';ctx.fill();
+    ctx.beginPath();ctx.arc(px,py,1.5,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
+  }
+  /* Fill gradient (lighter) */
   ctx.lineTo(pad.l+cw,pad.t+ch);ctx.lineTo(pad.l,pad.t+ch);ctx.closePath();
   const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+ch);
-  grad.addColorStop(0,(opts.color||'#2563eb')+'40');
-  grad.addColorStop(1,(opts.color||'#2563eb')+'08');
+  grad.addColorStop(0,(opts.color||'#2563eb')+'25');
+  grad.addColorStop(1,(opts.color||'#2563eb')+'04');
   ctx.fillStyle=grad;ctx.fill();
 }
 
