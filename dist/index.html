@@ -1670,14 +1670,21 @@ function initCharParallax(){
 /* ── Terminal Link: visitor IP geolocation ── */
 async function fetchTermLink(){
   try{
-    const r=await fetch('http://ip-api.com/json/?fields=status,country,countryCode,regionName,city,isp,as,query,lat,lon');
-    const d=await r.json();
-    if(d.status!=='success')return;
-    const flag=countryFlag(d.countryCode);
+    /* Try multiple free IP APIs (HTTPS) */
+    let d=null;
+    try{
+      const r=await fetch('https://ipapi.co/json/');d=await r.json();
+      if(d&&d.ip){d={ip:d.ip,country:d.country_name,cc:d.country_code,city:d.city,region:d.region,isp:d.org||d.asn,asn:d.asn||'--',lat:d.latitude,lon:d.longitude}}
+    }catch(e){
+      try{const r2=await fetch('https://ipwho.is/');d=await r2.json();
+        if(d&&d.ip){d={ip:d.ip,country:d.country,cc:d.country_code,city:d.city,region:d.region,isp:d.connection?.org||'--',asn:d.connection?.asn||'--'}}
+      }catch(e2){}
+    }
+    if(!d||!d.ip)return;
+    const flag=countryFlag(d.cc);
     const fl=$('tlFlag');if(fl)fl.textContent=flag;
-    const loc=$('tlLoc');if(loc)loc.textContent=`${d.countryCode} · ${d.city||d.regionName||'--'}`;
-    const asn=d.as?d.as.split(' ')[0]:'--';
-    const meta=$('tlMeta');if(meta)meta.innerHTML=`<b>${asn}</b> · ${esc(d.isp||'--')} · <b>${d.query}</b>`;
+    const loc=$('tlLoc');if(loc)loc.textContent=`${d.cc} · ${d.city||d.region||'--'}`;
+    const meta=$('tlMeta');if(meta)meta.innerHTML=`<b>${d.asn}</b> · ${esc(d.isp||'--')}<br><b>${d.ip}</b>`;
   }catch(e){console.log('[NM] Terminal link failed',e)}
 }
 function countryFlag(cc){
