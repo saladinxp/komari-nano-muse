@@ -239,7 +239,7 @@ body{
 .nc-meters{display:flex;flex-direction:column;gap:6px;margin:4px 0}
 .nc-m{display:flex;align-items:center;gap:8px}
 .nc-ml{font-family:var(--fm);font-size:9px;letter-spacing:1.5px;color:var(--t3);width:32px;flex-shrink:0}
-.nc-mt{flex:1;height:4px;border-radius:2px;overflow:hidden;background:rgba(148,163,184,0.08);position:relative}
+.nc-mt{flex:1;height:5px;border-radius:2.5px;overflow:hidden;background:rgba(148,163,184,0.12);position:relative}
 .nc-mf{height:100%;border-radius:2px}
 .nc-mf.blue{background:linear-gradient(90deg,var(--cyan),var(--blue));box-shadow:0 0 4px rgba(0,210,255,.15)}
 .nc-mf.green{background:var(--g)}.nc-mf.amber{background:var(--am)}.nc-mf.red{background:var(--r)}
@@ -249,7 +249,10 @@ body{
 .nc-f{display:flex;justify-content:space-between;padding:8px 14px;border-top:1px solid rgba(226,232,240,0.5);font-family:var(--fm);font-size:9px;color:var(--t3);letter-spacing:1px;position:relative}
 .nc-f::after{content:'';position:absolute;top:-1px;right:14px;width:14px;height:2px;background:var(--cyan);border-radius:1px;opacity:.45}
 .nc-ut{display:flex;align-items:center;gap:4px}.nc-utd{width:4px;height:4px;border-radius:50%;background:var(--g)}
-.nc.off{opacity:.5}.nc.off:hover{opacity:.75}
+.nc.off{opacity:.65}.nc.off:hover{opacity:.85}
+.nc.off{background:rgba(255,240,240,0.88);border-color:rgba(239,68,68,0.25);box-shadow:inset 3px 0 0 var(--r),0 2px 8px rgba(239,68,68,0.06)}
+.nc.off.ovl{background:rgba(255,248,235,0.88);border-color:rgba(245,158,11,0.25);box-shadow:inset 3px 0 0 var(--am),0 2px 8px rgba(245,158,11,0.06)}
+.nc.off.ovl::before{background:linear-gradient(90deg,var(--am),#f59e0b)}
 .footer{border-top:1px solid rgba(148,163,184,0.12);display:flex;align-items:center;justify-content:center;padding:10px 36px;gap:14px;
   font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--t3)}
 .ft-dot{width:4px;height:4px;background:var(--cyan);border-radius:50%;opacity:.6}
@@ -770,7 +773,7 @@ function rCards(fl){
     const osStr=on?(d.os||n.os||''):(fake?fake.os:'');
     const region=n.region||'';const group=n.group||'';
     const chips=['region','group','os'].map(k=>{const v=k==='region'?region:k==='group'?group:osStr;return v?`<span class="nc-chip">${esc(v)}</span>`:''}).join('');
-    const offCls=on?'':'off';
+    const offCls=on?'':(fake&&fake.atk?'off atk':'off ovl');
     const dly=Math.min(9,Math.floor(i/2)+4);
     html+=`<div class="nc ${offCls} an d${dly}" data-uuid="${n.uuid}" onclick="openDet('${n.uuid}')">
       <div class="nc-h"><div class="nc-n"><span class="nc-dot ${on?'on':'off'}"></span>${esc(n.name||n.uuid)}</div><span class="nc-badge ${on?'on':'off'}">${on?'ONLINE':'OFFLINE'}</span></div>
@@ -820,7 +823,11 @@ function uCards(){
     if(dot){dot.setAttribute('class','nc-dot '+(on?'on':'off'))}
     const badge=card.querySelector('.nc-badge');
     if(badge){badge.setAttribute('class','nc-badge '+(on?'on':'off'));badge.textContent=on?'ONLINE':'OFFLINE'}
-    if(on)card.classList.remove('off');else card.classList.add('off');
+    if(on){card.classList.remove('off','atk','ovl')}else{
+      card.classList.add('off');
+      const fake=genFake(n.uuid);
+      if(fake&&fake.atk)card.classList.add('atk');else card.classList.add('ovl');
+    }
   });
 }
 
