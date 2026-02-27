@@ -282,73 +282,74 @@ body{
 .det-val{font-family:var(--fd);font-weight:700;font-size:17px;color:#1e293b}
 /* ═══ DETAIL PAGE v2 — Tactical + Engineering ═══ */
 /* Status strip */
-.det-strip{display:flex;align-items:center;gap:0;background:linear-gradient(135deg,rgba(20,30,42,0.95),rgba(28,40,56,0.92));border-radius:14px;overflow:hidden;margin-bottom:20px;position:relative;border:1px solid rgba(0,216,255,0.12)}
+.det-strip{display:flex;align-items:center;gap:0;background:linear-gradient(135deg,rgba(20,30,42,0.96),rgba(24,36,52,0.94));border-radius:14px;overflow:hidden;margin-bottom:24px;position:relative;border:1px solid rgba(0,216,255,0.12);min-height:72px}
 .det-strip::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(0,216,255,0.03) 30%,rgba(0,216,255,0.03) 70%,transparent);pointer-events:none}
 .det-strip::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--blue),var(--cyan));opacity:.4}
 .det-strip-scan{position:absolute;top:0;left:0;right:0;height:100%;overflow:hidden;pointer-events:none}
 .det-strip-scan::after{content:'';position:absolute;top:0;left:-30%;width:30%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,216,255,0.06),transparent);animation:det-scan 3s ease-in-out infinite}
 @keyframes det-scan{0%{left:-30%}100%{left:100%}}
-.ds-cell{padding:14px 20px;display:flex;flex-direction:column;gap:3px;border-right:1px solid rgba(100,130,160,0.15);position:relative}
+.ds-cell{padding:16px 24px;display:flex;flex-direction:column;gap:4px;border-right:1px solid rgba(100,130,160,0.15);position:relative}
 .ds-cell:last-child{border-right:none}
-.ds-cell.ds-name{min-width:160px;padding:14px 24px}
-.ds-name-v{font-family:var(--fd);font-weight:700;font-size:16px;color:#fff;letter-spacing:0.5px}
-.ds-name-uuid{font-family:var(--fm);font-size:8px;letter-spacing:2px;color:rgba(148,163,184,0.5)}
-.ds-k{font-family:var(--fm);font-size:8px;letter-spacing:2.5px;color:rgba(148,163,184,0.6)}
-.ds-v{font-family:var(--fd);font-weight:700;font-size:14px;color:#fff}
-.ds-v.online{color:var(--g);text-shadow:0 0 8px rgba(34,197,94,0.3)}
-.ds-v.offline{color:var(--r);text-shadow:0 0 8px rgba(255,77,79,0.3)}
-.ds-v.st-active{color:var(--g)}.ds-v.st-stable{color:var(--cyan)}.ds-v.st-warning{color:var(--am)}.ds-v.st-critical{color:var(--r)}
-.ds-dot{width:6px;height:6px;border-radius:50%;display:inline-block;margin-right:6px}
-.ds-dot.on{background:var(--g);box-shadow:0 0 8px rgba(34,197,94,0.5)}.ds-dot.off{background:var(--r);box-shadow:0 0 6px rgba(255,77,79,0.4)}
+.ds-cell.ds-name{min-width:200px;padding:16px 28px}
+.ds-name-v{font-family:var(--fd);font-weight:800;font-size:20px;color:#fff;letter-spacing:0.5px;display:flex;align-items:center;gap:8px}
+.ds-name-uuid{font-family:var(--fm);font-size:8px;letter-spacing:2px;color:rgba(148,163,184,0.45)}
+.ds-k{font-family:var(--fm);font-size:8px;letter-spacing:2.5px;color:rgba(148,163,184,0.55);font-weight:600}
+.ds-v{font-family:var(--fd);font-weight:800;font-size:17px;color:#fff}
+.ds-v.online{color:var(--g);text-shadow:0 0 12px rgba(34,197,94,0.4)}
+.ds-v.offline{color:var(--r);text-shadow:0 0 10px rgba(255,77,79,0.4)}
+.ds-v.st-active{color:var(--g);text-shadow:0 0 8px rgba(34,197,94,0.3)}.ds-v.st-stable{color:var(--cyan)}.ds-v.st-warning{color:var(--am);text-shadow:0 0 8px rgba(234,179,8,0.3)}.ds-v.st-critical{color:var(--r);text-shadow:0 0 8px rgba(255,77,79,0.3)}
+.ds-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+.ds-dot.on{background:var(--g);box-shadow:0 0 10px rgba(34,197,94,0.6)}.ds-dot.off{background:var(--r);box-shadow:0 0 8px rgba(255,77,79,0.5)}
 /* Mini core echo */
-.det-core-echo{position:absolute;right:20px;top:50%;transform:translateY(-50%);width:36px;height:36px;opacity:.25}
+.det-core-echo{position:absolute;right:24px;top:50%;transform:translateY(-50%);width:44px;height:44px;opacity:.2}
 .det-core-echo svg{width:100%;height:100%}
 .dce-ring{fill:none;stroke:var(--cyan);stroke-width:1.5;stroke-dasharray:8 4;animation:ring-spin 12s linear infinite;transform-origin:center}
 .dce-inner{fill:none;stroke:var(--blue);stroke-width:1;stroke-dasharray:4 6;animation:ring-rev 8s linear infinite;transform-origin:center}
 .dce-dot{fill:var(--cyan);opacity:.6}
 
-/* Gauge strip — half-arc tactical gauges */
-.det-gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:20px 0}
-.det-gauge{background:rgba(237,242,250,0.92);border:1.5px solid rgba(140,160,185,0.25);border-radius:14px;padding:20px 16px 14px;text-align:center;position:relative;box-shadow:0 2px 8px rgba(59,130,246,0.05);transition:all .3s}
-.det-gauge:hover{box-shadow:0 4px 16px rgba(59,130,246,0.1);transform:translateY(-1px)}
-.det-gauge.highlight{border-color:rgba(239,68,68,0.3);box-shadow:0 2px 12px rgba(239,68,68,0.1),0 0 20px rgba(239,68,68,0.04);background:rgba(255,245,245,0.92)}
+/* Gauge strip — half-arc tactical gauges (LARGE) */
+.det-gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:24px 0}
+.det-gauge{background:rgba(240,244,250,0.92);border:1.5px solid rgba(140,160,185,0.25);border-radius:16px;padding:28px 20px 18px;text-align:center;position:relative;box-shadow:0 2px 12px rgba(59,130,246,0.05),0 1px 3px rgba(0,0,0,0.03);transition:all .3s}
+.det-gauge:hover{box-shadow:0 6px 20px rgba(59,130,246,0.1);transform:translateY(-2px)}
+.det-gauge.highlight{border-color:rgba(239,68,68,0.35);box-shadow:0 2px 16px rgba(239,68,68,0.12),0 0 24px rgba(239,68,68,0.05);background:rgba(255,245,245,0.92)}
 .det-gauge.highlight .det-gauge-lbl{color:var(--r);font-weight:700}
-.det-gauge.warning{border-color:rgba(234,179,8,0.3);background:rgba(255,252,240,0.92)}
+.det-gauge.warning{border-color:rgba(234,179,8,0.35);background:rgba(255,252,240,0.92);box-shadow:0 2px 16px rgba(234,179,8,0.08)}
 .det-gauge.warning .det-gauge-lbl{color:var(--am);font-weight:700}
-.det-gauge-arc{position:relative;width:110px;height:62px;margin:0 auto 6px;overflow:hidden}
-.det-gauge-arc svg{width:110px;height:62px}
-.det-ga-bg{fill:none;stroke:rgba(148,163,184,0.12);stroke-width:6;stroke-linecap:round}
-.det-ga-fill{fill:none;stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .8s;filter:drop-shadow(0 0 6px var(--cyan-g))}
-.det-ga-tick{fill:none;stroke:rgba(148,163,184,0.2);stroke-width:0.8}
-.det-ga-dot{fill:rgba(148,163,184,0.25)}
-.det-gauge-val{font-family:var(--fd);font-size:24px;font-weight:800;color:#1e293b;line-height:1;margin-top:2px}
-.det-gauge-unit{font-family:var(--fm);font-size:8px;letter-spacing:1.5px;color:var(--t4);margin-left:1px}
-.det-gauge-lbl{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--t3);font-weight:600;margin-top:4px}
-.det-gauge-range{display:flex;justify-content:space-between;padding:0 8px;margin-top:2px}
+.det-gauge-arc{position:relative;width:150px;height:82px;margin:0 auto 8px;overflow:hidden}
+.det-gauge-arc svg{width:150px;height:82px}
+.det-ga-bg{fill:none;stroke:rgba(148,163,184,0.15);stroke-width:8;stroke-linecap:round}
+.det-ga-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)}
+.det-ga-tick{fill:none;stroke:rgba(100,116,139,0.3);stroke-width:1}
+.det-ga-dot{fill:rgba(100,116,139,0.2)}
+.det-gauge-val{font-family:var(--fd);font-size:32px;font-weight:900;color:#1e293b;line-height:1;margin-top:4px}
+.det-gauge-unit{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t4);margin-left:2px}
+.det-gauge-lbl{font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--t3);font-weight:600;margin-top:6px}
+.det-gauge-range{display:flex;justify-content:space-between;padding:0 12px;margin-top:4px}
 .det-gauge-range span{font-family:var(--fm);font-size:7px;color:var(--t5)}
 /* Info panels */
-.det-panels{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
-.det-panel{background:rgba(237,242,250,0.92);border:1.5px solid rgba(140,160,185,0.25);border-radius:14px;padding:18px 22px;box-shadow:0 2px 8px rgba(59,130,246,0.05);position:relative}
+.det-panels{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:20px 0}
+.det-panel{background:rgba(240,244,250,0.92);border:1.5px solid rgba(140,160,185,0.25);border-radius:16px;padding:22px 26px;box-shadow:0 2px 10px rgba(59,130,246,0.05);position:relative}
 .det-panel::before{content:'';position:absolute;top:0;left:16px;right:16px;height:1px;background:linear-gradient(90deg,transparent,rgba(0,216,255,0.08),transparent)}
-.det-panel-title{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--blue);font-weight:700;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(59,130,246,0.1);display:flex;align-items:center;gap:6px}
+.det-panel-title{font-family:var(--fm);font-size:10px;letter-spacing:2.5px;color:var(--blue);font-weight:700;margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid rgba(59,130,246,0.1);display:flex;align-items:center;gap:6px}
 .det-panel-title::before{content:'';width:8px;height:8px;border-radius:2px;background:var(--blue);opacity:.3}
-.det-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(148,163,184,0.06)}
+.det-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(148,163,184,0.06)}
 .det-row:last-child{border-bottom:none}
 .det-row-k{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)}
-.det-row-v{font-family:var(--fd);font-size:13px;font-weight:600;color:#1e293b;text-align:right}
-.det-tabs{display:flex;gap:8px;margin:16px 0}
-.det-tab{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;padding:6px 16px;border:1px solid rgba(148,163,184,0.25);background:rgba(255,255,255,.4);color:var(--t3);cursor:pointer;border-radius:6px;transition:.2s}
+.det-row-v{font-family:var(--fd);font-size:14px;font-weight:600;color:#1e293b;text-align:right}
+.det-tabs{display:flex;gap:8px;margin:20px 0 8px}
+.det-tab{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;padding:7px 18px;border:1px solid rgba(148,163,184,0.25);background:rgba(255,255,255,.4);color:var(--t3);cursor:pointer;border-radius:6px;transition:.2s;font-weight:600}
 .det-tab.a{background:var(--blue);color:#fff;border-color:var(--blue)}
 .det-time{display:flex;gap:6px;margin-bottom:16px}
-.det-time button{font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:4px 12px;border:1px solid rgba(148,163,184,0.2);background:rgba(255,255,255,.5);color:var(--t3);cursor:pointer;border-radius:4px;transition:.2s}
+.det-time button{font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:5px 14px;border:1px solid rgba(148,163,184,0.2);background:rgba(255,255,255,.5);color:var(--t3);cursor:pointer;border-radius:4px;transition:.2s;font-weight:600}
 .det-time button.a{background:var(--blue);color:#fff;border-color:var(--blue)}
-/* Chart — tactical enhanced */
-.chart-wrap{background:rgba(237,242,250,0.95);border:1.5px solid rgba(140,160,185,0.25);border-radius:14px;padding:18px;margin-bottom:20px;box-shadow:0 2px 8px rgba(59,130,246,0.05);border-left:3px solid var(--cyan);position:relative}
-.chart-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(0,216,255,0.15),transparent 60%);border-radius:14px 14px 0 0}
+/* Chart — tactical enhanced, 2-col layout */
+.det-charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.chart-wrap{background:rgba(240,244,250,0.95);border:1.5px solid rgba(140,160,185,0.25);border-radius:16px;padding:18px;box-shadow:0 2px 10px rgba(59,130,246,0.05);border-left:3px solid var(--cyan);position:relative}
+.chart-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,rgba(0,216,255,0.15),transparent 60%);border-radius:16px 16px 0 0}
 .chart-wrap canvas{width:100%;height:180px}
 .chart-label{font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--blue);margin-bottom:8px;font-weight:700;display:flex;align-items:center;gap:6px}
 .chart-label::before{content:'';width:3px;height:10px;border-radius:1.5px;background:var(--cyan)}
-.chart-cur{position:absolute;top:16px;right:18px;font-family:var(--fd);font-size:14px;font-weight:700;color:var(--t)}
+.chart-cur{position:absolute;top:16px;right:18px;font-family:var(--fd);font-size:15px;font-weight:800;color:var(--t)}
 .chart-cur span{font-family:var(--fm);font-size:9px;color:var(--t4);margin-left:2px}
 
 /* ═══ STABILITY PAGE ═══ */
@@ -424,7 +425,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .boot-under{opacity:1}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:2px}
 @media(max-width:1100px){.hero{grid-template-columns:1fr;min-height:280px}.h-left,.h-right{display:none}}
-@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:16px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr)}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}.det-strip{flex-wrap:wrap}.ds-cell{min-width:auto;padding:10px 14px}.det-core-echo{display:none}}
+@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:16px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr)}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}.det-strip{flex-wrap:wrap}.ds-cell{min-width:auto;padding:10px 14px}.det-core-echo{display:none}.det-charts-grid{grid-template-columns:1fr}}
 @media(max-width:480px){.stab-ov{grid-template-columns:1fr}}
 </style>
 </head>
@@ -916,34 +917,38 @@ function rDetInfo(node,uuid){
   const grade=statusGrade(health);
   function gaugeColor(v){return v>=80?'var(--r)':v>=50?'var(--am)':'var(--blue)'}
   function gaugeHex(v){return v>=80?'#ff4d4f':v>=50?'#eab308':'#2563eb'}
-  /* Half-arc gauge: 180° arc from left to right */
+  /* Half-arc gauge: 180° arc — LARGE version */
   function halfArc(val,color,hexC,label){
     const v=Math.min(100,val);
-    /* Arc params: center(55,55), r=45, 180° arc from 180° to 0° (left to right over top) */
-    const r=45;const cx=55;const cy=55;
-    const arcLen=Math.PI*r; /* half circumference */
+    /* Arc params: viewBox 150x82, center(75,72), r=60, 180° arc */
+    const r=60;const cx=75;const cy=72;
+    const arcLen=Math.PI*r; /* half circumference ≈ 188.5 */
     const off=arcLen-(arcLen*v/100);
-    /* Tick marks: 11 ticks at 0%,10%,...100% along the arc */
+    /* Tick marks: 11 ticks at 0%,10%,...100% */
     let ticks='';
     for(let i=0;i<=10;i++){
       const angle=Math.PI-((i/10)*Math.PI);
       const isMajor=i%5===0;
-      const r1=isMajor?35:38;const r2=42;
+      const r1=isMajor?46:50;const r2=56;
       const x1=cx+r1*Math.cos(angle),y1=cy-r1*Math.sin(angle);
       const x2=cx+r2*Math.cos(angle),y2=cy-r2*Math.sin(angle);
       ticks+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" class="det-ga-tick"/>`;
     }
-    /* Small dots between major ticks */
+    /* Small dots between ticks */
     for(let i=0;i<20;i++){
       const angle=Math.PI-((i/20)*Math.PI);
-      const dx=cx+43.5*Math.cos(angle),dy=cy-43.5*Math.sin(angle);
-      ticks+=`<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="0.6" class="det-ga-dot"/>`;
+      const dx=cx+58*Math.cos(angle),dy=cy-58*Math.sin(angle);
+      ticks+=`<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="0.8" class="det-ga-dot"/>`;
     }
+    /* Glow filter for fill arc */
+    const filterId='gf'+label.toLowerCase();
+    const glowDef=`<defs><filter id="${filterId}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur in="SourceGraphic" stdDeviation="3"/></filter></defs>`;
     const warnCls=v>=80?'highlight':v>=60?'warning':'';
-    return`<div class="det-gauge ${warnCls}"><div class="det-gauge-arc"><svg viewBox="0 0 110 62">
+    return`<div class="det-gauge ${warnCls}"><div class="det-gauge-arc"><svg viewBox="0 0 150 82">
+      ${glowDef}
       ${ticks}
       <path d="M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}" class="det-ga-bg"/>
-      <path d="M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}" class="det-ga-fill" style="stroke:${color};stroke-dasharray:${arcLen.toFixed(1)};stroke-dashoffset:${on?off.toFixed(1):arcLen.toFixed(1)}"/>
+      <path d="M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}" class="det-ga-fill" style="stroke:${color};stroke-dasharray:${arcLen.toFixed(1)};stroke-dashoffset:${on?off.toFixed(1):arcLen.toFixed(1)};filter:drop-shadow(0 0 8px ${color.replace('var(--','rgba(').replace('--r)','255,77,79,0.4)').replace('--am)','234,179,8,0.4)').replace('--blue)','37,99,235,0.4)')})"/>
     </svg></div>
     <div class="det-gauge-val" style="color:${on&&v>=80?'var(--r)':on&&v>=60?'var(--am)':'#1e293b'}">${on?v:'--'}<span class="det-gauge-unit">%</span></div>
     <div class="det-gauge-lbl">${label}</div>
@@ -1026,28 +1031,17 @@ function rLoadCharts(records){
   const cc=$('detCharts');if(!cc||!records.length){cc.innerHTML='<div style="text-align:center;padding:40px;color:var(--t4)">No data</div>';return}
   /* Debug: log first record keys to understand API format */
   if(records[0])console.log('[NM] Load record sample:',JSON.stringify(records[0]));
-  cc.innerHTML=`<div class="chart-wrap"><div class="chart-label">CPU %</div><canvas id="chCpu"></canvas></div>
-    <div class="chart-wrap"><div class="chart-label">RAM %</div><canvas id="chRam"></canvas></div>
-    <div class="chart-wrap"><div class="chart-label">NETWORK</div><canvas id="chNet"></canvas></div>`;
+  cc.innerHTML=`<div class="det-charts-grid">
+    <div class="chart-wrap"><div class="chart-label">CPU %</div><canvas id="chCpu"></canvas></div>
+    <div class="chart-wrap"><div class="chart-label">NETWORK</div><canvas id="chNet"></canvas></div>
+  </div>`;
   const labels=records.map(r=>{const t=r.time||r.timestamp;if(!t)return'--';const d=new Date(t);return d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})});
   /* CPU: Komari may return 0-100 or 0-1 decimal — check max of first 20 samples */
   const cpuSamples=records.slice(0,20).map(r=>r.cpu||0);
   const cpuMax=Math.max(...cpuSamples);
   const cpuIsDecimal=cpuMax>0&&cpuMax<=1;
   const cpuData=records.map(r=>{let v=r.cpu||0;if(cpuIsDecimal)v=v*100;return Math.round(v*10)/10});
-  /* RAM: if any value > 100 it's bytes, need ram_total to compute % */
-  const ramSample=records[0]?.ram||records[0]?.memory_used||0;
-  const ramIsBytes=ramSample>100;
-  const ramData=records.map(r=>{
-    if(ramIsBytes){
-      const used=r.ram||r.memory_used||0;
-      const total=r.ram_total||r.memory_total||0;
-      return total>0?Math.round(used/total*1000)/10:0;
-    }
-    return Math.round((r.ram||0)*10)/10;
-  });
   dCh('chCpu',{labels,data:cpuData,color:'#2563eb',max:100,label:'%'});
-  dCh('chRam',{labels,data:ramData,color:'#22c55e',max:100,label:'%'});
   dCh('chNet',{labels,data:records.map(r=>(r.net_out||0)/1048576),color:'#00d2ff',label:'MB/s'});
 }
 function rPingCharts(pd){
@@ -1070,7 +1064,7 @@ function uDetLive(){
   const disk=d.disk_total?Math.round(pc(d.disk_used||0,d.disk_total)):0;
   const swap=d.swap_total?Math.round(pc(d.swap_used||0,d.swap_total)):0;
   const vals=[cpu,ram,disk,swap];
-  const r=45;const arcLen=Math.PI*r;
+  const r=60;const arcLen=Math.PI*r;
   gauges.forEach((g,i)=>{
     const v=Math.min(100,vals[i]||0);const off=arcLen-(arcLen*v/100);
     const fill=g.querySelector('.det-ga-fill');
