@@ -296,9 +296,10 @@ body{
 .det-label{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--blue);margin-bottom:6px;font-weight:700;opacity:.8}
 .det-val{font-family:var(--fd);font-weight:700;font-size:17px;color:#1e293b}
 /* ═══ DETAIL PAGE v2 — Tactical + Engineering ═══ */
-/* Status strip */
-.det-strip{display:flex;align-items:center;gap:0;background:linear-gradient(135deg,rgba(20,30,42,0.96),rgba(24,36,52,0.94));border-radius:14px;overflow:hidden;margin-bottom:24px;position:relative;border:1px solid rgba(0,216,255,0.12);min-height:72px}
-.det-strip::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(0,216,255,0.03) 30%,rgba(0,216,255,0.03) 70%,transparent);pointer-events:none}
+/* Status strip — embedded control bar, not floating card */
+.det-strip{display:flex;align-items:center;gap:0;background:linear-gradient(90deg,rgba(20,30,42,0.90),rgba(24,36,52,0.87));border-radius:14px;overflow:hidden;margin-bottom:24px;position:relative;border:1px solid rgba(0,216,255,0.1);min-height:72px;box-shadow:0 1px 6px rgba(0,0,0,0.08)}
+/* Top inner edge glow — makes it feel "embedded" not "floating" */
+.det-strip::before{content:'';position:absolute;top:0;left:20px;right:20px;height:1px;background:linear-gradient(90deg,transparent,rgba(148,180,210,0.2) 20%,rgba(0,216,255,0.12) 50%,rgba(148,180,210,0.2) 80%,transparent);pointer-events:none;z-index:1}
 .det-strip::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--blue),var(--cyan));opacity:.4}
 .det-strip-scan{position:absolute;top:0;left:0;right:0;height:100%;overflow:hidden;pointer-events:none}
 .det-strip-scan::after{content:'';position:absolute;top:0;left:-30%;width:30%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,216,255,0.06),transparent);animation:det-scan 3s ease-in-out infinite}
