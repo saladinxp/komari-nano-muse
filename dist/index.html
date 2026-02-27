@@ -1272,10 +1272,14 @@ function bootSequence(){
           phaseIdx++;
         }
 
-        /* Overlay: deep cold blue-gray fades to reveal girl
-           Same world: rgba(14,26,34) not pure black */
+        /* Overlay: girl stays in "cold fog" during boot — NOT fully revealed
+           Boot is "preheating", not the climax. Girl should be a silhouette/muted.
+           0% → 0.97 (deep fog)
+           50% → 0.55 (silhouette emerging)
+           100% → 0.22 (visible but still veiled — energy stays restrained)
+           Real reveal happens when overlay removes entirely at boot-done */
         if(overlay){
-          const overlayOpacity=Math.max(0.06, 0.97 - progress * 0.95);
+          const overlayOpacity=Math.max(0.22, 0.97 - progress * 0.78);
           overlay.style.background=`rgba(14,26,34,${overlayOpacity.toFixed(3)})`;
           if(progress>0.7){
             const ringFade=1-((progress-0.7)/0.3);
@@ -1294,19 +1298,27 @@ function bootSequence(){
       requestAnimationFrame(tick);
     }
 
-    /* ── Phase D: 88% pulse + SYNC COMPLETE flash ── */
+    /* ── Phase D: 88% completion — brief energy burst then system online ── */
     function completeBoot(){
-      /* Pulse the ring */
+      /* Pulse the ring with glow burst */
       if(ringWrap){
         ringWrap.style.transition='none';
         ringWrap.style.opacity='1';
         ringWrap.style.animation='boot-pulse 0.3s ease';
+        ringWrap.style.filter='drop-shadow(0 0 30px rgba(0,216,255,0.6))';
       }
       /* Flash SYNC COMPLETE */
       if(completeEl){
         completeEl.style.animation='complete-flash 0.6s ease forwards';
       }
-      /* Hide status text */
+      /* Brief glow on overlay then clear — the "fog lifts" moment */
+      if(overlay){
+        overlay.style.transition='background 0.4s ease';
+        overlay.style.background='rgba(14,26,34,0.10)';
+        setTimeout(()=>{
+          overlay.style.background='rgba(14,26,34,0)';
+        },200);
+      }
       if(statusEl)statusEl.style.opacity='0';
       /* Resolve after ceremony */
       setTimeout(resolve,500);
