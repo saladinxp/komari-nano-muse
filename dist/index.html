@@ -336,10 +336,10 @@ body{
 /* Glass edge glow: soft outer luminance */
 .det-gauge::after{content:'';position:absolute;inset:-1px;border-radius:17px;background:linear-gradient(135deg,rgba(0,216,255,0.06),transparent 40%,transparent 60%,rgba(59,130,246,0.04));pointer-events:none;z-index:-1}
 .det-gauge:hover{box-shadow:0 6px 24px rgba(59,130,246,0.1),0 2px 8px rgba(0,0,0,0.04),inset 0 1px 0 rgba(255,255,255,0.7);transform:translateY(-2px)}
-.det-gauge.highlight{border-color:rgba(239,68,68,0.25);box-shadow:0 2px 16px rgba(239,68,68,0.12),0 0 24px rgba(239,68,68,0.05),inset 0 1px 0 rgba(255,255,255,0.5);background:rgba(255,245,245,0.5)}
-.det-gauge.highlight .det-gauge-lbl{color:var(--r);font-weight:700}
-.det-gauge.warning{border-color:rgba(234,179,8,0.25);background:rgba(255,252,240,0.5);box-shadow:0 2px 16px rgba(234,179,8,0.08),inset 0 1px 0 rgba(255,255,255,0.5)}
-.det-gauge.warning .det-gauge-lbl{color:var(--am);font-weight:700}
+.det-gauge.highlight{border-color:rgba(160,140,200,0.25);box-shadow:0 2px 16px rgba(160,140,200,0.1),0 0 24px rgba(160,140,200,0.04),inset 0 1px 0 rgba(255,255,255,0.5);background:rgba(248,245,255,0.45)}
+.det-gauge.highlight .det-gauge-lbl{color:rgba(140,120,180,0.8);font-weight:700}
+.det-gauge.warning{border-color:rgba(100,160,220,0.25);background:rgba(245,250,255,0.45);box-shadow:0 2px 16px rgba(100,160,220,0.08),inset 0 1px 0 rgba(255,255,255,0.5)}
+.det-gauge.warning .det-gauge-lbl{color:rgba(80,140,200,0.8);font-weight:700}
 /* Peak gauge: highest load gets subtle emphasis (even below warning threshold) */
 .det-gauge.peak-gauge:not(.highlight):not(.warning){border-color:rgba(0,216,255,0.3);box-shadow:0 2px 12px rgba(59,130,246,0.06),0 1px 3px rgba(0,0,0,0.03),inset 0 1px 0 rgba(255,255,255,0.6),0 0 16px rgba(0,216,255,0.06)}
 .det-gauge.peak-gauge:not(.highlight):not(.warning) .det-gauge-lbl{color:var(--blue);font-weight:700}
@@ -349,7 +349,7 @@ body{
 .det-ga-fill{fill:none;stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)}
 .det-ga-tick{fill:none;stroke:rgba(100,116,139,0.3);stroke-width:1}
 .det-ga-dot{fill:rgba(100,116,139,0.2)}
-.det-gauge-val{font-family:var(--fd);font-size:32px;font-weight:900;color:#1e293b;line-height:1;margin-top:4px}
+.det-gauge-val{font-family:var(--fd);font-size:32px;font-weight:900;color:#1e293b;line-height:1;margin-top:4px;letter-spacing:1px}
 .det-gauge-unit{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t4);margin-left:2px}
 .det-gauge-lbl{font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--t3);font-weight:600;margin-top:6px}
 .det-gauge-range{display:flex;justify-content:space-between;padding:0 12px;margin-top:4px}
@@ -1031,64 +1031,67 @@ function rDetInfo(node,uuid){
   const grade=statusGrade(health);
   function gaugeColor(v){return v>=80?'var(--r)':v>=50?'var(--am)':'var(--blue)'}
   function gaugeHex(v){return v>=80?'#ff4d4f':v>=50?'#eab308':'#2563eb'}
-  /* Half-arc gauge: 180° arc — INSTRUMENT version */
+  /* Half-arc gauge: 180° arc — COLD ENERGY HUD version */
   function halfArc(val,color,hexC,label){
     const v=Math.min(100,val);
     const r=60;const cx=75;const cy=72;
     const arcLen=Math.PI*r;
     const off=arcLen-(arcLen*v/100);
 
-    /* === Danger zone background arcs === */
-    /* 70-85%: faint amber zone, 85-100%: faint red zone */
+    /* === Zone arcs: cold abstract — NOT red/yellow === */
     const zoneR=60;
-    const a70=Math.PI-(0.70*Math.PI), a85=Math.PI-(0.85*Math.PI), a100=0;
-    const z70x=cx+zoneR*Math.cos(a70), z70y=cy-zoneR*Math.sin(a70);
-    const z85x=cx+zoneR*Math.cos(a85), z85y=cy-zoneR*Math.sin(a85);
-    const z100x=cx+zoneR*Math.cos(a100), z100y=cy-zoneR*Math.sin(a100);
-    const zones=`<path d="M ${z70x.toFixed(1)} ${z70y.toFixed(1)} A ${zoneR} ${zoneR} 0 0 1 ${z85x.toFixed(1)} ${z85y.toFixed(1)}" fill="none" stroke="rgba(234,179,8,0.08)" stroke-width="14" stroke-linecap="butt"/>
-      <path d="M ${z85x.toFixed(1)} ${z85y.toFixed(1)} A ${zoneR} ${zoneR} 0 0 1 ${z100x.toFixed(1)} ${z100y.toFixed(1)}" fill="none" stroke="rgba(239,68,68,0.06)" stroke-width="14" stroke-linecap="butt"/>`;
+    const a70=Math.PI-(0.70*Math.PI),a85=Math.PI-(0.85*Math.PI),a100=0;
+    const z70x=cx+zoneR*Math.cos(a70),z70y=cy-zoneR*Math.sin(a70);
+    const z85x=cx+zoneR*Math.cos(a85),z85y=cy-zoneR*Math.sin(a85);
+    const z100x=cx+zoneR*Math.cos(a100),z100y=cy-zoneR*Math.sin(a100);
+    const zones=`<path d="M ${z70x.toFixed(1)} ${z70y.toFixed(1)} A ${zoneR} ${zoneR} 0 0 1 ${z85x.toFixed(1)} ${z85y.toFixed(1)}" fill="none" stroke="rgba(148,163,184,0.06)" stroke-width="14" stroke-linecap="butt"/>
+      <path d="M ${z85x.toFixed(1)} ${z85y.toFixed(1)} A ${zoneR} ${zoneR} 0 0 1 ${z100x.toFixed(1)} ${z100y.toFixed(1)}" fill="none" stroke="rgba(160,140,200,0.06)" stroke-width="14" stroke-linecap="butt"/>`;
 
-    /* === Tick marks: every 10%, major every 20% === */
+    /* === HUD-style irregular ticks — abstract, not mechanical === */
     let ticks='';
-    for(let i=0;i<=10;i++){
-      const angle=Math.PI-((i/10)*Math.PI);
-      const pct=i*10;
-      const isMajor=pct%20===0;
-      const inDanger=pct>=85;const inWarn=pct>=70&&pct<85;
-      const r1=isMajor?44:49;const r2=57;
-      const tickColor=inDanger?'rgba(239,68,68,0.35)':inWarn?'rgba(234,179,8,0.3)':'rgba(100,116,139,0.25)';
-      const tickW=isMajor?1.2:0.7;
+    const hudTicks=[0,12,25,38,50,62,75,88,100]; /* irregular spacing */
+    hudTicks.forEach(pct=>{
+      const angle=Math.PI-((pct/100)*Math.PI);
+      const isKey=pct===0||pct===50||pct===100;
+      const inHigh=pct>=85;
+      const r1=isKey?42:48;const r2=57;
+      const tickColor=inHigh?'rgba(160,140,200,0.3)':'rgba(148,163,184,0.2)';
+      const tickW=isKey?1.0:0.6;
       const x1=cx+r1*Math.cos(angle),y1=cy-r1*Math.sin(angle);
       const x2=cx+r2*Math.cos(angle),y2=cy-r2*Math.sin(angle);
       ticks+=`<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${tickColor}" stroke-width="${tickW}" fill="none"/>`;
-    }
-    /* Sub-ticks: small dots between major ticks */
-    for(let i=0;i<20;i++){
-      const angle=Math.PI-((i/20)*Math.PI);
-      const dx=cx+58.5*Math.cos(angle),dy=cy-58.5*Math.sin(angle);
-      ticks+=`<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="0.6" fill="rgba(100,116,139,0.15)"/>`;
+    });
+    /* Dot matrix between ticks — HUD texture */
+    for(let i=0;i<24;i++){
+      const angle=Math.PI-((i/24)*Math.PI);
+      const dx=cx+59*Math.cos(angle),dy=cy-59*Math.sin(angle);
+      ticks+=`<circle cx="${dx.toFixed(1)}" cy="${dy.toFixed(1)}" r="0.5" fill="rgba(148,163,184,0.12)"/>`;
     }
 
-    /* === Needle pointer at current value === */
+    /* === Energy needle — thin, cold === */
     let needle='';
     if(on&&v>0){
-      const needleAngle=Math.PI-((v/100)*Math.PI);
-      const nInner=cx+36*Math.cos(needleAngle), nInnerY=cy-36*Math.sin(needleAngle);
-      const nOuter=cx+64*Math.cos(needleAngle), nOuterY=cy-64*Math.sin(needleAngle);
-      const needleColor=v>=85?'rgba(239,68,68,0.7)':v>=70?'rgba(234,179,8,0.6)':'rgba(37,99,235,0.5)';
-      needle=`<line x1="${nInner.toFixed(1)}" y1="${nInnerY.toFixed(1)}" x2="${nOuter.toFixed(1)}" y2="${nOuterY.toFixed(1)}" stroke="${needleColor}" stroke-width="1.5" stroke-linecap="round"/>
-        <circle cx="${nOuter.toFixed(1)}" cy="${nOuterY.toFixed(1)}" r="2" fill="${needleColor}"/>`;
+      const na=Math.PI-((v/100)*Math.PI);
+      const ni=cx+38*Math.cos(na),niy=cy-38*Math.sin(na);
+      const no=cx+63*Math.cos(na),noy=cy-63*Math.sin(na);
+      const nc=v>=85?'rgba(160,140,200,0.6)':v>=70?'rgba(148,180,220,0.5)':'rgba(37,99,235,0.45)';
+      needle=`<line x1="${ni.toFixed(1)}" y1="${niy.toFixed(1)}" x2="${no.toFixed(1)}" y2="${noy.toFixed(1)}" stroke="${nc}" stroke-width="1.2" stroke-linecap="round"/>
+        <circle cx="${no.toFixed(1)}" cy="${noy.toFixed(1)}" r="1.8" fill="${nc}"/>`;
     }
+
+    /* === Fill arc color: cold gradient, not pure blue === */
+    const fillColor=v>=85?'rgba(160,140,200,0.85)':v>=70?'rgba(100,160,220,0.8)':'var(--blue)';
+    const glowColor=v>=85?'rgba(160,140,200,0.25)':v>=70?'rgba(100,160,220,0.2)':'rgba(37,99,235,0.2)';
 
     const warnCls=v>=80?'highlight':v>=60?'warning':'';
     return`<div class="det-gauge ${warnCls}"><div class="det-gauge-arc"><svg viewBox="0 0 150 82">
       ${zones}
       ${ticks}
       <path d="M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}" class="det-ga-bg"/>
-      <path d="M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}" class="det-ga-fill" style="stroke:${color};stroke-dasharray:${arcLen.toFixed(1)};stroke-dashoffset:${on?off.toFixed(1):arcLen.toFixed(1)};filter:drop-shadow(0 0 6px ${color.replace('var(--','rgba(').replace('--r)','255,77,79,0.3)').replace('--am)','234,179,8,0.3)').replace('--blue)','37,99,235,0.3)')})"/>
+      <path d="M ${cx-r} ${cy} A ${r} ${r} 0 0 1 ${cx+r} ${cy}" class="det-ga-fill" style="stroke:${fillColor};stroke-dasharray:${arcLen.toFixed(1)};stroke-dashoffset:${on?off.toFixed(1):arcLen.toFixed(1)};filter:drop-shadow(0 0 6px ${glowColor})"/>
       ${needle}
     </svg></div>
-    <div class="det-gauge-val" style="color:${on&&v>=80?'var(--r)':on&&v>=60?'var(--am)':'#1e293b'}">${on?v:'--'}<span class="det-gauge-unit">%</span></div>
+    <div class="det-gauge-val" style="color:${on&&v>=85?'rgba(160,140,200,0.9)':on&&v>=70?'rgba(100,160,220,0.85)':'#1e293b'}">${on?v:'--'}<span class="det-gauge-unit">%</span></div>
     <div class="det-gauge-lbl">${label}</div>
     <div class="det-gauge-range"><span>0</span><span>50</span><span>100</span></div></div>`}
 
