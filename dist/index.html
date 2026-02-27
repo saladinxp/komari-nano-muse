@@ -396,8 +396,8 @@ body{
 .stab-row:hover{background:rgba(255,255,255,0.5);box-shadow:inset 0 1px 0 rgba(255,255,255,0.6),0 2px 8px rgba(59,130,246,0.06)}
 .stab-row-name{font-weight:700;font-size:12px;width:130px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .stab-heatmap{display:flex;gap:2px;flex:1;align-items:center}
-.stab-cell{width:9px;height:18px;border-radius:2px;transition:transform .15s,box-shadow .15s;position:relative;cursor:default}
-.stab-cell:hover{transform:scaleY(1.3);z-index:2}
+.stab-cell{flex:1;height:22px;min-width:4px;border-radius:2px;transition:transform .15s,box-shadow .15s;position:relative;cursor:default}
+.stab-cell:hover{transform:scaleY(1.25);z-index:2}
 .stab-cell.c100{background:#34d399}.stab-cell.c99{background:#6ee7b7}.stab-cell.c95{background:#fbbf24}.stab-cell.c90{background:#f97316}.stab-cell.c0{background:rgba(210,80,80,0.7)}
 .stab-cell.c100:hover{box-shadow:0 0 8px rgba(52,211,153,0.4)}.stab-cell.c99:hover{box-shadow:0 0 8px rgba(110,231,183,0.4)}
 .stab-cell.c95:hover{box-shadow:0 0 8px rgba(251,191,36,0.4)}.stab-cell.c90:hover{box-shadow:0 0 8px rgba(249,115,22,0.4)}
@@ -411,7 +411,7 @@ body{
 .stab-date-row{display:flex;align-items:center;gap:10px;padding:0 14px;margin-bottom:2px}
 .stab-date-row .stab-row-name{opacity:0}
 .stab-date-labels{display:flex;gap:2px;flex:1}
-.stab-date-lbl{width:9px;font-family:var(--fm);font-size:6px;color:var(--t5);text-align:center;overflow:hidden}
+.stab-date-lbl{flex:1;min-width:4px;font-family:var(--fm);font-size:7px;color:var(--t5);text-align:center;overflow:hidden}
 
 /* ═══ ALERT ATMOSPHERE SYSTEM — 3 layers ═══ */
 
