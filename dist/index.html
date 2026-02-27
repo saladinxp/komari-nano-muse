@@ -455,6 +455,10 @@ body{
 .tl-meta b{font-weight:700;color:var(--t2)}
 .tl-status{font-family:var(--fm);font-size:8px;letter-spacing:2.5px;color:var(--t5);margin-left:auto}
 .tl-core-dot{width:6px;height:6px;border-radius:50%;background:rgba(0,216,255,0.4);box-shadow:0 0 8px rgba(0,216,255,0.3);flex-shrink:0;animation:dot-breathe 3s ease-in-out infinite 0.5s}
+.tl-rows{display:flex;flex-direction:column;gap:5px;margin:6px 0}
+.tl-row{display:flex;align-items:baseline;gap:6px;font-family:var(--fm);font-size:9.5px;line-height:1.5;letter-spacing:0.5px}
+.tl-key{color:var(--t3);white-space:nowrap;min-width:60px;flex-shrink:0}
+.tl-val{color:var(--t);font-weight:600;word-break:break-all}
 @media(max-width:768px){.tl-status{display:none}.term-link{flex-wrap:wrap;gap:10px}}
 
 /* ═══ STABILITY PAGE — Heatmap Matrix ═══ */
@@ -791,12 +795,18 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
         <div class="hp-s d3">
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">TERMINAL LINK</span><span class="h-div-l"></span></div>
         <div class="hp-ln"></div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
           <div class="tl-dot"></div>
           <span class="tl-flag" id="tlFlag">🌐</span>
           <div class="tl-loc" id="tlLoc" style="font-size:14px">RESOLVING ...</div>
         </div>
-        <div style="font-family:var(--fm);font-size:9px;letter-spacing:1px;color:var(--t3);line-height:1.6" id="tlMeta">ASN -- · RTT --</div>
+        <div class="tl-rows" id="tlRows">
+          <div class="tl-row"><span class="tl-key">📍 位置：</span><span class="tl-val" id="tlLocFull">--</span></div>
+          <div class="tl-row"><span class="tl-key">🖥 IP 地址：</span><span class="tl-val" id="tlIP">--</span></div>
+          <div class="tl-row"><span class="tl-key">✦ ASN：</span><span class="tl-val" id="tlASN">--</span></div>
+          <div class="tl-row"><span class="tl-key">🌐 浏览器：</span><span class="tl-val" id="tlBrowser">--</span></div>
+          <div class="tl-row"><span class="tl-key">💻 系统：</span><span class="tl-val" id="tlOS">--</span></div>
+        </div>
         <div class="hp-ln"></div>
         <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
           <div class="tl-core-dot"></div>
@@ -1939,22 +1949,42 @@ function initCharParallax(){
 /* ── Terminal Link: visitor IP geolocation ── */
 async function fetchTermLink(){
   try{
-    /* Try multiple free IP APIs (HTTPS) */
     let d=null;
     try{
       const r=await fetch('https://ipapi.co/json/');d=await r.json();
-      if(d&&d.ip){d={ip:d.ip,country:d.country_name,cc:d.country_code,city:d.city,region:d.region,isp:d.org||d.asn,asn:d.asn||'--',lat:d.latitude,lon:d.longitude}}
+      if(d&&d.ip){d={ip:d.ip,country:d.country_name,cc:d.country_code,city:d.city,region:d.region_code||d.region,isp:d.org||'--',asn:d.asn||'--',lat:d.latitude,lon:d.longitude,tz:d.timezone||'--'}}
     }catch(e){
       try{const r2=await fetch('https://ipwho.is/');d=await r2.json();
-        if(d&&d.ip){d={ip:d.ip,country:d.country,cc:d.country_code,city:d.city,region:d.region,isp:d.connection?.org||'--',asn:d.connection?.asn||'--'}}
+        if(d&&d.ip){d={ip:d.ip,country:d.country,cc:d.country_code,city:d.city,region:d.region,isp:d.connection?.org||'--',asn:d.connection?.asn||'--',tz:d.timezone?.id||'--'}}
       }catch(e2){}
     }
     if(!d||!d.ip)return;
     const flag=countryFlag(d.cc);
     const fl=$('tlFlag');if(fl)fl.textContent=flag;
-    const loc=$('tlLoc');if(loc)loc.textContent=`${d.cc} · ${d.city||d.region||'--'}`;
-    const meta=$('tlMeta');if(meta)meta.innerHTML=`<b>${d.asn}</b> · ${esc(d.isp||'--')}<br><b>${d.ip}</b>`;
+    const loc=$('tlLoc');if(loc)loc.textContent=`欢迎来自 ${d.city||d.region||'--'} 的朋友!`;
+    const locF=$('tlLocFull');if(locF)locF.textContent=`${d.country||'--'}, ${d.region||'--'}, ${d.city||'--'}`;
+    const ipE=$('tlIP');if(ipE)ipE.textContent=d.ip;
+    const asnE=$('tlASN');if(asnE)asnE.textContent=`${d.asn}, ${d.isp}`;
+    /* Parse UA locally */
+    const ua=navigator.userAgent||'';
+    const brw=parseUA(ua);
+    const brE=$('tlBrowser');if(brE)brE.textContent=brw.browser;
+    const osE=$('tlOS');if(osE)osE.textContent=brw.os;
   }catch(e){console.log('[NM] Terminal link failed',e)}
+}
+function parseUA(ua){
+  let browser='Unknown',os='Unknown';
+  if(/Edg\/(\d+)/.test(ua))browser='Edge '+RegExp.$1;
+  else if(/OPR\/(\d+)/.test(ua))browser='Opera '+RegExp.$1;
+  else if(/Chrome\/(\d[\d.]*)/.test(ua))browser='Chrome '+RegExp.$1;
+  else if(/Firefox\/(\d[\d.]*)/.test(ua))browser='Firefox '+RegExp.$1;
+  else if(/Safari\/(\d[\d.]*)/.test(ua)&&/Version\/(\d[\d.]*)/.test(ua))browser='Safari '+RegExp.$1;
+  if(/Windows NT ([\d.]+)/.test(ua)){var v=RegExp.$1;os='Windows'+(v==='10.0'?' 10/11':v==='6.3'?' 8.1':v==='6.1'?' 7':' '+v)}
+  else if(/Mac OS X ([\d_]+)/.test(ua))os='macOS '+RegExp.$1.replace(/_/g,'.');
+  else if(/Android ([\d.]+)/.test(ua))os='Android '+RegExp.$1;
+  else if(/iPhone OS ([\d_]+)/.test(ua))os='iOS '+RegExp.$1.replace(/_/g,'.');
+  else if(/Linux/.test(ua))os='Linux';
+  return{browser,os};
 }
 function countryFlag(cc){
   if(!cc||cc.length!==2)return'🌐';
