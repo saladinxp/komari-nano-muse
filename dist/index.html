@@ -311,10 +311,22 @@ body{
 .an{animation:fadeUp .7s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
 .d1{animation-delay:.1s}.d2{animation-delay:.15s}.d3{animation-delay:.2s}.d4{animation-delay:.25s}.d5{animation-delay:.3s}.d6{animation-delay:.35s}.d7{animation-delay:.4s}.d8{animation-delay:.45s}.d9{animation-delay:.5s}
 /* Boot sequence */
-.boot-phase .hero-top .h-left,.boot-phase .hero-top .h-right,.boot-phase .fleet-strip,.boot-phase .content-area{opacity:0;transform:translateY(12px);transition:all .8s cubic-bezier(.16,1,.3,1)}
-.boot-done .hero-top .h-left,.boot-done .hero-top .h-right{opacity:1;transform:translateY(0);transition-delay:.2s}
-.boot-done .fleet-strip{opacity:1;transform:translateY(0);transition-delay:.5s}
-.boot-done .content-area{opacity:1;transform:translateY(0);transition-delay:.7s}
+.boot-overlay{position:fixed;inset:0;z-index:9999;background:#0a0e14;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;transition:opacity 1.2s ease,visibility 1.2s}
+.boot-overlay.done{opacity:0;visibility:hidden;pointer-events:none}
+.boot-ring-wrap{position:relative;width:280px;height:280px}
+.boot-ring-wrap svg{width:100%;height:100%}
+.boot-bg{fill:none;stroke:rgba(100,130,160,0.15);stroke-width:3}
+.boot-fill{fill:none;stroke:url(#bootGrad);stroke-width:5;stroke-linecap:round;filter:drop-shadow(0 0 20px var(--cyan-g)) drop-shadow(0 0 8px rgba(0,216,255,0.5));transform:rotate(-90deg);transform-origin:center}
+.boot-ticks{stroke:rgba(100,130,160,0.2);stroke-width:1}
+.boot-inner{fill:none;stroke:rgba(0,216,255,0.08);stroke-width:1.5;stroke-dasharray:8 6;animation:ring-rev 20s linear infinite;transform-origin:center}
+.boot-outer{fill:none;stroke:rgba(0,216,255,0.05);stroke-width:1;stroke-dasharray:3 9;animation:ring-spin 25s linear infinite;transform-origin:center}
+.boot-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.boot-pct{font-family:var(--fd);font-weight:900;font-size:72px;color:#fff;line-height:1;text-shadow:0 0 60px rgba(0,216,255,0.3),0 0 20px rgba(0,216,255,0.15)}
+.boot-lbl{font-family:var(--fm);font-size:11px;letter-spacing:6px;color:var(--cyan);font-weight:700;margin-top:6px}
+.boot-status{font-family:var(--fm);font-size:9px;letter-spacing:3px;color:rgba(148,163,184,0.5);margin-top:8px}
+/* Page hidden during boot */
+.boot-hidden{opacity:0;transition:opacity .8s ease .2s}
+.boot-revealed{opacity:1}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:2px}
 @media(max-width:1100px){.hero{grid-template-columns:1fr;min-height:280px}.h-left,.h-right{display:none}}
 @media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:16px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr)}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}}
@@ -323,6 +335,26 @@ body{
 </head>
 <body>
 
+<!-- BOOT OVERLAY -->
+<div class="boot-overlay" id="bootOverlay">
+  <div class="boot-ring-wrap">
+    <svg viewBox="0 0 280 280">
+      <defs><linearGradient id="bootGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d8ff"/><stop offset="100%" stop-color="#2563eb"/></linearGradient></defs>
+      <circle cx="140" cy="140" r="128" class="boot-outer"/>
+      <circle cx="140" cy="140" r="120" class="boot-bg"/>
+      <g class="boot-ticks"><line x1="140" y1="16" x2="140" y2="28" transform="rotate(0,140,140)"/><line x1="140" y1="16" x2="140" y2="24" transform="rotate(30,140,140)"/><line x1="140" y1="16" x2="140" y2="28" transform="rotate(60,140,140)"/><line x1="140" y1="16" x2="140" y2="24" transform="rotate(90,140,140)"/><line x1="140" y1="16" x2="140" y2="28" transform="rotate(120,140,140)"/><line x1="140" y1="16" x2="140" y2="24" transform="rotate(150,140,140)"/><line x1="140" y1="16" x2="140" y2="28" transform="rotate(180,140,140)"/><line x1="140" y1="16" x2="140" y2="24" transform="rotate(210,140,140)"/><line x1="140" y1="16" x2="140" y2="28" transform="rotate(240,140,140)"/><line x1="140" y1="16" x2="140" y2="24" transform="rotate(270,140,140)"/><line x1="140" y1="16" x2="140" y2="28" transform="rotate(300,140,140)"/><line x1="140" y1="16" x2="140" y2="24" transform="rotate(330,140,140)"/></g>
+      <circle cx="140" cy="140" r="120" class="boot-fill" id="bootRing" style="stroke-dasharray:754;stroke-dashoffset:754"/>
+      <circle cx="140" cy="140" r="108" class="boot-inner"/>
+    </svg>
+    <div class="boot-val">
+      <div class="boot-pct" id="bootPct">0%</div>
+      <div class="boot-lbl">SYNC RATE</div>
+    </div>
+  </div>
+  <div class="boot-status" id="bootStatus">INITIALIZING NANO CORE ...</div>
+</div>
+
+<div class="boot-hidden" id="mainContent">
 <div class="bp-grid"></div>
 <svg class="circuit-lines" viewBox="0 0 1200 800" fill="none" preserveAspectRatio="none">
   <line x1="0" y1="120" x2="1200" y2="120" stroke="#3b82f6" stroke-width="0.5" stroke-dasharray="8 16"/>
@@ -374,7 +406,7 @@ body{
   </div>
 
   <!-- ═══ DASHBOARD PAGE ═══ -->
-  <div class="page active boot-phase" id="pg-dashboard">
+  <div class="page active" id="pg-dashboard">
     <div class="hero">
       <div class="hero-top">
       <div class="scan-line"></div>
@@ -479,6 +511,7 @@ body{
   <div class="footer"><span class="ft-dot"></span><span id="footerSite">KOMARI MONITOR</span><span style="opacity:.3">—</span>NanoMuse<span style="opacity:.2">·</span>Secure Channel<span style="opacity:.2">·</span>Encrypted<span style="opacity:.2">|</span><span style="color:var(--cyan)"><a href="https://lol.moe" style="color:inherit;text-decoration:none">Miuler</a></span></div>
 </div>
 
+</div><!-- /mainContent -->
 <script>
 /* ═══ NanoMuse v0.1.0 — JS ═══ */
 ;(function(){
@@ -1095,30 +1128,55 @@ function initHeartbeat(){
 /* ── Init ── */
 async function init(){
   try{
+    /* Phase 1: fetch data while boot screen shows */
+    const statusEl=$('bootStatus');
+    if(statusEl)statusEl.textContent='CONNECTING TO NODE ARRAY ...';
     await Promise.all([fetchP(),fetchN(),fetchMe()]);
+    if(statusEl)statusEl.textContent='SYNCHRONIZING DATA ...';
     rGF();render();conWS();hRoute();
     initParticles();initHeartbeat();
-    /* Boot sequence: animate sync ring from 0→actual, then reveal page */
-    bootSequence();
-  }catch(e){console.error('Init failed:',e)}
+    /* Phase 2: animate boot ring */
+    if(statusEl)statusEl.textContent='CORE ONLINE';
+    await bootSequence();
+    /* Phase 3: reveal main page */
+    const overlay=$('bootOverlay');
+    const main=$('mainContent');
+    if(main){main.classList.remove('boot-hidden');main.classList.add('boot-revealed')}
+    await new Promise(r=>setTimeout(r,300));
+    if(overlay)overlay.classList.add('done');
+  }catch(e){
+    console.error('Init failed:',e);
+    /* Reveal page even on error */
+    const overlay=$('bootOverlay');const main=$('mainContent');
+    if(main){main.classList.remove('boot-hidden');main.classList.add('boot-revealed')}
+    if(overlay)overlay.classList.add('done');
+  }
 }
 function bootSequence(){
-  const dash=$('pg-dashboard');if(!dash)return;
-  const syncEl=$('syncRing');const syncPctEl=$('syncPct');
-  const total=S.nodes.length;const onC=S.nodes.filter(n=>S.onlineSet.has(n.uuid)).length;
-  const targetPct=total?(onC/total*100):0;
-  const circ=2*Math.PI*105;
-  let current=0;const duration=1800;const start=performance.now();
-  function tick(now){
-    const elapsed=now-start;const progress=Math.min(elapsed/duration,1);
-    const eased=1-Math.pow(1-progress,3);/* ease-out cubic */
-    current=targetPct*eased;
-    if(syncEl)syncEl.style.strokeDashoffset=(circ-(circ*current/100)).toFixed(1);
-    if(syncPctEl)syncPctEl.textContent=Math.round(current)+'%';
-    if(progress<1){requestAnimationFrame(tick)}
-    else{dash.classList.remove('boot-phase');dash.classList.add('boot-done')}
-  }
-  requestAnimationFrame(tick);
+  return new Promise(resolve=>{
+    const bootRing=$('bootRing');const bootPct=$('bootPct');
+    const syncEl=$('syncRing');const syncPctEl=$('syncPct');
+    const total=S.nodes.length;const onC=S.nodes.filter(n=>S.onlineSet.has(n.uuid)).length;
+    const targetPct=total?(onC/total*100):0;
+    const bootCirc=2*Math.PI*120;
+    const syncCirc=2*Math.PI*105;
+    const duration=2200;const start=performance.now();
+    function tick(now){
+      const elapsed=now-start;const progress=Math.min(elapsed/duration,1);
+      const eased=1-Math.pow(1-progress,3);
+      const current=targetPct*eased;
+      const pctText=Math.round(current)+'%';
+      /* Update boot overlay ring */
+      if(bootRing)bootRing.style.strokeDashoffset=(bootCirc-(bootCirc*current/100)).toFixed(1);
+      if(bootPct)bootPct.textContent=pctText;
+      /* Also update main page sync ring in parallel */
+      if(syncEl)syncEl.style.strokeDashoffset=(syncCirc-(syncCirc*current/100)).toFixed(1);
+      if(syncPctEl)syncPctEl.textContent=pctText;
+      if(progress<1){requestAnimationFrame(tick)}
+      else{setTimeout(resolve,400)}/* Brief pause at 100% before reveal */
+    }
+    requestAnimationFrame(tick);
+  });
 }
 function render(){rSum();rCards()}
 init();
