@@ -317,6 +317,32 @@ body{
 .boot-typewriter{font-family:var(--fm);font-size:11px;letter-spacing:5px;color:var(--cyan);text-transform:uppercase;display:flex;align-items:center;position:absolute}
 .boot-tw-cursor{color:var(--cyan);animation:cursorBlink 0.6s step-end infinite;margin-left:2px;font-size:13px}
 @keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
+/* Boot panel control — hide everything during boot */
+body.booting .topbar,body.booting .fleet-strip,body.booting .h-left,body.booting .h-right,
+body.booting .content-area,body.booting .footer,body.booting .sync-core,
+body.booting .stab-ov,body.booting .hero-stats{
+  opacity:0!important;visibility:hidden!important;animation:none!important}
+body.booting .mech{background:transparent!important;border-color:transparent!important;box-shadow:none!important}
+body.booting .char-veil,body.booting .grid-inside,body.booting .hc,
+body.booting .scan-line,body.booting .circuit-lines{opacity:0!important}
+/* Boot done — staggered panel reveal */
+@keyframes panel-in{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+body.boot-done .topbar{animation:panel-in 0.5s ease forwards;animation-delay:0s}
+body.boot-done .fleet-strip{animation:panel-in 0.5s ease forwards;animation-delay:0.15s;opacity:0}
+body.boot-done .h-left{animation:panel-in 0.5s ease forwards;animation-delay:0.3s;opacity:0}
+body.boot-done .h-right{animation:panel-in 0.5s ease forwards;animation-delay:0.4s;opacity:0}
+body.boot-done .sync-core{animation:panel-in 0.6s ease forwards;animation-delay:0.35s;opacity:0}
+body.boot-done .content-area{animation:panel-in 0.5s ease forwards;animation-delay:0.6s;opacity:0}
+body.boot-done .stab-ov{animation:panel-in 0.5s ease forwards;animation-delay:0.5s;opacity:0}
+body.boot-done .hero-stats{animation:panel-in 0.5s ease forwards;animation-delay:0.55s;opacity:0}
+body.boot-done .footer{animation:panel-in 0.5s ease forwards;animation-delay:0.8s;opacity:0}
+body.boot-done .mech{transition:background 0.6s ease,border-color 0.6s ease,box-shadow 0.6s ease}
+body.boot-done .char-veil,body.boot-done .grid-inside,body.boot-done .hc,
+body.boot-done .scan-line,body.boot-done .circuit-lines{transition:opacity 0.6s ease;opacity:1}
+/* Boot skip — everything visible immediately (session revisit) */
+body.boot-skip .topbar,body.boot-skip .fleet-strip,body.boot-skip .h-left,body.boot-skip .h-right,
+body.boot-skip .content-area,body.boot-skip .footer,body.boot-skip .sync-core,
+body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .boot-ring-wrap{position:relative;width:280px;height:280px}
 .boot-ring-wrap svg{width:100%;height:100%}
 .boot-bg{fill:none;stroke:rgba(100,130,160,0.15);stroke-width:3}
@@ -336,7 +362,7 @@ body{
 @media(max-width:480px){.stab-ov{grid-template-columns:1fr}}
 </style>
 </head>
-<body>
+<body class="booting">
 
 <!-- BOOT OVERLAY -->
 <div class="boot-overlay" id="bootOverlay">
@@ -1139,6 +1165,8 @@ async function init(){
     const booted=sessionStorage.getItem('nm-booted');
     if(booted){
       const ov=$('bootOverlay');if(ov)ov.style.display='none';
+      document.body.classList.remove('booting');
+      document.body.classList.add('boot-skip');
     }
     /* Start boot animation IMMEDIATELY */
     const bootPromise=booted?Promise.resolve():bootSequence();
@@ -1149,6 +1177,8 @@ async function init(){
     /* Wait for boot to finish */
     await bootPromise;
     if(!booted){
+      document.body.classList.remove('booting');
+      document.body.classList.add('boot-done');
       const overlay=$('bootOverlay');
       if(overlay)overlay.classList.add('done');
       sessionStorage.setItem('nm-booted','1');
@@ -1156,6 +1186,8 @@ async function init(){
     rSum();
   }catch(e){
     console.error('Init failed:',e);
+    document.body.classList.remove('booting');
+    document.body.classList.add('boot-skip');
     const overlay=$('bootOverlay');
     if(overlay){overlay.classList.add('done')}
   }
