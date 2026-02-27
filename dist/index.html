@@ -1128,25 +1128,25 @@ function initHeartbeat(){
 /* ── Init ── */
 async function init(){
   try{
-    /* Phase 1: fetch data while boot screen shows */
-    const statusEl=$('bootStatus');
-    if(statusEl)statusEl.textContent='CONNECTING TO NODE ARRAY ...';
+    /* Start boot animation IMMEDIATELY - don't wait for data */
+    const bootPromise = bootSequence();
+    /* Fetch data in parallel */
     await Promise.all([fetchP(),fetchN(),fetchMe()]);
-    if(statusEl)statusEl.textContent='SYNCHRONIZING DATA ...';
     rGF();render();conWS();hRoute();
     initParticles();initHeartbeat();
-    /* Phase 2: animate boot ring */
-    if(statusEl)statusEl.textContent='CORE ONLINE';
-    await bootSequence();
-    /* Phase 3: reveal main page */
+    /* Wait for boot to finish */
+    await bootPromise;
+    /* Reveal main page */
     const overlay=$('bootOverlay');
     const main=$('mainContent');
     if(main){main.classList.remove('boot-hidden');main.classList.add('boot-revealed')}
-    await new Promise(r=>setTimeout(r,300));
+    await new Promise(r=>setTimeout(r,200));
     if(overlay)overlay.classList.add('done');
+    sessionStorage.setItem('nm-booted','1');
+    /* Update sync ring to actual value */
+    rSum();
   }catch(e){
     console.error('Init failed:',e);
-    /* Reveal page even on error */
     const overlay=$('bootOverlay');const main=$('mainContent');
     if(main){main.classList.remove('boot-hidden');main.classList.add('boot-revealed')}
     if(overlay)overlay.classList.add('done');
@@ -1155,30 +1155,51 @@ async function init(){
 function bootSequence(){
   return new Promise(resolve=>{
     const bootRing=$('bootRing');const bootPct=$('bootPct');
-    const syncEl=$('syncRing');const syncPctEl=$('syncPct');
-    const total=S.nodes.length;const onC=S.nodes.filter(n=>S.onlineSet.has(n.uuid)).length;
-    const targetPct=total?(onC/total*100):0;
+    const statusEl=$('bootStatus');
+    const overlay=$('bootOverlay');
     const bootCirc=2*Math.PI*120;
-    const syncCirc=2*Math.PI*105;
-    const duration=2200;const start=performance.now();
+    /* Simulate boot: 0→100 over 3 seconds, smooth */
+    const duration=3000;const start=performance.now();
+    const phases=[
+      {at:0,text:'INITIALIZING NANO CORE ...'},
+      {at:0.2,text:'CONNECTING TO NODE ARRAY ...'},
+      {at:0.5,text:'SYNCHRONIZING DATA ...'},
+      {at:0.8,text:'CORE ONLINE'}
+    ];
+    let phaseIdx=0;
     function tick(now){
       const elapsed=now-start;const progress=Math.min(elapsed/duration,1);
-      const eased=1-Math.pow(1-progress,3);
-      const current=targetPct*eased;
+      /* Ease: slow start, accelerate, slow end */
+      const eased=progress<0.5?2*progress*progress:1-Math.pow(-2*progress+2,2)/2;
+      /* Boot always goes to ~88% (visual target) */
+      const target=88;
+      const current=target*eased;
       const pctText=Math.round(current)+'%';
-      /* Update boot overlay ring */
       if(bootRing)bootRing.style.strokeDashoffset=(bootCirc-(bootCirc*current/100)).toFixed(1);
       if(bootPct)bootPct.textContent=pctText;
-      /* Also update main page sync ring in parallel */
-      if(syncEl)syncEl.style.strokeDashoffset=(syncCirc-(syncCirc*current/100)).toFixed(1);
-      if(syncPctEl)syncPctEl.textContent=pctText;
+      /* Phase status text */
+      while(phaseIdx<phases.length&&progress>=phases[phaseIdx].at){
+        if(statusEl)statusEl.textContent=phases[phaseIdx].text;
+        phaseIdx++;
+      }
+      /* Gradually brighten overlay from pure black to slightly lighter */
+      if(overlay){
+        const brightness=Math.min(progress*0.15,0.12);
+        overlay.style.background=`rgba(10,14,20,${1-brightness})`;
+      }
       if(progress<1){requestAnimationFrame(tick)}
-      else{setTimeout(resolve,400)}/* Brief pause at 100% before reveal */
+      else{setTimeout(resolve,500)}
     }
     requestAnimationFrame(tick);
   });
 }
 function render(){rSum();rCards()}
+/* Check if boot already played this session */
+const skipBoot=sessionStorage.getItem('nm-booted');
+if(skipBoot){
+  const ov=$('bootOverlay');if(ov)ov.style.display='none';
+  const mc=$('mainContent');if(mc){mc.classList.remove('boot-hidden');mc.classList.add('boot-revealed')}
+}
 init();
 
 })();
