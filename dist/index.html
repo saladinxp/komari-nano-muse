@@ -311,7 +311,7 @@ body{
 .an{animation:fadeUp .7s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
 .d1{animation-delay:.1s}.d2{animation-delay:.15s}.d3{animation-delay:.2s}.d4{animation-delay:.25s}.d5{animation-delay:.3s}.d6{animation-delay:.35s}.d7{animation-delay:.4s}.d8{animation-delay:.45s}.d9{animation-delay:.5s}
 /* Boot sequence */
-.boot-overlay{position:fixed;inset:0;z-index:9999;background:rgba(10,14,20,1);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;transition:opacity .8s ease,visibility .8s}
+.boot-overlay{position:fixed;inset:0;z-index:9999;background:rgba(14,26,34,0.97);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;transition:opacity .8s ease,visibility .8s}
 .boot-overlay.done{opacity:0;visibility:hidden;pointer-events:none}
 /* Typewriter phase */
 .boot-typewriter{font-family:var(--fm);font-size:11px;letter-spacing:5px;color:var(--cyan);text-transform:uppercase;display:flex;align-items:center;position:absolute}
@@ -354,6 +354,12 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .boot-pct{font-family:var(--fd);font-weight:900;font-size:72px;color:#fff;line-height:1;text-shadow:0 0 60px rgba(0,216,255,0.3),0 0 20px rgba(0,216,255,0.15)}
 .boot-lbl{font-family:var(--fm);font-size:11px;letter-spacing:6px;color:var(--cyan);font-weight:700;margin-top:6px}
 .boot-status{font-family:var(--fm);font-size:9px;letter-spacing:3px;color:rgba(148,163,184,0.5);margin-top:8px}
+/* Boot scan line */
+.boot-scanline{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(0,216,255,0.4) 20%,rgba(0,216,255,0.6) 50%,rgba(0,216,255,0.4) 80%,transparent 100%);opacity:0;pointer-events:none}
+/* Sync complete flash */
+.boot-complete{position:absolute;font-family:var(--fm);font-size:11px;letter-spacing:6px;color:var(--cyan);opacity:0;pointer-events:none;text-shadow:0 0 20px rgba(0,216,255,0.5)}
+@keyframes boot-pulse{0%{transform:scale(1)}50%{transform:scale(1.03)}100%{transform:scale(1)}}
+@keyframes complete-flash{0%{opacity:0;transform:translateY(4px)}20%{opacity:1;transform:translateY(0)}80%{opacity:1}100%{opacity:0}}
 /* Main content starts visible but behind overlay */
 .boot-under{opacity:1}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:2px}
@@ -366,7 +372,9 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
 <!-- BOOT OVERLAY -->
 <div class="boot-overlay" id="bootOverlay">
-  <!-- Phase 1: Typewriter (pure black) -->
+  <!-- Scan line -->
+  <div class="boot-scanline" id="bootScanline"></div>
+  <!-- Phase 1: Typewriter -->
   <div class="boot-typewriter" id="bootTypewriter">
     <span class="boot-tw-text" id="bootTwText"></span><span class="boot-tw-cursor">▌</span>
   </div>
@@ -385,6 +393,8 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       <div class="boot-lbl">SYNC RATE</div>
     </div>
   </div>
+  <!-- Sync complete flash -->
+  <div class="boot-complete" id="bootComplete">SYNC COMPLETE</div>
   <div class="boot-status" id="bootStatus" style="opacity:0"></div>
 </div>
 
@@ -1200,12 +1210,21 @@ function bootSequence(){
     const twText=$('bootTwText');
     const twWrap=$('bootTypewriter');
     const ringWrap=$('bootRingWrap');
+    const scanline=$('bootScanline');
+    const completeEl=$('bootComplete');
     const bootCirc=2*Math.PI*120;
 
-    /* ── Phase 1: Typewriter (~1.5s) — pure black screen ── */
+    /* ── Phase A (0–0.8s): Typewriter on deep cold blue-gray ── */
     const twString='INITIALIZING NANO CORE';
-    const charDelay=68;
+    const charDelay=36; /* faster: ~0.8s total for 22 chars */
     let charIdx=0;
+
+    /* Scan line sweeps during typewriter */
+    if(scanline){
+      scanline.style.opacity='1';
+      scanline.style.transition='top 1.2s ease-in-out';
+      scanline.style.top='100%';
+    }
 
     function typeNext(){
       if(charIdx<twString.length){
@@ -1213,53 +1232,51 @@ function bootSequence(){
         charIdx++;
         setTimeout(typeNext,charDelay);
       }else{
-        /* Typewriter done → hold 400ms then transition to Phase 2 */
-        setTimeout(startProgress,400);
+        /* Phase B (0.8–1.0s): seamless crossfade to ring — NO pause */
+        startProgress();
       }
     }
 
+    /* ── Phase B→C: Ring progress (~2s) + overlay fade ── */
     function startProgress(){
-      /* Fade out typewriter, fade in ring */
-      twWrap.style.transition='opacity 0.5s ease';
+      /* Crossfade: typewriter out, ring in */
+      twWrap.style.transition='opacity 0.3s ease';
       twWrap.style.opacity='0';
-      ringWrap.style.transition='opacity 0.6s ease, transform 0.6s ease';
+      ringWrap.style.transition='opacity 0.5s ease, transform 0.5s ease';
       ringWrap.style.opacity='1';
       ringWrap.style.transform='scale(1)';
-      statusEl.style.transition='opacity 0.4s ease';
+      statusEl.style.transition='opacity 0.3s ease';
       statusEl.style.opacity='1';
 
-      /* ── Phase 2: Progress ring (~3s) — overlay fades, girl reveals ── */
-      const duration=3000;const start=performance.now();
+      const duration=2000; /* tighter: 2s instead of 3s */
+      const start=performance.now();
       const phases=[
-        {at:0,text:'SYNCHRONIZING DATA ...'},
-        {at:0.3,text:'LINKING NODE ARRAY ...'},
-        {at:0.6,text:'CALIBRATING SENSORS ...'},
-        {at:0.85,text:'CORE ONLINE'}
+        {at:0,text:'SYNCHRONIZING ...'},
+        {at:0.35,text:'LINKING NODE ARRAY ...'},
+        {at:0.65,text:'CALIBRATING ...'},
+        {at:0.88,text:'CORE ONLINE'}
       ];
       let phaseIdx=0;
 
       function tick(now){
         const elapsed=now-start;const progress=Math.min(elapsed/duration,1);
-        /* ease-in-out quad */
         const eased=progress<0.5?2*progress*progress:1-Math.pow(-2*progress+2,2)/2;
         const target=88;
         const current=target*eased;
-        /* Update boot ring */
+
         if(bootRing)bootRing.style.strokeDashoffset=(bootCirc-(bootCirc*current/100)).toFixed(1);
         if(bootPct)bootPct.textContent=Math.round(current)+'%';
-        /* Status text */
+
         while(phaseIdx<phases.length&&progress>=phases[phaseIdx].at){
           if(statusEl)statusEl.textContent=phases[phaseIdx].text;
           phaseIdx++;
         }
-        /* Overlay opacity: stays opaque at start, fades during progress
-           0% → 0.95 (still nearly black, girl barely visible)
-           50% → 0.5 (silhouette emerging)
-           100% → 0.08 (nearly clear) */
+
+        /* Overlay: deep cold blue-gray fades to reveal girl
+           Same world: rgba(14,26,34) not pure black */
         if(overlay){
-          const overlayOpacity=Math.max(0.08, 0.95 - progress * 0.92);
-          overlay.style.background=`rgba(10,14,20,${overlayOpacity.toFixed(3)})`;
-          /* Fade ring elements as page becomes visible */
+          const overlayOpacity=Math.max(0.06, 0.97 - progress * 0.95);
+          overlay.style.background=`rgba(14,26,34,${overlayOpacity.toFixed(3)})`;
           if(progress>0.7){
             const ringFade=1-((progress-0.7)/0.3);
             const statusTxt=overlay.querySelector('.boot-status');
@@ -1267,13 +1284,34 @@ function bootSequence(){
             if(statusTxt)statusTxt.style.opacity=ringFade.toFixed(2);
           }
         }
+
         if(progress<1){requestAnimationFrame(tick)}
-        else{setTimeout(resolve,300)}
+        else{
+          /* ── Phase D: Completion ceremony ── */
+          completeBoot();
+        }
       }
       requestAnimationFrame(tick);
     }
 
-    /* Kick off typewriter */
+    /* ── Phase D: 88% pulse + SYNC COMPLETE flash ── */
+    function completeBoot(){
+      /* Pulse the ring */
+      if(ringWrap){
+        ringWrap.style.transition='none';
+        ringWrap.style.opacity='1';
+        ringWrap.style.animation='boot-pulse 0.3s ease';
+      }
+      /* Flash SYNC COMPLETE */
+      if(completeEl){
+        completeEl.style.animation='complete-flash 0.6s ease forwards';
+      }
+      /* Hide status text */
+      if(statusEl)statusEl.style.opacity='0';
+      /* Resolve after ceremony */
+      setTimeout(resolve,500);
+    }
+
     typeNext();
   });
 }
