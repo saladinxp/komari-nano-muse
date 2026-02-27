@@ -102,8 +102,8 @@ body{
 /* ═══ HERO ═══ */
 .hero{display:grid;grid-template-columns:300px 1fr 250px;min-height:440px;position:relative}
 .h-left{padding:28px 22px 24px 32px;display:flex;flex-direction:column;gap:8px;
-  border-right:1px solid rgba(148,163,184,0.12);
-  background:linear-gradient(90deg,rgba(240,243,247,0.85) 0%,rgba(240,243,247,0.5) 100%);position:relative}
+  border-right:1px solid rgba(59,130,246,0.12);
+  background:linear-gradient(135deg,rgba(219,234,254,0.55) 0%,rgba(224,231,243,0.4) 100%);position:relative;backdrop-filter:blur(8px)}
 .h-left::before{content:'';position:absolute;inset:0;
   background-image:linear-gradient(to right,#6b7280 1px,transparent 1px);
   background-size:40px 100%;opacity:0.03;pointer-events:none}
@@ -141,8 +141,8 @@ body{
 .h-center{position:relative;display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px;overflow:hidden}
 .h-center-lbl{font-family:var(--fm);font-size:7px;letter-spacing:2px;color:var(--t5);opacity:.35;position:absolute}
 .h-right{padding:28px 32px 24px 22px;display:flex;flex-direction:column;gap:10px;align-items:flex-end;text-align:right;
-  border-left:1px solid rgba(148,163,184,0.12);
-  background:linear-gradient(270deg,rgba(240,243,247,0.85) 0%,rgba(240,243,247,0.5) 100%);position:relative}
+  border-left:1px solid rgba(59,130,246,0.12);
+  background:linear-gradient(225deg,rgba(219,234,254,0.55) 0%,rgba(224,231,243,0.4) 100%);position:relative;backdrop-filter:blur(8px)}
 .h-right::before{content:'';position:absolute;inset:0;
   background-image:linear-gradient(to right,#6b7280 1px,transparent 1px);
   background-size:40px 100%;opacity:0.03;pointer-events:none}
@@ -221,7 +221,7 @@ body{
 .det-back{font-family:var(--fm);font-size:11px;letter-spacing:1px;color:var(--blue);cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:8px 0;transition:.2s}
 .det-back:hover{opacity:.7}
 .det-info{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
-.det-card{background:rgba(255,255,255,0.9);border:1px solid rgba(226,232,240,0.5);border-radius:14px;padding:16px 20px}
+.det-card{background:rgba(241,245,249,0.85);border:1px solid rgba(59,130,246,0.1);border-radius:14px;padding:16px 20px;backdrop-filter:blur(6px)}
 .det-label{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--t4);margin-bottom:4px}
 .det-val{font-family:var(--fd);font-weight:700;font-size:16px}
 .det-tabs{display:flex;gap:8px;margin:16px 0}
@@ -432,7 +432,7 @@ function flatLive(r){
   // Already flat? (has 'cpu' as number) — return as-is
   if(typeof r.cpu==='number')return r;
   return{
-    cpu:r.cpu?.usage||0,
+    cpu:Math.round((r.cpu?.usage||0)*100)/100,
     memory_used:r.ram?.used||0, memory_total:r.ram?.total||0,
     swap_used:r.swap?.used||0, swap_total:r.swap?.total||0,
     disk_used:r.disk?.used||0, disk_total:r.disk?.total||0,
@@ -689,7 +689,7 @@ function rDetInfo(node,uuid){
     <div class="det-card"><div class="det-label">GROUP</div><div class="det-val">${esc(node.group||'--')}</div></div>
     <div class="det-card"><div class="det-label">OS</div><div class="det-val">${esc(d.os||node.os||'--')}</div></div>
     <div class="det-card"><div class="det-label">UPTIME</div><div class="det-val">${on?fUs(d.uptime):'--'}</div></div>
-    <div class="det-card"><div class="det-label">CPU</div><div class="det-val">${on?(d.cpu||0)+'%':'--'}</div></div>
+    <div class="det-card"><div class="det-label">CPU</div><div class="det-val">${on?Math.round(d.cpu||0)+'%':'--'}</div></div>
     <div class="det-card"><div class="det-label">RAM</div><div class="det-val">${on?fB(d.memory_used||0)+' / '+fB(d.memory_total||0):'--'}</div></div>
     <div class="det-card"><div class="det-label">DISK</div><div class="det-val">${on?fB(d.disk_used||0)+' / '+fB(d.disk_total||0):'--'}</div></div>
     <div class="det-card"><div class="det-label">NETWORK</div><div class="det-val">${on?'↑'+fS(d.network_tx||0)+' ↓'+fS(d.network_rx||0):'--'}</div></div>
@@ -756,7 +756,7 @@ function uDetLive(){
   const cards=document.querySelectorAll('#pg-detail .det-card');
   if(cards.length>=8){
     const on=S.onlineSet.has(S.detailUUID);
-    cards[4].querySelector('.det-val').textContent=on?(d.cpu||0)+'%':'--';
+    cards[4].querySelector('.det-val').textContent=on?Math.round(d.cpu||0)+'%':'--';
     cards[5].querySelector('.det-val').textContent=on?fB(d.memory_used||0)+' / '+fB(d.memory_total||0):'--';
     cards[6].querySelector('.det-val').textContent=on?fB(d.disk_used||0)+' / '+fB(d.disk_total||0):'--';
     cards[7].querySelector('.det-val').textContent=on?'↑'+fS(d.network_tx||0)+' ↓'+fS(d.network_rx||0):'--';
