@@ -397,7 +397,38 @@ body{
 .stab-node-pct{font-family:var(--fm);font-size:12px;font-weight:700;width:60px;text-align:right}
 .stab-tasks{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 
-/* ═══ LOADING ═══ */
+/* ═══ ALERT ATMOSPHERE SYSTEM — 3 layers ═══ */
+
+/* ── Layer 3: Global atmosphere shift (body.alert-active) ── */
+/* "World gets cold, anomaly gets bright" */
+body.alert-active .mech{border-color:rgba(140,100,120,0.35);transition:border-color 1.5s ease}
+body.alert-active .energy-glow{background:radial-gradient(circle,rgba(180,160,220,0.1) 0%,rgba(120,100,180,0.04) 35%,transparent 65%);transition:background 2s ease}
+body.alert-active .energy-glow2{background:radial-gradient(circle,rgba(140,120,180,0.06) 0%,rgba(100,80,160,0.03) 40%,transparent 65%);transition:background 2s ease}
+/* Core ring — energy diminished, cooler tone */
+body.alert-active .sr-fill{filter:drop-shadow(0 0 18px rgba(180,190,220,0.3)) drop-shadow(0 0 6px rgba(180,190,220,0.4)) drop-shadow(0 0 2px rgba(200,200,220,0.5));transition:filter 2s ease}
+body.alert-active .sync-ring-wrap::before{background:radial-gradient(circle,rgba(180,190,220,0.1) 0%,rgba(160,170,200,0.04) 40%,transparent 70%);transition:background 2s ease}
+/* Scan line shifts to warmer warning tone */
+body.alert-active .scan-line{background:linear-gradient(90deg,transparent,rgba(180,100,120,0.12),rgba(140,80,100,0.08),transparent)}
+
+/* ── Layer 2: Fleet strip ALERTS cell pulse ── */
+.fleet-cell.alert-pulse .fleet-val{animation:alert-num-breathe 2s ease-in-out infinite}
+.fleet-cell.alert-pulse::after{background:var(--r)!important;box-shadow:0 0 12px rgba(var(--rr),.5)!important;animation:alert-bar-breathe 2s ease-in-out infinite}
+@keyframes alert-num-breathe{0%,100%{text-shadow:0 0 4px rgba(255,77,79,0.2)}50%{text-shadow:0 0 16px rgba(255,77,79,0.5),0 0 4px rgba(255,77,79,0.8)}}
+@keyframes alert-bar-breathe{0%,100%{opacity:.5;box-shadow:0 0 8px rgba(255,77,79,0.3)}50%{opacity:1;box-shadow:0 0 16px rgba(255,77,79,0.6)}}
+
+/* ── Layer 1: Node card enhanced risk states ── */
+/* UNDER ATTACK — sharpened */
+.nc.off.atk{background:rgba(255,235,235,0.45);border-color:rgba(239,68,68,0.2);
+  box-shadow:inset 3px 0 0 var(--r),0 2px 10px rgba(239,68,68,0.08),inset 0 1px 0 rgba(255,255,255,0.35)}
+.nc.off.atk::before{background:linear-gradient(90deg,var(--r),#ff6b8a);animation:pulse-glow 1.5s ease-in-out infinite}
+.nc.off.atk .nc-f{border-top-color:rgba(239,68,68,0.15)}
+/* OVERLOAD — sharpened */
+.nc.off.ovl{background:rgba(255,248,230,0.45);border-color:rgba(245,158,11,0.2);
+  box-shadow:inset 3px 0 0 var(--am),0 2px 10px rgba(245,158,11,0.08),inset 0 1px 0 rgba(255,255,255,0.35)}
+.nc.off.ovl .nc-f{border-top-color:rgba(245,158,11,0.15)}
+
+/* Transition smoothness for all alert-driven changes */
+.mech,.energy-glow,.energy-glow2,.sr-fill,.sync-ring-wrap::before,.scan-line{transition:all 2s ease}
 .loading-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(245,248,252,0.8);z-index:50;border-radius:18px}
 .loading-spinner{width:40px;height:40px;border:3px solid rgba(148,163,184,0.15);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -838,6 +869,33 @@ function rSum(){
   /* Bandwidth display */
   const fSplit=fS(bwUp).split(' ');$('hNetUp').textContent=fSplit[0];$('hNetUpU').textContent=fSplit[1]||'MB/s';
   const fSplit2=fS(bwDn).split(' ');$('hNetDn').textContent=fSplit2[0];$('hNetDnU').textContent=fSplit2[1]||'MB/s';
+
+  /* ── Alert Atmosphere System (3 layers) ── */
+  const hasAlert=offC>0;
+
+  /* Layer 3: Global atmosphere — body class toggle */
+  if(hasAlert&&!document.body.classList.contains('alert-active')){
+    document.body.classList.add('alert-active');
+  }else if(!hasAlert&&document.body.classList.contains('alert-active')){
+    document.body.classList.remove('alert-active');
+  }
+
+  /* Layer 2: Fleet strip ALERTS cell pulse */
+  const alertCell=document.querySelector('.fleet-cell:nth-child(3)');
+  if(alertCell){
+    if(hasAlert&&!alertCell.classList.contains('alert-pulse')){alertCell.classList.add('alert-pulse')}
+    else if(!hasAlert&&alertCell.classList.contains('alert-pulse')){alertCell.classList.remove('alert-pulse')}
+  }
+
+  /* Layer 1+3 bonus: Core ring color temperature shift */
+  const ringFill=document.querySelector('.sr-fill');
+  if(ringFill){
+    if(hasAlert){
+      ringFill.style.stroke='rgba(180,200,220,0.85)'; /* cooler, whiter — energy fading */
+    }else{
+      ringFill.style.stroke=''; /* restore default cyan */
+    }
+  }
 }
 
 /* ── Render Cards ── */
