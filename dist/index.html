@@ -6,9 +6,9 @@
 <title>Komari Monitor</title>
 <meta name="description" content="A simple server monitor tool.">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<!-- NanoMuse v0.6.1 — Komari Monitor Theme -->
+<!-- NanoMuse v0.7.0 — Komari Monitor Theme -->
 <style>
-/* ═══ NanoMuse v0.6.1 — CSS ═══ */
+/* ═══ NanoMuse v0.7.0 — CSS ═══ */
 :root{
   --bg:#dfe6ee;
   --cyan:#00d8ff;--cyan-g:rgba(0,216,255,0.5);
@@ -118,9 +118,20 @@ body{
 .hs-d.b{background:var(--blue);box-shadow:0 0 5px var(--blue-g)}
 .hs-k{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--t4)}
 .hs-v{font-family:var(--fm);font-size:10.5px;color:var(--blue);font-weight:700;letter-spacing:1px}
-.h-div{display:flex;align-items:center;gap:6px;margin:6px 0}
-.h-div-l{flex:1;height:1px;background:linear-gradient(90deg,rgba(148,163,184,0.2),transparent)}
-.h-div-t{font-family:var(--fm);font-size:9px;letter-spacing:3px;color:var(--t5);font-weight:600}
+.h-div{display:flex;align-items:center;gap:8px;margin:10px 0 8px}
+.h-div-l{flex:1;height:1px;background:linear-gradient(90deg,rgba(148,163,184,0.35),rgba(148,163,184,0.08))}
+.h-div-t{font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--t4);font-weight:600;white-space:nowrap}
+/* Panel section blocks — layered depth */
+.hp-s{padding:12px 14px;border-radius:4px;margin:3px 0;position:relative;border:1px solid rgba(148,163,184,0.15)}
+.hp-s.d1{background:rgba(200,214,232,0.4)}
+.hp-s.d2{background:rgba(192,208,228,0.32)}
+.hp-s.d3{background:rgba(184,202,224,0.26)}
+.hp-s.d4{background:rgba(178,196,218,0.22)}
+.hp-s+.hp-s{margin-top:6px}
+/* Inner separator line within sections */
+.hp-ln{height:1px;margin:10px 0;background:linear-gradient(90deg,rgba(148,163,184,0.08),rgba(148,163,184,0.35) 20%,rgba(148,163,184,0.35) 80%,rgba(148,163,184,0.08))}
+.hp-s::before{content:'';position:absolute;top:0;left:8px;right:8px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent)}
+.hp-s::after{content:'';position:absolute;bottom:0;left:8px;right:8px;height:1px;background:linear-gradient(90deg,transparent,rgba(100,116,139,0.12),transparent)}
 .h-ring-wrap{position:relative;width:80px;height:80px}
 .h-ring-wrap svg{position:absolute;inset:0;width:100%;height:100%}
 .rg-base{fill:none;stroke:rgba(148,163,184,0.15);stroke-width:1.5;stroke-dasharray:4 4}
@@ -196,7 +207,47 @@ body{
 
 /* ═══ CONTENT ═══ */
 .content-area{padding:20px 36px 28px}
-#pg-detail .content-area,#pg-stability .content-area{background:rgba(225,232,242,0.55);border-radius:0 0 18px 18px;min-height:80vh;position:relative;overflow:hidden}
+#pg-detail .content-area,#pg-stability .content-area,#pg-worldmap .content-area{background:rgba(225,232,242,0.55);border-radius:0 0 18px 18px;min-height:80vh;position:relative;overflow:hidden}
+/* ═══ WORLD MAP ═══ */
+.wmap-container{position:relative;background:linear-gradient(135deg,rgba(210,222,238,0.85),rgba(220,230,244,0.75));border:1px solid rgba(148,163,184,0.2);border-radius:6px;overflow:hidden;min-height:420px;box-shadow:0 4px 20px rgba(0,0,0,0.05),inset 0 1px 0 rgba(255,255,255,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.wmap-container::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.035;mix-blend-mode:soft-light;background-size:48px 48px;background-image:radial-gradient(circle,rgba(100,116,139,0.5) 1px,transparent 1px)}
+.wmap-svg-wrap{position:relative;width:100%;padding-bottom:50%;overflow:hidden;cursor:grab;touch-action:none;z-index:1}
+.wmap-svg-wrap.dragging{cursor:grabbing}
+.wmap-svg-wrap svg{position:absolute;inset:0;width:100%;height:100%}
+.wmap-zoom-ctrl{position:absolute;top:12px;left:12px;display:flex;flex-direction:column;gap:3px;z-index:10}
+.wmap-zoom-btn{width:30px;height:30px;background:linear-gradient(180deg,rgba(230,236,244,0.95),rgba(210,218,230,0.9));border:1px solid rgba(148,163,184,0.3);color:var(--t2);font-family:var(--fm);font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,0.08),inset 0 1px 0 rgba(255,255,255,0.8);text-shadow:0 1px 0 rgba(255,255,255,0.6)}
+.wmap-zoom-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,0.3),transparent);pointer-events:none;border-radius:3px 3px 0 0}
+.wmap-zoom-btn:hover{background:linear-gradient(180deg,rgba(235,240,248,0.98),rgba(215,224,236,0.95));border-color:rgba(59,130,246,0.25);color:var(--blue)}
+.wmap-zoom-btn:active{transform:translateY(1px);box-shadow:inset 0 1px 2px rgba(0,0,0,0.06)}
+.wmap-zoom-reset{font-size:13px}
+.wmap-land{fill:rgba(148,163,184,0.18);stroke:rgba(100,116,139,0.2);stroke-width:.4}
+.wmap-grid-line{stroke:rgba(148,163,184,0.08);stroke-width:.3;fill:none;stroke-dasharray:3 5}
+.wmap-conn{stroke:var(--cyan);stroke-width:.5;stroke-dasharray:6 4;opacity:.15;fill:none}
+.wmap-label{opacity:.5;pointer-events:none;transition:opacity .15s}
+.wmap-node-group:hover .wmap-label{opacity:1}
+@keyframes wmapPulse{0%{r:8;opacity:.6}100%{r:24;opacity:0}}
+.wmap-tip{position:absolute;background:rgba(255,255,255,0.92);border:1px solid rgba(148,163,184,0.3);padding:8px 14px;font-family:var(--fm);font-size:10px;letter-spacing:1px;color:var(--t);white-space:nowrap;z-index:20;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,0.1);border-radius:4px;transform:translate(-50%,-100%) translateY(-12px);opacity:0;transition:opacity .15s;backdrop-filter:blur(6px)}
+.wmap-tip.show{opacity:1}
+.wmap-tip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:rgba(148,163,184,0.3)}
+.wmap-tip-name{font-weight:700;letter-spacing:2px;margin-bottom:2px;color:var(--t)}
+.wmap-tip-status{font-size:9px;letter-spacing:1.5px}
+.wmap-tip-status.online{color:var(--g)}
+.wmap-tip-status.offline{color:var(--r)}
+.wmap-tip-stats{font-size:8px;color:var(--t4);margin-top:3px;letter-spacing:1px}
+.wmap-legend{display:flex;align-items:center;gap:16px;padding:10px 20px;border-top:1px solid rgba(148,163,184,0.15);font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--t4);position:relative;z-index:1}
+.wmap-legend-item{display:flex;align-items:center;gap:5px}
+.wmap-legend-dot{width:8px;height:8px;transform:rotate(45deg);border-radius:1px}
+.wmap-legend-dot.on{background:var(--cyan);box-shadow:0 0 6px rgba(0,216,255,0.4)}
+.wmap-legend-dot.off{background:var(--r);opacity:.6}
+.wmap-zone-id{position:absolute;top:8px;right:16px;font-family:var(--fm);font-size:7px;letter-spacing:3px;color:var(--t4);opacity:.5;z-index:3}
+.wmap-node-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-top:12px}
+.wmap-node-item{background:rgba(255,255,255,0.45);border:1px solid rgba(148,163,184,0.18);padding:10px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:.2s;font-family:var(--fm);font-size:10px;letter-spacing:1px;border-radius:4px;box-shadow:0 1px 4px rgba(0,0,0,0.03),inset 0 1px 0 rgba(255,255,255,0.5)}
+.wmap-node-item:hover{border-color:rgba(0,216,255,0.3);background:rgba(0,216,255,0.04);box-shadow:0 2px 8px rgba(0,216,255,0.08)}
+.wmap-node-dot{width:7px;height:7px;transform:rotate(45deg);flex-shrink:0;border-radius:1px}
+.wmap-node-dot.on{background:var(--cyan);box-shadow:0 0 5px rgba(0,216,255,0.5)}
+.wmap-node-dot.off{background:var(--r);opacity:.6}
+.wmap-node-name{color:var(--t);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.wmap-node-region{color:var(--t4);font-size:9px;flex-shrink:0;letter-spacing:1.5px}
 /* ── Atmosphere Layer 1: Noise/Dust (makes it "not plastic") ── */
 #pg-detail .content-area::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.035;mix-blend-mode:soft-light;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -288,8 +339,10 @@ body{
 
 /* ═══ DETAIL PAGE ═══ */
 .page{display:none}.page.active{display:block}
-.det-back{font-family:var(--fm);font-size:11px;letter-spacing:1px;color:var(--blue);cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;transition:.2s;background:rgba(59,130,246,0.06);border-radius:8px;border:1px solid rgba(59,130,246,0.1);font-weight:600}
-.det-back:hover{background:rgba(59,130,246,0.12);border-color:rgba(59,130,246,0.2)}
+.det-back{font-family:var(--fm);font-size:11px;letter-spacing:1.5px;color:var(--t2);cursor:pointer;display:inline-flex;align-items:center;gap:8px;padding:9px 20px;transition:.25s;background:linear-gradient(180deg,rgba(230,236,244,0.95),rgba(210,218,230,0.9));border-radius:6px;border:1px solid rgba(148,163,184,0.3);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04),inset 0 1px 0 rgba(255,255,255,0.8),inset 0 -1px 0 rgba(0,0,0,0.04);text-shadow:0 1px 0 rgba(255,255,255,0.6);position:relative;overflow:hidden}
+.det-back::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,0.4),transparent);pointer-events:none;border-radius:5px 5px 0 0}
+.det-back:hover{background:linear-gradient(180deg,rgba(235,240,248,0.98),rgba(215,224,236,0.95));border-color:rgba(59,130,246,0.25);box-shadow:0 2px 6px rgba(0,0,0,0.1),0 4px 12px rgba(59,130,246,0.08),inset 0 1px 0 rgba(255,255,255,0.9),inset 0 -1px 0 rgba(0,0,0,0.05);color:var(--blue)}
+.det-back:active{transform:translateY(1px);box-shadow:0 0px 2px rgba(0,0,0,0.1),inset 0 1px 2px rgba(0,0,0,0.06)}
 .det-info{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
 .det-card{background:rgba(237,242,250,0.92);border:1.5px solid rgba(140,160,185,0.3);border-radius:14px;padding:18px 22px;box-shadow:0 2px 8px rgba(59,130,246,0.06),0 1px 3px rgba(0,0,0,0.04);border-left:3px solid var(--blue);transition:all .2s}
 .det-card:hover{box-shadow:0 4px 16px rgba(59,130,246,0.1),0 2px 6px rgba(0,0,0,0.06);transform:translateY(-1px)}
@@ -297,15 +350,16 @@ body{
 .det-val{font-family:var(--fd);font-weight:700;font-size:17px;color:#1e293b}
 /* ═══ DETAIL PAGE v2 — Tactical + Engineering ═══ */
 /* Status strip — embedded control bar, not floating card */
-.det-strip{display:flex;align-items:center;gap:0;background:linear-gradient(90deg,rgba(20,30,42,0.90),rgba(24,36,52,0.87));border-radius:14px;overflow:hidden;margin-bottom:24px;position:relative;border:1px solid rgba(0,216,255,0.1);min-height:72px;box-shadow:0 1px 6px rgba(0,0,0,0.08)}
-/* Top inner edge glow — makes it feel "embedded" not "floating" */
-.det-strip::before{content:'';position:absolute;top:0;left:20px;right:20px;height:1px;background:linear-gradient(90deg,transparent,rgba(148,180,210,0.2) 20%,rgba(0,216,255,0.12) 50%,rgba(148,180,210,0.2) 80%,transparent);pointer-events:none;z-index:1}
-.det-strip::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--blue),var(--cyan));opacity:.4}
+.det-strip{display:flex;align-items:center;gap:0;background:linear-gradient(180deg,rgba(32,44,60,0.96) 0%,rgba(22,34,50,0.94) 40%,rgba(18,28,42,0.97) 100%);border-radius:14px;margin-bottom:24px;position:relative;border-top:1px solid rgba(148,180,210,0.18);border-left:1px solid rgba(100,130,160,0.1);border-right:1px solid rgba(100,130,160,0.1);border-bottom:1px solid rgba(0,0,0,0.3);min-height:76px;box-shadow:0 8px 32px rgba(0,0,0,0.25),0 2px 8px rgba(0,0,0,0.2),0 1px 0 rgba(148,180,210,0.08),inset 0 1px 0 rgba(148,180,210,0.15),inset 0 -2px 0 rgba(0,0,0,0.4);overflow:hidden}
+/* Top bevel highlight — visible metallic edge */
+.det-strip::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent 5%,rgba(148,180,210,0.25) 20%,rgba(180,210,240,0.35) 50%,rgba(148,180,210,0.25) 80%,transparent 95%);pointer-events:none;z-index:2}
+.det-strip::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent 5%,var(--cyan) 30%,var(--blue) 50%,var(--cyan) 70%,transparent 95%);opacity:.5;z-index:2}
 .det-strip-scan{position:absolute;top:0;left:0;right:0;height:100%;overflow:hidden;pointer-events:none}
 .det-strip-scan::after{content:'';position:absolute;top:0;left:-30%;width:30%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,216,255,0.06),transparent);animation:det-scan 3s ease-in-out infinite}
 @keyframes det-scan{0%{left:-30%}100%{left:100%}}
-.ds-cell{padding:16px 24px;display:flex;flex-direction:column;gap:4px;border-right:1px solid rgba(100,130,160,0.15);position:relative}
-.ds-cell:last-child{border-right:none}
+.ds-cell{padding:16px 24px;display:flex;flex-direction:column;gap:4px;position:relative}
+.ds-cell+.ds-cell{border-left:1px solid rgba(80,110,140,0.25);box-shadow:inset 1px 0 0 rgba(148,180,210,0.08)}
+.ds-cell:last-child{padding-right:60px}
 .ds-cell.ds-name{min-width:200px;padding:16px 28px}
 .ds-name-v{font-family:var(--fd);font-weight:800;font-size:20px;color:#fff;letter-spacing:0.5px;display:flex;align-items:center;gap:8px}
 .ds-name-uuid{font-family:var(--fm);font-size:8px;letter-spacing:2px;color:rgba(148,163,184,0.45)}
@@ -314,9 +368,9 @@ body{
 .ds-v.online{color:var(--g);text-shadow:0 0 12px rgba(34,197,94,0.4)}
 .ds-v.offline{color:var(--r);text-shadow:0 0 10px rgba(255,77,79,0.4)}
 .ds-v.st-active{color:var(--g);text-shadow:0 0 8px rgba(34,197,94,0.3)}.ds-v.st-stable{color:var(--cyan)}.ds-v.st-warning{color:var(--am);text-shadow:0 0 8px rgba(234,179,8,0.3)}.ds-v.st-critical{color:var(--r);text-shadow:0 0 8px rgba(255,77,79,0.3)}
-.ds-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
-.ds-dot.on{background:var(--g);box-shadow:0 0 10px rgba(34,197,94,0.6);animation:dot-breathe 2.5s ease-in-out infinite}
-.ds-dot.off{background:var(--r);box-shadow:0 0 8px rgba(255,77,79,0.5);animation:dot-breathe-r 2s ease-in-out infinite}
+.ds-dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0;position:relative}
+.ds-dot.on{background:radial-gradient(circle at 35% 35%,#a0ffb0,var(--g) 50%,#15803d);box-shadow:0 0 6px rgba(34,197,94,0.8),0 0 16px rgba(34,197,94,0.4),0 0 28px rgba(34,197,94,0.15),inset 0 -1px 2px rgba(0,0,0,0.2);animation:dot-breathe 2.5s ease-in-out infinite}
+.ds-dot.off{background:radial-gradient(circle at 35% 35%,#ffb0b0,var(--r) 50%,#991b1b);box-shadow:0 0 6px rgba(255,77,79,0.8),0 0 16px rgba(255,77,79,0.4),0 0 28px rgba(255,77,79,0.15),inset 0 -1px 2px rgba(0,0,0,0.2);animation:dot-breathe-r 2s ease-in-out infinite}
 @keyframes dot-breathe{0%,100%{box-shadow:0 0 6px rgba(34,197,94,0.4)}50%{box-shadow:0 0 14px rgba(34,197,94,0.8),0 0 4px rgba(34,197,94,1)}}
 @keyframes dot-breathe-r{0%,100%{box-shadow:0 0 5px rgba(255,77,79,0.3)}50%{box-shadow:0 0 12px rgba(255,77,79,0.7),0 0 4px rgba(255,77,79,0.9)}}
 /* Health value in strip — extra emphasis */
@@ -536,7 +590,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .boot-under{opacity:1}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:2px}
 @media(max-width:1100px){.hero{grid-template-columns:1fr;min-height:280px}.h-left,.h-right{display:none}}
-@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:16px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr)}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}.det-strip{flex-wrap:wrap}.ds-cell{min-width:auto;padding:10px 14px}.det-core-echo{display:none}.det-charts-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:16px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr)}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}.det-strip{flex-wrap:wrap}.ds-cell{min-width:auto;padding:10px 14px}.det-core-echo{display:none}.det-charts-grid{grid-template-columns:1fr}.wmap-overview{grid-template-columns:repeat(2,1fr)}.wmap-node-list{grid-template-columns:1fr}}
 @media(max-width:480px){.stab-ov{grid-template-columns:1fr}}
 </style>
 </head>
@@ -618,8 +672,9 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       <span class="tb-tab a" data-page="dashboard"><span class="tb-num">01</span>DASHBOARD</span>
       <span class="tb-tab" data-page="detail"><span class="tb-num">02</span>DETAIL</span>
       <span class="tb-tab" data-page="stability"><span class="tb-num">03</span>STABILITY</span>
+      <span class="tb-tab" data-page="worldmap"><span class="tb-num">04</span>MAP</span>
     </div>
-    <div class="tb-right"><button class="tb-badge" id="verBadge">v0.6.1</button><button class="tb-btn" id="searchBtn">⌕</button></div>
+    <div class="tb-right"><button class="tb-badge" id="verBadge">v0.7.0</button><button class="tb-btn" id="searchBtn">⌕</button></div>
   </div>
 
   <!-- ═══ DASHBOARD PAGE ═══ -->
@@ -632,10 +687,13 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5" style="opacity:0.7"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span style="font-family:var(--fd);font-size:15px;font-weight:800;letter-spacing:1.5px;color:var(--t)">SYSTEM FLEET</span></div>
 
         <!-- SYS LINK -->
+        <div class="hp-s d1">
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">STATUS</span><span class="h-div-l"></span></div>
         <div class="hs"><span class="hs-d on"></span><span class="hs-k">SYS LINK</span><span class="hs-v" id="sysLink">ACTIVE</span></div>
+        </div>
 
         <!-- Score ring + stats -->
+        <div class="hp-s d2">
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">LOAD</span><span class="h-div-l"></span></div>
         <div style="display:flex;align-items:center;gap:14px">
           <div class="h-ring-wrap"><svg viewBox="0 0 100 100"><circle class="rg-base" cx="50" cy="50" r="46"/><circle class="rg-track" cx="50" cy="50" r="46"/><circle class="rg-inner" cx="50" cy="50" r="38"/></svg><svg viewBox="0 0 100 100" style="position:absolute;inset:0"><text x="50" y="45" text-anchor="middle" dominant-baseline="central" font-family="var(--fd)" font-weight="800" font-size="18" fill="var(--t)" id="hScore">--</text><text x="50" y="62" text-anchor="middle" font-family="var(--fm)" font-size="7" letter-spacing="2" fill="var(--t4)">SCORE</text></svg></div>
@@ -647,24 +705,31 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
         </div>
 
         <!-- Resource bars: CPU / RAM / DISK -->
-        <div class="h-bar" style="margin-top:6px" id="heroBars">
+        <div class="hp-ln"></div>
+        <div class="h-bar" style="margin-top:2px" id="heroBars">
           <div class="hb-r"><span class="hb-l">CPU</span><div class="hb-t"><div class="hb-f b" id="heroBarCpu" style="width:0%"></div></div><span class="hb-v" id="heroValCpu">--%</span></div>
           <div class="hb-r"><span class="hb-l">RAM</span><div class="hb-t"><div class="hb-f g" id="heroBarRam" style="width:0%"></div></div><span class="hb-v" id="heroValRam">--%</span></div>
           <div class="hb-r"><span class="hb-l">DISK</span><div class="hb-t"><div class="hb-f cy" id="heroBarDisk" style="width:0%"></div></div><span class="hb-v" id="heroValDisk">--%</span></div>
         </div>
+        </div>
 
         <!-- Internal Load chart -->
+        <div class="hp-s d3">
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">INTERNAL LOAD</span><span class="h-div-l"></span></div>
         <div style="font-family:var(--fm);font-size:8px;letter-spacing:1.5px;color:var(--t5);margin-bottom:4px">CPU+RAM (6h)</div>
-        <div class="h-wave"><svg viewBox="0 0 260 30" preserveAspectRatio="none"><path class="wf" d="M0,30 L0,18 10,16 20,20 30,13 40,17 50,10 60,14 70,8 80,12 90,6 100,11 110,16 120,12 130,18 140,14 150,9 160,13 170,6 180,11 190,15 200,10 210,14 220,8 230,12 240,16 250,11 260,14 260,30Z"/><polyline class="wl" points="0,18 10,16 20,20 30,13 40,17 50,10 60,14 70,8 80,12 90,6 100,11 110,16 120,12 130,18 140,14 150,9 160,13 170,6 180,11 190,15 200,10 210,14 220,8 230,12 240,16 250,11 260,14"/></svg></div>
+        <div class="h-wave"><canvas id="fleetLoadCanvas" style="width:100%;height:100%"></canvas></div>
+        </div>
 
         <!-- Bottom stats strip -->
+        <div class="hp-s d4">
         <div class="h-div" style="margin-top:2px"><span class="h-div-l"></span><span class="h-div-t">SUMMARY</span><span class="h-div-l"></span></div>
+        <div class="hp-ln"></div>
         <div style="display:flex;gap:16px;font-family:var(--fm);font-size:10px;letter-spacing:1px;color:var(--t3)">
           <span>ACTIVE NODES <b style="color:var(--t);font-family:var(--fd);font-weight:800;font-size:13px" id="hActiveN">--</b></span>
           <span>ALERTS <b style="color:var(--r);font-family:var(--fd);font-weight:800;font-size:13px" id="hAlertN">--</b></span>
         </div>
         <div style="font-family:var(--fm);font-size:9px;letter-spacing:1.5px;color:var(--t4);margin-top:2px">TOP PRESSURE: <b style="color:var(--t2);font-weight:700" id="hTopPressure">--</b></div>
+        </div>
 
         <div class="h-ghost">HASH:SHA512 // CACHE:HIT<br>FIREWALL:ACTIVE // NODE:SYNC<br>ROUTE:OPTIMIZED</div>
       </div>
@@ -696,14 +761,18 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
         <div style="display:flex;align-items:center;gap:8px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.5" style="opacity:0.7"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span style="font-family:var(--fd);font-size:15px;font-weight:800;letter-spacing:1.5px;color:var(--t)">NANO CORE</span></div>
 
         <!-- STATUS -->
+        <div class="hp-s d1">
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">STATUS</span><span class="h-div-l"></span></div>
         <div style="font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--t3)" id="rightStatus">STATUS: ACTIVE</div>
-
+        <div class="hp-ln"></div>
         <!-- Live network waveform — canvas -->
         <div class="hb-box"><canvas id="hbCanvas" width="400" height="104" style="width:100%;height:100%"></canvas></div>
+        </div>
 
         <!-- Bandwidth: INBOUND / OUTBOUND -->
+        <div class="hp-s d2">
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">BANDWIDTH</span><span class="h-div-l"></span></div>
+        <div class="hp-ln"></div>
         <div style="display:flex;gap:0;width:100%">
           <div style="flex:1;padding:6px 0">
             <div style="font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--t4);margin-bottom:2px">INBOUND</div>
@@ -716,17 +785,23 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
           </div>
         </div>
 
+        </div>
+
         <!-- TERMINAL LINK (integrated) -->
+        <div class="hp-s d3">
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">TERMINAL LINK</span><span class="h-div-l"></span></div>
+        <div class="hp-ln"></div>
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
           <div class="tl-dot"></div>
           <span class="tl-flag" id="tlFlag">🌐</span>
           <div class="tl-loc" id="tlLoc" style="font-size:14px">RESOLVING ...</div>
         </div>
         <div style="font-family:var(--fm);font-size:9px;letter-spacing:1px;color:var(--t3);line-height:1.6" id="tlMeta">ASN -- · RTT --</div>
+        <div class="hp-ln"></div>
         <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
           <div class="tl-core-dot"></div>
-          <div style="font-family:var(--fm);font-size:7px;letter-spacing:2.5px;color:var(--t5)">SECURE CHANNEL ESTABLISHED</div>
+          <div style="font-family:var(--fm);font-size:8px;letter-spacing:2.5px;color:var(--t3)">SECURE CHANNEL ESTABLISHED</div>
+        </div>
         </div>
 
         <!-- WS status -->
@@ -768,12 +843,46 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
     </div>
   </div>
 
+  <!-- ═══ WORLD MAP PAGE ═══ -->
+  <div class="page" id="pg-worldmap">
+    <div class="content-area">
+      <div class="det-back" onclick="nav('/')">← BACK TO DASHBOARD</div>
+      <div class="sec-div"><span class="sd-line"></span><span class="sd-label"><span class="sd-dot"></span>GLOBAL MAP · 节点分布</span><span class="sd-line r"></span></div>
+      <div class="sec-head"><div class="sh-l"><span class="sh-tag">SEC-04</span><span class="sh-title">NODE DISTRIBUTION</span></div></div>
+
+      <!-- Stats strip — fleet-strip style -->
+      <div class="fleet-strip" id="wmap-overview" style="margin-bottom:20px"></div>
+
+      <!-- Map container — hero panel style -->
+      <div class="wmap-container" id="wmap-container">
+        <div class="wmap-zone-id">◆ NODE DISTRIBUTION // GLOBAL</div>
+        <div class="wmap-svg-wrap" id="wmap-svg-wrap"></div>
+        <div class="wmap-zoom-ctrl">
+          <button class="wmap-zoom-btn" id="wmap-zoom-in" title="Zoom In">+</button>
+          <button class="wmap-zoom-btn" id="wmap-zoom-out" title="Zoom Out">−</button>
+          <button class="wmap-zoom-btn wmap-zoom-reset" id="wmap-zoom-reset" title="Reset">⟳</button>
+        </div>
+        <div class="wmap-tip" id="wmap-tip"></div>
+        <div class="wmap-legend">
+          <span style="letter-spacing:3px;font-weight:600">◆ LEGEND</span>
+          <div class="wmap-legend-item"><div class="wmap-legend-dot on"></div>ONLINE</div>
+          <div class="wmap-legend-item"><div class="wmap-legend-dot off"></div>OFFLINE</div>
+          <span style="opacity:.4;margin-left:auto">MERCATOR PROJECTION</span>
+        </div>
+      </div>
+
+      <!-- Node list below map -->
+      <div class="sec-head" style="margin-top:24px"><div class="sh-l"><span class="sh-tag">LIST</span><span class="sh-title">NODE INDEX</span></div></div>
+      <div class="wmap-node-list" id="wmap-node-list"></div>
+    </div>
+  </div>
+
   <div class="footer"><div class="footer-shimmer"></div><span class="ft-dot"></span><span id="footerSite">KOMARI MONITOR</span><span style="opacity:.3">—</span>NanoMuse<span style="opacity:.2">·</span>Secure Channel<span style="opacity:.2">·</span>Encrypted<span style="opacity:.2">|</span><span style="color:var(--cyan)"><a href="https://lol.moe" style="color:inherit;text-decoration:none">Miuler</a></span></div>
 </div>
 
 </div><!-- /mainContent -->
 <script>
-/* ═══ NanoMuse v0.6.1 — JS ═══ */
+/* ═══ NanoMuse v0.7.0 — JS ═══ */
 ;(function(){
 'use strict';
 
@@ -785,7 +894,8 @@ const S={
   ws:null,_wsI:null,wsRetries:0,
   _lastF:[],
   detailUUID:null,detailNode:null,detailHours:6,detailTab:'load',detailPingHours:6,detailWsData:[],
-  VER:'0.6.0'
+  VER:'v0.7.0',
+  fleetLoadHist:[]
 };
 const STAB={hours:24,sort:'name',data:null,tasks:[],taskId:null,loading:false,_tasksFromApi:false};
 window.S=S;window.STAB=STAB;
@@ -894,6 +1004,7 @@ function conWS(){
         }
         uCards();rSum();
         if(S.detailUUID)uDetLive();
+        if(document.querySelector('#pg-worldmap.active')&&typeof initWorldMap==='function'){if(S._wmZoom)S._wmZoomPrev={scale:S._wmZoom.scale,tx:S._wmZoom.tx,ty:S._wmZoom.ty};initWorldMap()}
       }catch(er){console.error('[NM]',er)}
     };
     S.ws.onclose=()=>{if(S._wsPoll)clearInterval(S._wsPoll);$('wsStatus').textContent='RECONNECT ...';reWS()};
@@ -980,6 +1091,46 @@ function rSum(){
   }
 
   /* Layer 3 bonus: Core ring visual shift handled by CSS body.alert-active .sr-fill */
+
+  /* ── Fleet INTERNAL LOAD live waveform ── */
+  const avgLoad=(avgCpu+avgRam)/2;
+  S.fleetLoadHist.push(avgLoad);
+  if(S.fleetLoadHist.length>60)S.fleetLoadHist.shift();
+  const flc=$('fleetLoadCanvas');
+  if(flc){
+    const dpr=window.devicePixelRatio||1;
+    const rect=flc.parentElement.getBoundingClientRect();
+    const w=rect.width,h=rect.height;
+    if(flc.width!==Math.round(w*dpr)||flc.height!==Math.round(h*dpr)){flc.width=Math.round(w*dpr);flc.height=Math.round(h*dpr)}
+    const ctx=flc.getContext('2d');
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    ctx.clearRect(0,0,w,h);
+    const pts=S.fleetLoadHist;
+    if(pts.length>1){
+      const maxV=Math.max(50,...pts)*1.2;
+      const stepX=w/(pts.length-1);
+      /* Fill */
+      ctx.beginPath();
+      ctx.moveTo(0,h);
+      for(let i=0;i<pts.length;i++){
+        const x=i*stepX,y=h-(pts[i]/maxV)*h*0.85;
+        if(i===0)ctx.lineTo(x,y);
+        else{const px=(i-1)*stepX,py=h-(pts[i-1]/maxV)*h*0.85;ctx.bezierCurveTo(px+stepX*0.4,py,x-stepX*0.4,y,x,y)}
+      }
+      ctx.lineTo(w,h);ctx.closePath();
+      const grad=ctx.createLinearGradient(0,0,0,h);
+      grad.addColorStop(0,'rgba(56,189,248,0.18)');grad.addColorStop(1,'rgba(56,189,248,0.02)');
+      ctx.fillStyle=grad;ctx.fill();
+      /* Line */
+      ctx.beginPath();
+      for(let i=0;i<pts.length;i++){
+        const x=i*stepX,y=h-(pts[i]/maxV)*h*0.85;
+        if(i===0)ctx.moveTo(x,y);
+        else{const px=(i-1)*stepX,py=h-(pts[i-1]/maxV)*h*0.85;ctx.bezierCurveTo(px+stepX*0.4,py,x-stepX*0.4,y,x,y)}
+      }
+      ctx.strokeStyle='rgba(56,189,248,0.55)';ctx.lineWidth=1.5;ctx.stroke();
+    }
+  }
 }
 
 /* ── Render Cards ── */
@@ -1062,14 +1213,30 @@ function uCards(){
       const fake=genFake(n.uuid);
       if(fake&&fake.atk)card.classList.add('atk');else card.classList.add('ovl');
     }
+    /* Update footer: uptime vs alert label + hardware */
+    const footer=card.querySelector('.nc-f');
+    if(footer){
+      const d2=S.liveData[n.uuid]||{};
+      const uptime=on&&d2.uptime?fUs(d2.uptime):'--';
+      const hw=on?[(n.cpu_cores||'?')+'C',fB(d2.memory_total||n.mem_total||0,0),fB(d2.disk_total||n.disk_total||0,0)].join(' / '):(()=>{const fk=genFake(n.uuid);return fB(fk.mem,0)+' / '+fB(fk.dsk,0)})();
+      if(on){
+        footer.innerHTML=`<span class="nc-ut"><span class="nc-utd"></span>${uptime}</span><span>${esc(hw)}</span>`;
+      }else{
+        const fk=genFake(n.uuid);
+        footer.innerHTML=`<span style="color:var(--r)">⚠ ${fk.atk?'UNDER ATTACK':'OVERLOAD'}</span><span>${esc(hw)}</span>`;
+      }
+    }
   });
 }
 
 /* ── Group filter ── */
 function rGF(){
   const c=$('groupPills');if(!c)return;
-  c.innerHTML=S.groups.map(g=>`<button class="pill${g===S.currentGroup?' a':''}" data-g="${esc(g)}">${esc(g)}</button>`).join('');
-  c.querySelectorAll('.pill').forEach(b=>{
+  let h=S.groups.map(g=>`<button class="pill${g===S.currentGroup?' a':''}" data-g="${esc(g)}">${esc(g)}</button>`).join('');
+  h+='<button class="pill" style="margin-left:auto;opacity:.7" onclick="nav(\'/stability\')">◈ STABILITY</button>';
+  h+='<button class="pill" style="opacity:.7" onclick="nav(\'/worldmap\')">◈ MAP</button>';
+  c.innerHTML=h;
+  c.querySelectorAll('.pill[data-g]').forEach(b=>{
     b.onclick=()=>{S.currentGroup=b.dataset.g;rGF();rCards()}
   });
 }
@@ -1229,8 +1396,37 @@ async function ldDetData(){
     }else{
       const r=await fetch(`/api/records/ping?uuid=${uuid}&hours=${hours}`);const j=await r.json();const dd=j.data||j;
       rPingCharts(dd);
+      /* Update strip LATENCY + PACKET LOSS from ping records */
+      uDetPingStrip(dd);
     }
   }catch(e){cc.innerHTML='<div style="text-align:center;padding:40px;color:var(--r)">Failed to load data</div>'}
+  /* Always try to fetch latest ping for strip even on load tab */
+  if(S.detailTab==='load'){try{
+    const pr=await fetch(`/api/records/ping?uuid=${uuid}&hours=1`);const pj=await pr.json();const pd=pj.data||pj;
+    uDetPingStrip(pd);
+  }catch(e){}}
+}
+function uDetPingStrip(pd){
+  const records=pd.records||[];
+  if(!records.length)return;
+  const strip=document.querySelector('#pg-detail .det-strip');
+  if(!strip)return;
+  const cells=strip.querySelectorAll('.ds-cell');
+  /* LATENCY cell is index 4 (0:name 1:status 2:grade 3:health 4:latency 5:loss) */
+  const validPings=records.filter(r=>r.value>=0);
+  if(validPings.length&&cells[4]){
+    const last=validPings[validPings.length-1];
+    const vEl=cells[4].querySelector('.ds-v');
+    if(vEl)vEl.textContent=last.value.toFixed(1)+' ms';
+  }
+  /* PACKET LOSS */
+  if(records.length&&cells[5]){
+    const total=records.length;
+    const lost=records.filter(r=>r.value<0||r.value===null||r.value===undefined).length;
+    const lossPct=((lost/total)*100).toFixed(1);
+    const vEl=cells[5].querySelector('.ds-v');
+    if(vEl)vEl.textContent=lossPct+'%';
+  }
 }
 function rLoadCharts(records){
   const cc=$('detCharts');if(!cc||!records.length){cc.innerHTML='<div style="text-align:center;padding:40px;color:var(--t4)">No data</div>';return}
@@ -1254,9 +1450,47 @@ function rPingCharts(pd){
   const records=pd.records||[];
   const tasks=pd.tasks||[];
   if(!records.length){cc.innerHTML='<div style="text-align:center;padding:40px;color:var(--t4)">No ping data</div>';return}
-  cc.innerHTML=`<div class="chart-wrap"><div class="chart-label">LATENCY (ms)</div><canvas id="chPing"></canvas></div>`;
-  const labels=records.map(r=>{const t=r.time;if(!t)return'--';const d=new Date(t);return d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})});
-  dCh('chPing',{labels,data:records.map(r=>r.value>=0?r.value:0),color:'#2563eb'});
+  /* Group records by task_id */
+  const PING_COLORS=['#2563eb','#00d2ff','#34d399','#a78bfa'];
+  if(tasks.length>1){
+    /* Multiple monitoring servers — one chart per task */
+    const byTask=new Map();
+    tasks.forEach(t=>byTask.set(t.id,{name:t.name||('Task '+t.id),records:[]}));
+    records.forEach(r=>{
+      const tid=r.task_id;
+      if(tid!==undefined&&byTask.has(tid)){byTask.get(tid).records.push(r)}
+      else if(!byTask.size){/* fallback */}
+    });
+    let html='<div class="det-charts-grid">';
+    let idx=0;
+    byTask.forEach((v,tid)=>{
+      if(!v.records.length)return;
+      const cid='chPing'+tid;
+      /* Compute current value + loss rate for header */
+      const last=v.records[v.records.length-1];
+      const curVal=last&&last.value>=0?last.value.toFixed(1):'--';
+      const total=v.records.length;
+      const lost=v.records.filter(r=>r.value<0||r.value===null).length;
+      const lossPct=total>0?((lost/total)*100).toFixed(1):'--';
+      html+=`<div class="chart-wrap"><div class="chart-label"><span>▎LATENCY (ms)</span><span style="float:right;font-size:12px;opacity:.7">${esc(v.name)}</span></div><div style="display:flex;justify-content:space-between;padding:0 8px;margin-bottom:4px;font-size:11px;opacity:.6"><span>Current: ${curVal} ms</span><span>Loss: ${lossPct}%</span></div><canvas id="${cid}"></canvas></div>`;
+      idx++;
+    });
+    html+='</div>';
+    cc.innerHTML=html;
+    idx=0;
+    byTask.forEach((v,tid)=>{
+      if(!v.records.length)return;
+      const cid='chPing'+tid;
+      const labels=v.records.map(r=>{const t=r.time;if(!t)return'--';const d=new Date(t);return d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})});
+      dCh(cid,{labels,data:v.records.map(r=>r.value>=0?r.value:0),color:PING_COLORS[idx%PING_COLORS.length],label:'ms'});
+      idx++;
+    });
+  }else{
+    /* Single task or no task info — original single chart */
+    cc.innerHTML=`<div class="chart-wrap"><div class="chart-label">▎LATENCY (ms)${tasks.length?'<span style="float:right;font-size:12px;opacity:.7">'+esc(tasks[0].name)+'</span>':''}</div><canvas id="chPing"></canvas></div>`;
+    const labels=records.map(r=>{const t=r.time;if(!t)return'--';const d=new Date(t);return d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})});
+    dCh('chPing',{labels,data:records.map(r=>r.value>=0?r.value:0),color:'#2563eb'});
+  }
 }
 function uDetLive(){
   if(!S.detailUUID||document.querySelector('#pg-detail').style.display==='none')return;
@@ -1556,6 +1790,8 @@ function hRoute(){
     }
   }else if(path==='/stability'){
     showP('stability');loadStabilityData();
+  }else if(path==='/worldmap'){
+    showP('worldmap');initWorldMap();
   }else{
     showP('dashboard');
   }
@@ -1577,6 +1813,7 @@ document.querySelectorAll('.tb-tab').forEach(b=>{
     const p=b.dataset.page;
     if(p==='dashboard')nav('/');
     else if(p==='stability')nav('/stability');
+    else if(p==='worldmap')nav('/worldmap');
     else if(p==='detail'&&S.detailUUID)nav('/detail/'+S.detailUUID);
   }
 });
@@ -1885,6 +2122,111 @@ function bootSequence(){
   });
 }
 function render(){rSum();rCards()}
+
+/* ═══ WORLD MAP ═══ */
+var WMAP_COORDS_CACHE={};
+var WMAP_SPREAD_COUNT={};
+function wmapSpread(lat,lng,idx,radius){
+if(idx===0)return{lat:lat,lng:lng};
+var angle=(idx-1)*2.399;var ring=Math.ceil(idx/6);var r=radius*ring*0.6;
+return{lat:lat+Math.sin(angle)*r,lng:lng+Math.cos(angle)*r};
+}
+var REGION_COORDS={
+'🇯🇵':[36.2,138.25],'🇨🇳':[35.86,104.2],'🇭🇰':[22.32,114.17],'🇹🇼':[23.7,120.96],
+'🇰🇷':[35.91,127.77],'🇸🇬':[1.35,103.82],'🇺🇸':[34.05,-118.24],'🇬🇧':[51.51,-0.13],
+'🇩🇪':[51.17,10.45],'🇫🇷':[46.23,2.21],'🇳🇱':[52.13,5.29],'🇷🇺':[61.52,105.32],
+'🇦🇺':[-25.27,133.78],'🇨🇦':[56.13,-106.35],'🇧🇷':[-14.24,-51.93],'🇮🇳':[20.59,78.96],
+'🇮🇩':[-0.79,113.92],'🇹🇭':[15.87,100.99],'🇻🇳':[14.06,108.28],'🇲🇾':[4.21,101.98],
+'🇵🇭':[12.88,121.77],'🇿🇦':[-30.56,22.94],'🇲🇽':[23.63,-102.55],'🇦🇷':[-38.42,-63.62],
+'🇳🇿':[-40.9,174.89],'🇫🇮':[61.92,25.75],'🇸🇪':[60.13,18.64],'🇳🇴':[60.47,8.47],
+'🇩🇰':[56.26,9.5],'🇵🇱':[51.92,19.15],'🇮🇹':[41.87,12.57],'🇪🇸':[40.46,-3.75],
+'🇹🇷':[38.96,35.24],'🇦🇪':[23.42,53.85],'🇺🇦':[48.38,31.17],'🇲🇴':[22.2,113.54]
+};
+var WMAP_LAND='M321.1,480L303.2,480L321.1,480Z M359.6,480L364.4,480L335.6,480L359.6,480Z M156.8,480L163.4,480L153,480L156.8,480Z M145.2,480L149.3,480L140.6,480L145.2,480Z M216.1,480L223.5,480L207.1,480L216.1,480Z M299.3,457L306.5,459.9L295.4,462.8L280.9,453.5L290.4,457.8L295.1,452.4L299.3,457Z M323.9,447.8L316.8,450.2L323.9,447.8Z M667.4,443.3L663.8,439.9L667.4,443.3Z M867.7,417.4L875.4,417.7L874.4,424.1L869.5,425L867.7,417.4Z M941.4,417.8L944.7,420.1L935,431.8L924.5,432.7L941.4,417.8Z M945.6,405.4L956,409.3L947.3,419.9L940.4,401.3L945.6,405.4Z M925.7,372.6L917.4,368.1L925.7,372.6Z M955.7,362.1L953,363.9L955.7,362.1Z M613.5,354.1L605.6,378.7L597.4,378.9L598.5,359.7L611.2,351L613.5,354.1Z M862.8,354.6L888.4,381.3L887.7,394.3L880,408.6L870.2,412.8L857.6,410.9L848.6,400.9L844.9,403.1L847.5,397.3L842.6,402.2L830.2,393.9L794.7,402.6L786.7,400.5L784.4,371.7L802.3,367.2L815.2,355.5L825.7,357.1L831.5,349.4L844,350.6L841.3,357.2L853.9,362.9L860,348.1L862.8,354.6Z M801.9,347.2L797.2,345.8L801.9,347.2Z M908.9,346.5L905.9,345.2L908.9,346.5Z M911.1,345.9L908.2,343.3L911.1,345.9Z M811.8,347L819.6,343.4L811.8,347Z M794.4,342.8L797.7,344L791.3,344.7L794.4,342.8Z M807.7,342.8L799.8,344.3L807.7,342.8Z M906.3,343.3L901.9,341.4L906.3,343.3Z M900.1,341.3L897.4,339.7L900.1,341.3Z M769.7,340.1L788.6,343.4L761,340.2L769.7,340.1Z M895.7,340.2L892,336.7L895.7,340.2Z M885.3,337.4L875.5,338L885.3,337.4Z M819.3,333.3L816,332.7L819.3,333.3Z M827.9,332.5L821.1,333.2L827.9,332.5Z M888.4,335.4L881.8,331.8L888.4,335.4Z M837.7,328.6L841.2,333.1L848.9,329.7L865.6,334.1L882.1,347.3L866,341.8L860.3,345.3L847,343.4L847.8,337.2L834.6,334.6L832,332L836.5,330.8L828.1,328.1L837.7,328.6Z M814,323.3L800.5,325.8L808.9,327.5L804,330.1L808.4,337.1L802.6,331.6L798.3,337.2L800.1,325.1L814,323.3Z M823.2,323.9L821.6,328.1L820.3,322.5L823.2,323.9Z M762.2,338.2L734.1,315.1L756.9,326L763,332.5L762.2,338.2Z M794.3,322.5L797.3,324.4L789.7,334.4L773.9,332.2L770.5,325.4L791.3,312.1L797.8,315.2L794.3,322.5Z M817,309L814.4,314.8L805.1,311.5L814.4,306.3L817,309Z M696.6,313.6L693.7,306.1L696.6,313.6Z M810.6,305.2L806.4,306.3L810.6,305.2Z M796,307.2L792.5,309.1L798.7,302.9L796,307.2Z M805,301.8L808.3,303.3L805,301.8Z M814.7,301.3L812.8,305.5L811.4,300.4L814.7,301.3Z M804.1,299.4L800.9,298.5L804.1,299.4Z M803.5,287.9L804.6,296.7L810.9,300.5L800.2,295.4L803.5,287.9Z M305.1,288.5L300.7,288.1L305.1,288.5Z M274.9,289.2L271.1,288.5L274.9,289.2Z M286.5,284.9L297.8,287.6L281.4,288.2L286.5,284.9Z M774.2,287.5L769.7,286L775.4,284.5L774.2,287.5Z M267.5,278.6L282.2,284L253.4,280.5L267.5,278.6Z M273.2,276.4L271.5,273.1L273.2,276.4Z M803.1,278.5L800.3,276.8L804,272.9L803.1,278.5Z M272.5,270L269.4,269.5L272.5,270Z M572.2,248.3L566,249.8L572.2,248.3Z M543.2,248.3L550.1,249.3L543.2,248.3Z M521.4,241.8L520.3,245.9L513.2,243.4L521.4,241.8Z M504.6,233.9L503.5,240L504.6,233.9Z M855.9,244.6L854,249.7L842.1,253.8L829.3,252.8L828.5,259.7L825.1,254.2L841.8,248.7L857,233.5L855.9,244.6Z M863.8,225.7L868.1,228.3L853.2,232.9L858.6,221.7L863.8,225.7Z M310.2,218.8L314.6,219.1L310.2,218.8Z M315.2,211L308,208.6L315.2,211Z M150.6,212.9L137.7,205.8L150.6,212.9Z M330.3,206L328.5,208.8L337.4,210.6L338.5,218.5L322,215.7L332.2,203.1L330.3,206Z M126.1,194.8L130.2,201.2L126.1,194.8Z M863.1,205.9L865.7,211.4L861.8,210.4L862.7,220L858.9,220.5L860.4,193.7L863.1,205.9Z M461.9,200.9L453.4,202.4L459.8,191L464.9,193L461.9,200.9Z M513.8,189.3L512.2,192.2L509.1,188.7L513.8,189.3Z M72,183.8L67.5,182.4L73.2,180.8L72,183.8Z M472,177.9L471.7,188L484.5,199.3L483.9,204.1L466,208.4L470.9,203.6L466,201.8L467.8,196.7L472.1,195L463.6,185L466.6,177.9L472,177.9Z M38.5,172.8L33.5,171.6L38.5,172.8Z M261.6,160.9L256,162.1L261.6,160.9Z M22.1,156.1L30.2,158.3L22.1,156.1Z M252.9,147.1L266.4,156.4L247.4,157.2L252.9,147.1Z M441.3,143.1L443.7,149.7L430.2,157.4L419.3,155.3L421.9,153.2L416.1,150.9L420.7,148.5L415.1,147.4L441.3,143.1Z M277.7,139.5L274,137.2L277.6,133.4L277.7,139.5Z M0,129.6L15.1,143.7L14.5,140L21.7,140.8L26.9,145.6L19.9,148.2L18.8,153.9L3.5,144.9L0,150.5Z M960,150.5L953.1,152.2L957.9,162.7L943.1,165.6L934.2,173L916.1,173L912.3,192L898.1,205L895.8,185.1L918.6,161.7L907,170.2L904.8,165L897.9,166.5L891.2,173.5L893.5,175.9L859.2,176.3L840.3,192.4L853.1,194.3L857,201L848.6,219.5L820.1,237.8L824.2,249.8L817.3,251.5L814.2,238.4L802.8,240.1L804.4,234.6L794.8,239.3L797.1,243.8L806.3,243.8L797.7,250.2L805.1,258.1L804.5,266.2L789,278.5L762.4,285.2L771.6,298.6L760.4,308.6L746.9,298.7L744.6,307.3L757.9,323.6L742.2,310.3L739.1,291.2L731.2,293.1L723.8,278.6L694.2,293.4L693,305L686.8,310L673.7,281.7L667.9,282.7L657,272.6L622.7,269.5L610.5,261.4L609.1,265.5L618.1,275.8L630.3,270.4L639.5,279.6L627.4,290.6L596,300.3L573.1,263.3L570.5,267.6L566.5,262.5L580,287.6L593.9,302.2L616.4,302.1L609.6,315.3L584.5,335.8L586.9,359.5L572.8,367.4L574.6,376.9L548.8,399.9L528.6,399.7L511.5,363.7L516.5,348.2L503.5,328.5L505.1,318.6L491.5,313.4L458.7,317.4L445.5,310.3L433,295.9L436.9,288.7L434.7,280.5L464.2,248.1L505.4,244.1L509.6,245.2L507.6,253L530.9,261.5L537.5,255.3L570.1,259.8L576.4,245.9L553.7,245.8L549.8,238.6L569.4,231.7L590.8,233L577.8,222.6L584.3,216.7L573.2,219.6L576.9,223L570.4,225.2L562,218.7L553.8,230.2L556.8,234.3L540.3,236.5L544.1,243.3L540,246.5L532.1,232.5L515,221.2L513.6,225.9L529.3,236.7L525,236L522.9,242.4L503.7,225.2L488.3,228.8L474.3,245.8L456.3,245.3L454.9,228.9L474.9,227.8L476.8,220.4L467.8,212.4L475.7,212.5L474.8,208.9L501.7,196.6L502.8,183.8L508.2,181.4L505.7,189.8L509.2,195L532.4,193.5L537.5,182.6L544.3,184.1L542.2,175.7L557.7,172.4L536.9,169.5L537.4,158.8L547.7,149.8L543.7,145.4L527.6,160.8L525.7,166.9L530.1,172.1L522.4,187.5L514.5,190.2L507.6,174.6L502.4,179.2L495.1,178.1L493.3,164.2L531.2,124.7L545.5,117.3L555.1,116.3L563.4,120.9L560,122.5L562.9,126.2L587.4,135.4L586.7,144.1L568.5,142.2L578.7,155.8L579.1,149.7L585.6,152.6L592.2,143L597.2,145.1L595.9,131.9L603.3,133.6L603.6,142.1L623.2,130.2L622.6,133.9L636.8,130.1L639.8,133.5L641.5,124.5L662.7,134.5L657.9,117.3L666.5,104L673.6,105.9L676.5,132.8L670.1,143.8L673.1,144.6L680.1,136.3L674.9,114.7L679.1,105.5L683.6,116.6L682.4,111.9L686.9,109.3L697.3,112.7L694.7,99.7L711.5,97.6L712.4,88.6L748.7,77.7L758.3,66.1L766,77.2L776.2,75.2L784.4,82.6L771.7,95.8L781.4,97.3L782.7,101.9L796.7,100.1L797.4,103.5L818.6,100.3L830.1,118.8L832.7,112.2L853,114.4L854.6,105.4L878.7,109.8L887.9,118.5L904,118.3L909.2,126.9L927.6,126.1L932.2,131.2L934.5,123L956.3,127.1Z M611,233.7L614.4,236.5L611.2,243.5L623.5,245.1L620.5,237.1L626,234.6L614.1,224.5L621.4,222.6L621.4,217.9L604.5,224.5L611,233.7Z M224.9,128.8L213.9,127.1L218.1,122.8L224.9,128.8Z M960,118.6L957.1,118.9L956.6,116.9Z M0,114.2L6.5,115.8L0,118.6L0,114.2Z M238.5,126.6L238.5,132.4L242.1,128L247.1,139.3L251.9,124.3L259.7,125.6L263.3,137.2L257.7,143.4L251.3,142.6L231.6,164L227.5,176.7L233.9,183.9L260.6,191L266.9,204.4L270.4,199.9L267.1,192.6L275.9,185.9L270.6,177.3L271.7,162.7L283.1,162.1L294.4,168.1L299.6,179.6L307.8,171.1L315.2,186.6L327.1,192.8L331.5,201.3L319.9,207.5L302.9,207.5L290.4,218L306.5,210.6L308.1,219.7L318.6,217.4L320.5,220.7L305.7,227.5L303.6,224.9L308.2,222.5L301,222.9L291.5,228.9L293.4,232.8L278.6,238.5L277.5,244.4L276.4,239.4L278.1,248.6L263.1,258.7L265.7,273.1L255.7,261.9L229.7,262.8L220.4,268.2L220.8,283.2L228.2,288.6L247.9,281.3L242.9,293.4L257.6,294.7L256.5,303.5L262.8,308.3L275.1,308.6L288.7,300.7L288.8,307.7L293.5,301.3L315,304.3L327.6,314L343.2,317.7L345.6,326.4L373.4,332.1L387.4,341.2L376.9,353.1L370.8,372.1L352.9,378.6L336.5,401L324.2,399.8L328.7,406L326,410.5L306.3,418.2L310.8,422.3L300.6,430.7L304,438.4L295.6,446.6L298.3,451.9L290.7,456.9L280.1,451.6L278.4,440.1L282.3,434.8L278.3,434L286.1,421.8L281.8,424.1L292.9,367.3L263.3,338.8L267.3,331.7L264.2,328.4L274.3,318.4L271.5,309.2L264.3,311.5L246.7,298.9L204,288.3L173.9,257.8L188.2,277.6L180.8,274.2L148.3,236.3L147.5,213.9L153.1,217.2L152.4,211.4L140.2,205.6L122.5,179.9L87.7,168.8L75.4,175.9L78.3,167.1L57.5,187.9L40.6,193.6L61.2,176.8L48.1,177.8L46.6,172.5L39.1,170.4L38,163.7L51.3,156.2L51.3,151.4L40.1,153L31.7,147.1L41.4,142.5L48.9,144.9L35.3,133L62.4,115.3L116,130L138.3,120.7L144.7,126.7L148.2,122.7L148.6,127.1L156.1,124.8L172.7,130L176.3,132.8L172.5,135.5L189.6,138.3L191.6,131.4L196.9,130.6L209.5,136.9L217.5,136.2L219.5,131.8L223.7,138.8L228.7,129L222.7,123.1L226.1,111.6L232.3,115.5L233.6,125.4L238.5,126.6Z M175.6,103.5L174.2,106.7L183.9,108.1L186.9,104.6L191.5,113.4L190.9,103.7L195.9,103.8L201.4,117.6L210.7,123.5L206.9,130.8L177.8,132.1L170.4,128.5L167.1,123.9L180.2,121.4L165.6,120.4L170.4,115.6L161.6,114L165.7,106.3L175.6,103.5Z M201.3,101.3L199,106L194.8,101.1L201.3,101.3Z M276.4,103.6L268,106.1L264.4,99.4L276.4,103.6Z M249.2,103.2L251.3,107.5L260.5,99L264.7,110.7L272.5,106L282.4,115.4L287.4,114L298.9,122.9L301.4,128.4L296.5,131L315.1,141L309.6,150.4L298.6,144.1L307.5,157.9L306.6,161.1L296.6,156.3L303.6,164.4L280.4,151.9L270.5,152.4L282.8,148.1L285.5,136.5L269.4,122.6L243.5,121.1L239.5,109.5L244.2,100.5L251.1,98.6L249.2,103.2Z M212.4,98.3L221,101L222.1,113.3L217.7,115.8L206.7,107.7L212.2,106.3L209.2,101.8L212.4,98.3Z M862.9,102.8L853,101.7L858.8,98.2L862.9,102.8Z M231.5,105.9L225.6,110.7L225.3,98.2L238.6,98.2L231.5,105.9Z M158.8,115L151.8,118.1L144.2,112L149.5,99.5L146.9,95L166.5,95.8L172,101L158.8,115Z M882,88.8L878.9,91.9L869.7,88.1L882,88.8Z M230.4,89.7L221.8,90.1L227.1,84.3L230.4,89.7Z M866.9,85L864.8,90.9L850.5,92.5L845.3,87.4L850.2,80.2L866.9,85Z M217.3,75.2L218.2,89.5L213.8,90.3L211,84.4L206.7,85L206.5,78.5L217.3,75.2Z M191.4,79.7L197.6,81.6L196.5,89.5L176.7,94.2L181.9,88.2L166.1,87.7L172.3,77.3L189.2,85.7L185.3,77.7L187.8,74.5L191.4,79.7Z M633.4,119.3L617.6,114.5L628.4,88.9L661.8,73.2L661.8,79.4L635.9,94.8L627.8,108.6L633.4,119.3Z M227.5,71.7L235.7,74.6L242.2,84.6L263.7,83.8L267.1,90.1L250.4,94.1L233.5,90.8L229.6,78.6L221,74.9L227.5,71.7Z M170.1,66.6L167.7,76.8L152.4,80.4L162.4,67.9L170.1,66.6Z M229.8,67.8L222.8,64.8L229.8,67.8Z M186.2,66.1L177.2,65.8L183.3,61.7L186.2,66.1Z M545.9,64.6L540,68.5L535.5,60.7L541,58.7L545.9,64.6Z M187.6,57.2L179.9,59.1L182.7,54.6L187.6,57.2Z M224.5,62.7L218.3,62.4L217,54.3L224.5,62.7Z M213.2,60L214.2,64.1L199.5,59.4L198.7,49.7L213.2,60Z M760.2,60.2L745.2,64L752.2,49.2L761,56L760.2,60.2Z M528.7,45.2L537.5,53.4L530.7,57.6L522.4,74.7L507.9,45.8L515.1,41.7L520.4,45.6L525.3,41.2L528.7,45.2Z M547.9,36.9L553.1,41.1L549.1,47.3L541.4,48.6L533.5,46.8L526.3,38L541.1,33.8L547.9,36.9Z M616.4,35.2L606.9,41.7L605.5,35L599.6,34.7L608.8,32.2L609.4,35.6L613.4,30.5L616.4,35.2Z M746.5,54.3L733.3,52.5L723.1,37.7L735.8,26.1L747.2,44.4L746.5,54.3Z M248,45.7L251.2,49.3L242.6,60.4L232.3,59.8L231.6,48.9L226.7,48.9L222.1,39.9L227.4,26.7L233.6,26L248,45.7Z M297.3,0L310.2,1.7L315,10.2L299.6,22.7L305.4,22.7L290.2,44.1L274.9,49.5L278.9,58L267.3,70.7L272.3,74.6L265.2,79.9L241.4,77.3L244.6,64.2L253.4,67.7L245.4,59.5L253.1,49.2L248.2,38.8L257.6,40.6L261.7,36.2L246.4,35.6L235.8,17.2L252,5.7L258.2,10.9L263.7,0L297.3,0Z M407.7,0L424.4,4.5L419.5,10.5L396.3,15.3L405.7,13.7L413.7,18.7L418.9,14.3L418.2,27.4L437.9,16.9L445.9,19.7L447.4,25.6L435.1,37.6L426.5,39.7L432.7,40.3L427.5,55.6L430.7,72.8L422.2,76L427.1,80.5L428.3,94.9L422.4,95.5L424.6,101L417.2,102.2L420.5,109.9L413.9,108.9L422,119.6L417.2,120.8L411.9,114.8L409.7,122.3L420.4,122.8L373.8,148.1L364.3,172.1L360.6,172.3L348.7,166.6L336.9,144.9L344.3,124L334.2,125.9L335,118.6L343,120.2L331.1,113.3L334.1,107.2L323.8,85.4L316.6,80.5L297.3,80.9L289.6,72.6L302,69.2L290.6,66.7L284.9,58.9L304.8,48.7L305.8,44.6L298.6,40.4L319.3,15.1L335.6,12.7L338.5,17.3L345.6,9L361.3,20.5L355.3,6.1L364.2,0L407.7,0Z';
+function wmapProject(lat,lng,w,h){
+var LAT_MIN=-60,LAT_MAX=83;lat=Math.max(LAT_MIN,Math.min(LAT_MAX,lat));
+var x=((lng+180)/360)*960;var latRad=lat*Math.PI/180;
+var m=Math.log(Math.tan(Math.PI/4+latRad/2));
+var mMax=Math.log(Math.tan(Math.PI/4+(LAT_MAX*Math.PI/180)/2));
+var mMin=Math.log(Math.tan(Math.PI/4+(LAT_MIN*Math.PI/180)/2));
+var y=480*(mMax-m)/(mMax-mMin);
+x=x*(w/960);y=y*(h/480);x=Math.max(5,Math.min(w-5,x));y=Math.max(5,Math.min(h-5,y));return{x:x,y:y};
+}
+function wmapGetCoords(node){
+var ts=S.themeSettings||{};var coordStr=(ts.node_coords||'').trim();
+if(coordStr){var pairs=coordStr.split(';');for(var i=0;i<pairs.length;i++){var p=pairs[i].trim();if(!p)continue;var kv=p.split(':');if(kv.length===2&&kv[0].trim()===node.uuid){var ll=kv[1].split(',');if(ll.length===2){var lat=parseFloat(ll[0]),lng=parseFloat(ll[1]);if(!isNaN(lat)&&!isNaN(lng))return{lat:lat,lng:lng}}}}}
+if(WMAP_COORDS_CACHE[node.uuid])return WMAP_COORDS_CACHE[node.uuid];
+var region=(node.region||'').trim();var nameKey=node.name||'';
+var nameHints={'佛山':[23.02,113.12],'深圳':[22.54,114.06],'日本':[36.2,138.25],'东京':[35.68,139.69],'大阪':[34.69,135.5],'香港':[22.32,114.17],'台湾':[23.7,120.96],'新加坡':[1.35,103.82],'韩国':[35.91,127.77],'首尔':[37.57,126.98],'美国':[34.05,-118.24],'洛杉矶':[34.05,-118.24],'纽约':[40.71,-74.01],'西雅图':[47.61,-122.33],'芝加哥':[41.88,-87.63],'达拉斯':[32.78,-96.8],'圣何塞':[37.34,-121.89],'迈阿密':[25.76,-80.19],'硅谷':[37.39,-122.08],'旧金山':[37.77,-122.42],'华盛顿':[38.91,-77.04],'英国':[55.38,-3.44],'伦敦':[51.51,-0.13],'德国':[51.17,10.45],'法兰克福':[50.11,8.68],'法国':[46.23,2.21],'巴黎':[48.86,2.35],'荷兰':[52.13,5.29],'阿姆斯特丹':[52.37,4.9],'俄罗斯':[55.76,37.62],'莫斯科':[55.76,37.62],'澳大利亚':[-25.27,133.78],'悉尼':[-33.87,151.21],'印度':[20.59,78.96],'孟买':[19.08,72.88],'加拿大':[56.13,-106.35],'巴西':[-14.24,-51.93],'上海':[31.23,121.47],'北京':[39.9,116.41],'广州':[23.13,113.26],'成都':[30.57,104.07],'杭州':[30.27,120.15],'南京':[32.06,118.8],'重庆':[29.43,106.91],'武汉':[30.59,114.31],'天津':[39.34,117.36],'西安':[34.26,108.94],'沈阳':[41.8,123.43],'大连':[38.91,121.6],'青岛':[36.07,120.33],'厦门':[24.48,118.09],'济南':[36.67,116.99],'长沙':[28.23,112.94],'昆明':[25.04,102.71],'福州':[26.07,119.31],'海口':[20.04,110.35],'哈尔滨':[45.75,126.65],
+'Tokyo':[35.68,139.69],'Osaka':[34.69,135.5],'Singapore':[1.35,103.82],'Seoul':[37.57,126.98],'London':[51.51,-0.13],'Frankfurt':[50.11,8.68],'Paris':[48.86,2.35],'Amsterdam':[52.37,4.9],'Moscow':[55.76,37.62],'Sydney':[-33.87,151.21],'Mumbai':[19.08,72.88],'LA':[34.05,-118.24],'NYC':[40.71,-74.01],'Seattle':[47.61,-122.33],'Dallas':[32.78,-96.8],'Miami':[25.76,-80.19],'Chicago':[41.88,-87.63],'SJC':[37.34,-121.89],'LAX':[34.05,-118.24],'Virginia':[37.43,-79.14],'Fremont':[37.55,-121.98],'Portland':[45.52,-122.68],'Denver':[39.74,-104.99],'Atlanta':[33.75,-84.39],'Ashburn':[39.04,-77.49],'San Jose':[37.34,-121.89],'Los Angeles':[34.05,-118.24],'New York':[40.71,-74.01],'Washington':[38.91,-77.04],'Toronto':[43.65,-79.38],'Vancouver':[49.28,-123.12],'Taipei':[25.03,121.57],'HongKong':[22.32,114.17],'Hong Kong':[22.32,114.17],'Shenzhen':[22.54,114.06],'Shanghai':[31.23,121.47],'Beijing':[39.9,116.41],'Guangzhou':[23.13,113.26]};
+var nameKeys=Object.keys(nameHints).sort(function(a,b){return b.length-a.length});
+var foundH=null;nameKeys.forEach(function(k){if(nameKey.indexOf(k)!==-1&&!foundH)foundH=nameHints[k]});
+if(foundH){var key=foundH[0]+','+foundH[1];if(!WMAP_SPREAD_COUNT[key])WMAP_SPREAD_COUNT[key]=0;var idx=WMAP_SPREAD_COUNT[key]++;var spread=wmapSpread(foundH[0],foundH[1],idx,0.35);WMAP_COORDS_CACHE[node.uuid]=spread;return spread}
+var ISO_COORDS={'JP':[36.2,138.25],'CN':[35.86,104.2],'HK':[22.32,114.17],'TW':[23.7,120.96],'KR':[35.91,127.77],'SG':[1.35,103.82],'US':[34.05,-118.24],'GB':[51.51,-0.13],'DE':[51.17,10.45],'FR':[46.23,2.21],'NL':[52.13,5.29],'RU':[61.52,105.32],'AU':[-25.27,133.78],'CA':[56.13,-106.35],'BR':[-14.24,-51.93],'IN':[20.59,78.96],'ID':[-0.79,113.92],'TH':[15.87,100.99],'VN':[14.06,108.28],'MY':[4.21,101.98],'PH':[12.88,121.77],'ZA':[-30.56,22.94],'MX':[23.63,-102.55],'AR':[-38.42,-63.62],'NZ':[-40.9,174.89],'FI':[61.92,25.75],'SE':[60.13,18.64],'NO':[60.47,8.47],'DK':[56.26,9.5],'PL':[51.92,19.15],'IT':[41.87,12.57],'ES':[40.46,-3.75],'TR':[38.96,35.24],'AE':[23.42,53.85],'UA':[48.38,31.17],'MO':[22.2,113.54]};
+var regionUp=region.toUpperCase();
+if(ISO_COORDS[regionUp]){var ic=ISO_COORDS[regionUp];var key2=ic[0]+','+ic[1];if(!WMAP_SPREAD_COUNT[key2])WMAP_SPREAD_COUNT[key2]=0;var idx2=WMAP_SPREAD_COUNT[key2]++;var spread2=wmapSpread(ic[0],ic[1],idx2,0.5);WMAP_COORDS_CACHE[node.uuid]=spread2;return spread2}
+var found=null;Object.keys(REGION_COORDS).forEach(function(emoji){if(region.indexOf(emoji)!==-1)found=REGION_COORDS[emoji]});
+if(found){var key3=found[0]+','+found[1];if(!WMAP_SPREAD_COUNT[key3])WMAP_SPREAD_COUNT[key3]=0;var idx3=WMAP_SPREAD_COUNT[key3]++;var spread3=wmapSpread(found[0],found[1],idx3,0.5);WMAP_COORDS_CACHE[node.uuid]=spread3;return spread3}
+return null;
+}
+function initWorldMap(){
+WMAP_COORDS_CACHE={};WMAP_SPREAD_COUNT={};
+var wrap=document.getElementById('wmap-svg-wrap');if(!wrap)return;
+var W=960,H=480;
+var svg='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="background:transparent">';
+svg+='<g id="wmap-transform">';
+for(var gi=1;gi<8;gi++){var gy=gi*(H/8);svg+='<line class="wmap-grid-line" x1="0" y1="'+gy+'" x2="'+W+'" y2="'+gy+'"/>';}
+for(var gj=1;gj<16;gj++){var gx=gj*(W/16);svg+='<line class="wmap-grid-line" x1="'+gx+'" y1="0" x2="'+gx+'" y2="'+H+'"/>';}
+svg+='<line x1="0" y1="326.2" x2="'+W+'" y2="326.2" stroke="var(--t4)" stroke-width=".3" opacity=".15" stroke-dasharray="8 6"/>';
+svg+='<path class="wmap-land" d="'+WMAP_LAND+'"/>';
+var mapNodes=[];
+S.nodes.forEach(function(n){if(n.hidden)return;var c=wmapGetCoords(n);if(!c)return;var pos=wmapProject(c.lat,c.lng,W,H);var on=S.onlineSet.has(n.uuid);mapNodes.push({node:n,x:pos.x,y:pos.y,on:on})});
+var onlineNodes=mapNodes.filter(function(m){return m.on});
+if(onlineNodes.length>=2){onlineNodes.forEach(function(a){var dists=onlineNodes.filter(function(b){return b!==a}).map(function(b){return{b:b,d:Math.sqrt(Math.pow(a.x-b.x,2)+Math.pow(a.y-b.y,2))}}).sort(function(x,y){return x.d-y.d});var conn=Math.min(2,dists.length);for(var ci=0;ci<conn;ci++){svg+='<line class="wmap-conn" x1="'+a.x.toFixed(1)+'" y1="'+a.y.toFixed(1)+'" x2="'+dists[ci].b.x.toFixed(1)+'" y2="'+dists[ci].b.y.toFixed(1)+'"/>'}})}
+mapNodes.forEach(function(m,i){
+svg+='<g class="wmap-node-group" data-uuid="'+m.node.uuid+'" data-online="'+(m.on?'1':'0')+'" data-pos="'+m.x.toFixed(1)+','+m.y.toFixed(1)+'" transform="translate('+m.x.toFixed(1)+','+m.y.toFixed(1)+')" style="cursor:pointer">';
+var mc=m.on?'rgba(0,216,255,0.9)':'rgba(255,77,79,0.7)';var po=m.on?'.12':'.04';
+svg+='<circle cx="0" cy="0" r="16" fill="'+mc+'" opacity="'+po+'"/>';
+svg+='<circle cx="0" cy="0" r="8" fill="none" stroke="'+mc+'" stroke-width="'+(m.on?'1':'.6')+'" opacity="0" style="animation:wmapPulse 2.5s ease-out infinite;animation-delay:'+(i*.4)+'s"/>';
+if(m.on)svg+='<circle cx="0" cy="0" r="8" fill="none" stroke="'+mc+'" stroke-width="1" opacity="0" style="animation:wmapPulse 2.5s ease-out infinite;animation-delay:'+(i*.4+1.2)+'s"/>';
+var sz=m.on?6.5:4;
+svg+='<rect x="-'+sz+'" y="-'+sz+'" width="'+(sz*2)+'" height="'+(sz*2)+'" rx="1.5" transform="rotate(45)" fill="'+mc+'"'+(m.on?' stroke="rgba(0,0,0,.12)" stroke-width=".5"':' opacity=".7"')+'/>';
+if(m.on)svg+='<circle cx="0" cy="0" r="2" fill="rgba(255,255,255,.4)"/>';
+var shortName=(m.node.region||'')+' '+((m.node.name||'').length>8?(m.node.name||'').substring(0,8)+'…':(m.node.name||''));
+svg+='<text x="0" y="'+(sz+11)+'" text-anchor="middle" fill="'+(m.on?'var(--t3)':'var(--t4)')+'" font-family="var(--fm)" font-size="6" letter-spacing=".5" class="wmap-label">'+shortName.trim().toUpperCase()+'</text>';
+svg+='</g>'});
+svg+='</g></svg>';wrap.innerHTML=svg;
+/* Zoom & Pan */
+var _wmZ={scale:1,tx:0,ty:0,dragging:false,sx:0,sy:0,stx:0,sty:0};
+var _wmG=document.getElementById('wmap-transform');
+function _wmApply(){if(!_wmG)return;_wmG.setAttribute('transform','translate('+_wmZ.tx+','+_wmZ.ty+') scale('+_wmZ.scale+')');var inv=1/_wmZ.scale;_wmG.querySelectorAll('.wmap-node-group').forEach(function(g){var orig=g.getAttribute('data-pos');if(orig){var pp=orig.split(',');g.setAttribute('transform','translate('+pp[0]+','+pp[1]+') scale('+inv+')')}})}
+function _wmZoomFn(delta,cx,cy){var os=_wmZ.scale;_wmZ.scale=Math.max(.5,Math.min(8,_wmZ.scale*(1+delta)));var ns=_wmZ.scale;if(cx!==undefined){_wmZ.tx=cx-(cx-_wmZ.tx)*ns/os;_wmZ.ty=cy-(cy-_wmZ.ty)*ns/os}_wmApply()}
+wrap.addEventListener('wheel',function(e){e.preventDefault();var rect=wrap.querySelector('svg').getBoundingClientRect();var mx=(e.clientX-rect.left)/rect.width*W;var my=(e.clientY-rect.top)/rect.height*H;_wmZoomFn(e.deltaY>0?-0.12:0.12,mx,my)},{passive:false});
+wrap.addEventListener('mousedown',function(e){if(e.button!==0)return;_wmZ.dragging=true;_wmZ.sx=e.clientX;_wmZ.sy=e.clientY;_wmZ.stx=_wmZ.tx;_wmZ.sty=_wmZ.ty;wrap.classList.add('dragging');e.preventDefault()});
+document.addEventListener('mousemove',function(e){if(!_wmZ.dragging)return;var svgRect=wrap.querySelector('svg');if(!svgRect)return;var r=svgRect.getBoundingClientRect();_wmZ.tx=_wmZ.stx+(e.clientX-_wmZ.sx)*(W/r.width);_wmZ.ty=_wmZ.sty+(e.clientY-_wmZ.sy)*(W/r.width);_wmApply()});
+document.addEventListener('mouseup',function(){if(_wmZ.dragging){_wmZ.dragging=false;wrap.classList.remove('dragging')}});
+var _wmTouch={lastDist:0};
+wrap.addEventListener('touchstart',function(e){if(e.touches.length===1){_wmZ.dragging=true;_wmZ.sx=e.touches[0].clientX;_wmZ.sy=e.touches[0].clientY;_wmZ.stx=_wmZ.tx;_wmZ.sty=_wmZ.ty}else if(e.touches.length===2){_wmTouch.lastDist=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY)}},{passive:true});
+wrap.addEventListener('touchmove',function(e){if(e.touches.length===1&&_wmZ.dragging){var r=wrap.querySelector('svg').getBoundingClientRect();_wmZ.tx=_wmZ.stx+(e.touches[0].clientX-_wmZ.sx)*(W/r.width);_wmZ.ty=_wmZ.sty+(e.touches[0].clientY-_wmZ.sy)*(W/r.width);_wmApply()}else if(e.touches.length===2){var d=Math.hypot(e.touches[1].clientX-e.touches[0].clientX,e.touches[1].clientY-e.touches[0].clientY);if(_wmTouch.lastDist>0)_wmZoomFn((d-_wmTouch.lastDist)*0.005,W/2,H/2);_wmTouch.lastDist=d}e.preventDefault()},{passive:false});
+wrap.addEventListener('touchend',function(){_wmZ.dragging=false;_wmTouch.lastDist=0},{passive:true});
+var zi=document.getElementById('wmap-zoom-in');if(zi)zi.addEventListener('click',function(){_wmZoomFn(0.3,W/2,H/2)});
+var zo=document.getElementById('wmap-zoom-out');if(zo)zo.addEventListener('click',function(){_wmZoomFn(-0.25,W/2,H/2)});
+var zr=document.getElementById('wmap-zoom-reset');if(zr)zr.addEventListener('click',function(){_wmZ.scale=1;_wmZ.tx=0;_wmZ.ty=0;_wmApply()});
+S._wmZoom=_wmZ;
+if(S._wmZoomPrev){_wmZ.scale=S._wmZoomPrev.scale;_wmZ.tx=S._wmZoomPrev.tx;_wmZ.ty=S._wmZoomPrev.ty;_wmApply()}
+/* Tooltips */
+var tip=document.getElementById('wmap-tip');var container=document.getElementById('wmap-container');
+wrap.querySelectorAll('.wmap-node-group').forEach(function(g){
+g.addEventListener('mouseenter',function(e){var uuid=this.getAttribute('data-uuid');var n=S.nodes.find(function(nd){return nd.uuid===uuid});if(!n)return;var on=S.onlineSet.has(uuid);var l=S.liveData[uuid];var cpuStr='',memStr='';if(on&&l){cpuStr='CPU: '+(l.cpu||0).toFixed(1)+'%';memStr=' MEM: '+(l.ram||0).toFixed(1)+'%'}tip.innerHTML='<div class="wmap-tip-name">'+(n.region||'')+' '+esc(n.name)+'</div><div class="wmap-tip-status '+(on?'online':'offline')+'">◆ '+(on?'ONLINE':'OFFLINE')+'</div>'+(on?'<div class="wmap-tip-stats">'+cpuStr+memStr+'</div>':'');var rect=container.getBoundingClientRect();var gRect=this.getBoundingClientRect();tip.style.left=(gRect.left+gRect.width/2-rect.left)+'px';tip.style.top=(gRect.top-rect.top)+'px';tip.classList.add('show')});
+g.addEventListener('mouseleave',function(){tip.classList.remove('show')});
+g.addEventListener('click',function(){nav('/detail/'+this.getAttribute('data-uuid'))})});
+/* Overview stats */
+var ovEl=document.getElementById('wmap-overview');
+if(ovEl){var total=S.nodes.filter(function(n){return!n.hidden}).length;var onCount=0;S.nodes.forEach(function(n){if(!n.hidden&&S.onlineSet.has(n.uuid))onCount++});var mapped=mapNodes.length;var groups={};mapNodes.forEach(function(m){var g=m.node.group||'Other';if(!groups[g])groups[g]=0;groups[g]++});var regionCount=Object.keys(groups).length;ovEl.innerHTML='<div class="fleet-cell"><div class="fleet-val" style="color:var(--cyan)">'+mapped+'<span style="font-size:11px;opacity:.5"> / '+total+'</span></div><div class="fleet-lbl">MAPPED NODES</div></div><div class="fleet-cell"><div class="fleet-val" style="color:var(--g)">'+onCount+'</div><div class="fleet-lbl">ONLINE</div></div><div class="fleet-cell"><div class="fleet-val" style="color:var(--r)">'+(total-onCount)+'</div><div class="fleet-lbl">OFFLINE</div></div><div class="fleet-cell"><div class="fleet-val" style="color:var(--am)">'+regionCount+'</div><div class="fleet-lbl">REGIONS</div></div>'}
+/* Node list */
+var listEl=document.getElementById('wmap-node-list');
+if(listEl){var h='';mapNodes.sort(function(a,b){return(b.on?1:0)-(a.on?1:0)||a.node.name.localeCompare(b.node.name)}).forEach(function(m){h+='<div class="wmap-node-item" data-uuid="'+m.node.uuid+'"><div class="wmap-node-dot '+(m.on?'on':'off')+'"></div><span class="wmap-node-name">'+esc(m.node.name)+'</span><span class="wmap-node-region">'+esc(m.node.region||'')+'</span></div>'});S.nodes.forEach(function(n){if(n.hidden)return;var isMapped=mapNodes.some(function(m){return m.node.uuid===n.uuid});if(!isMapped){var on=S.onlineSet.has(n.uuid);h+='<div class="wmap-node-item" data-uuid="'+n.uuid+'" style="opacity:.5" title="未能定位"><div class="wmap-node-dot '+(on?'on':'off')+'"></div><span class="wmap-node-name">'+esc(n.name)+' <span style="font-size:8px;color:var(--t4)">[未定位]</span></span><span class="wmap-node-region">'+esc(n.region||'')+'</span></div>'}});listEl.innerHTML=h;listEl.querySelectorAll('.wmap-node-item').forEach(function(item){item.addEventListener('click',function(){nav('/detail/'+this.getAttribute('data-uuid'))})})}
+}
 init();
 
 })();
