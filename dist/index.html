@@ -628,8 +628,14 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       <div class="hero-top">
       <div class="scan-line"></div>
       <div class="h-left an d2">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:16px;height:2px;border-radius:1px;background:var(--cyan);box-shadow:0 0 6px var(--cyan-g)"></span><span style="font-family:var(--fr);font-size:10px;letter-spacing:3px;color:var(--t4);font-weight:600">FLEET STATUS</span></div>
-        <div class="hs"><span class="hs-d on"></span><span class="hs-k">SYS LINK</span><span class="hs-v" id="sysLink">SYNC</span></div>
+        <!-- Header -->
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5" style="opacity:0.7"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span style="font-family:var(--fd);font-size:15px;font-weight:800;letter-spacing:1.5px;color:var(--t)">SYSTEM FLEET</span></div>
+
+        <!-- SYS LINK -->
+        <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">STATUS</span><span class="h-div-l"></span></div>
+        <div class="hs"><span class="hs-d on"></span><span class="hs-k">SYS LINK</span><span class="hs-v" id="sysLink">ACTIVE</span></div>
+
+        <!-- Score ring + stats -->
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">LOAD</span><span class="h-div-l"></span></div>
         <div style="display:flex;align-items:center;gap:14px">
           <div class="h-ring-wrap"><svg viewBox="0 0 100 100"><circle class="rg-base" cx="50" cy="50" r="46"/><circle class="rg-track" cx="50" cy="50" r="46"/><circle class="rg-inner" cx="50" cy="50" r="38"/></svg><svg viewBox="0 0 100 100" style="position:absolute;inset:0"><text x="50" y="45" text-anchor="middle" dominant-baseline="central" font-family="var(--fd)" font-weight="800" font-size="18" fill="var(--t)" id="hScore">--</text><text x="50" y="62" text-anchor="middle" font-family="var(--fm)" font-size="7" letter-spacing="2" fill="var(--t4)">SCORE</text></svg></div>
@@ -639,13 +645,27 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
             <div class="hs"><span class="hs-k">PEAK</span><span class="hs-v" style="color:var(--am)" id="hPeak">--%</span></div>
           </div>
         </div>
-        <div class="h-bar" style="margin-top:4px" id="heroBars">
+
+        <!-- Resource bars: CPU / RAM / DISK -->
+        <div class="h-bar" style="margin-top:6px" id="heroBars">
           <div class="hb-r"><span class="hb-l">CPU</span><div class="hb-t"><div class="hb-f b" id="heroBarCpu" style="width:0%"></div></div><span class="hb-v" id="heroValCpu">--%</span></div>
           <div class="hb-r"><span class="hb-l">RAM</span><div class="hb-t"><div class="hb-f g" id="heroBarRam" style="width:0%"></div></div><span class="hb-v" id="heroValRam">--%</span></div>
           <div class="hb-r"><span class="hb-l">DISK</span><div class="hb-t"><div class="hb-f cy" id="heroBarDisk" style="width:0%"></div></div><span class="hb-v" id="heroValDisk">--%</span></div>
-          <div class="hb-r"><span class="hb-l">NET</span><div class="hb-t"><div class="hb-f am" id="heroBarNet" style="width:0%"></div></div><span class="hb-v" id="heroValNet">--%</span></div>
         </div>
+
+        <!-- Internal Load chart -->
+        <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">INTERNAL LOAD</span><span class="h-div-l"></span></div>
+        <div style="font-family:var(--fm);font-size:8px;letter-spacing:1.5px;color:var(--t5);margin-bottom:4px">CPU+RAM (6h)</div>
         <div class="h-wave"><svg viewBox="0 0 260 30" preserveAspectRatio="none"><path class="wf" d="M0,30 L0,18 10,16 20,20 30,13 40,17 50,10 60,14 70,8 80,12 90,6 100,11 110,16 120,12 130,18 140,14 150,9 160,13 170,6 180,11 190,15 200,10 210,14 220,8 230,12 240,16 250,11 260,14 260,30Z"/><polyline class="wl" points="0,18 10,16 20,20 30,13 40,17 50,10 60,14 70,8 80,12 90,6 100,11 110,16 120,12 130,18 140,14 150,9 160,13 170,6 180,11 190,15 200,10 210,14 220,8 230,12 240,16 250,11 260,14"/></svg></div>
+
+        <!-- Bottom stats strip -->
+        <div class="h-div" style="margin-top:2px"><span class="h-div-l"></span><span class="h-div-t">SUMMARY</span><span class="h-div-l"></span></div>
+        <div style="display:flex;gap:16px;font-family:var(--fm);font-size:10px;letter-spacing:1px;color:var(--t3)">
+          <span>ACTIVE NODES <b style="color:var(--t);font-family:var(--fd);font-weight:800;font-size:13px" id="hActiveN">--</b></span>
+          <span>ALERTS <b style="color:var(--r);font-family:var(--fd);font-weight:800;font-size:13px" id="hAlertN">--</b></span>
+        </div>
+        <div style="font-family:var(--fm);font-size:9px;letter-spacing:1.5px;color:var(--t4);margin-top:2px">TOP PRESSURE: <b style="color:var(--t2);font-weight:700" id="hTopPressure">--</b></div>
+
         <div class="h-ghost">HASH:SHA512 // CACHE:HIT<br>FIREWALL:ACTIVE // NODE:SYNC<br>ROUTE:OPTIMIZED</div>
       </div>
       <div class="h-center">
@@ -921,9 +941,12 @@ function rSum(){
   setBar('heroBarCpu','heroValCpu',avgCpu);
   setBar('heroBarRam','heroValRam',avgRam);
   setBar('heroBarDisk','heroValDisk',avgDisk);
-  /* Net bar: normalize as percentage of max reasonable bandwidth */
-  const totalNet=bwUp+bwDn;const netPct=Math.min(100,Math.round(totalNet/1073741824*100));
-  setBar('heroBarNet','heroValNet',netPct);
+  /* Active nodes & alerts */
+  const hAN=$('hActiveN');if(hAN)hAN.textContent=onC;
+  const hAL=$('hAlertN');if(hAL)hAL.textContent=offC;
+  /* Top pressure: which resource is highest */
+  const hTP=$('hTopPressure');
+  if(hTP){const pressures=[{n:'CPU',v:avgCpu},{n:'RAM',v:avgRam},{n:'DISK',v:avgDisk}];pressures.sort((a,b)=>b.v-a.v);hTP.textContent=pressures[0].n}
   /* Bandwidth display */
   const fSplit=fS(bwUp).split(' ');$('hNetUp').textContent=fSplit[0];$('hNetUpU').textContent=fSplit[1]||'MB/s';
   const fSplit2=fS(bwDn).split(' ');$('hNetDn').textContent=fSplit2[0];$('hNetDnU').textContent=fSplit2[1]||'MB/s';
