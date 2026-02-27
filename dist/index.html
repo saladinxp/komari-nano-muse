@@ -460,7 +460,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
         <div class="hs"><span class="hs-d on"></span><span class="hs-k">SYS LINK</span><span class="hs-v" id="sysLink">SYNC</span></div>
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">LOAD</span><span class="h-div-l"></span></div>
         <div style="display:flex;align-items:center;gap:14px">
-          <div class="h-ring-wrap"><svg viewBox="0 0 100 100"><circle class="rg-base" cx="50" cy="50" r="46"/><circle class="rg-track" cx="50" cy="50" r="46"/><circle class="rg-inner" cx="50" cy="50" r="38"/></svg><svg viewBox="0 0 100 100" style="position:absolute;inset:0"><text x="50" y="45" text-anchor="middle" dominant-baseline="central" font-family="var(--fd)" font-weight="800" font-size="18" fill="var(--t)" id="hUptime">--</text><text x="50" y="62" text-anchor="middle" font-family="var(--fm)" font-size="7" letter-spacing="2" fill="var(--t4)">UPTIME%</text></svg></div>
+          <div class="h-ring-wrap"><svg viewBox="0 0 100 100"><circle class="rg-base" cx="50" cy="50" r="46"/><circle class="rg-track" cx="50" cy="50" r="46"/><circle class="rg-inner" cx="50" cy="50" r="38"/></svg><svg viewBox="0 0 100 100" style="position:absolute;inset:0"><text x="50" y="45" text-anchor="middle" dominant-baseline="central" font-family="var(--fd)" font-weight="800" font-size="18" fill="var(--t)" id="hScore">--</text><text x="50" y="62" text-anchor="middle" font-family="var(--fm)" font-size="7" letter-spacing="2" fill="var(--t4)">SCORE</text></svg></div>
           <div style="display:flex;flex-direction:column;gap:4px">
             <div class="hs"><span class="hs-k">AVG CPU</span><span class="hs-v" id="hAvgCpu">--%</span></div>
             <div class="hs"><span class="hs-k">AVG RAM</span><span class="hs-v" id="hAvgRam">--%</span></div>
@@ -719,8 +719,11 @@ function rSum(){
   const offC=total-onC;onN=onC||1;
   const avgCpu=Math.round(cpuS/onN),avgRam=Math.round(ramS/onN),avgDisk=Math.round(diskS/onN);
   $('hAvgCpu').textContent=avgCpu+'%';$('hAvgRam').textContent=avgRam+'%';$('hPeak').textContent=Math.round(peakCpu)+'%';
-  const upPct=total?((onC/total)*100).toFixed(1):'--';
-  $('hUptime').textContent=upPct;
+  /* Fleet Health Score: 100 minus weighted resource usage (CPU 40%, RAM 35%, Disk 25%) */
+  const healthScore=total&&onC?Math.max(0,Math.min(100,
+    100-(avgCpu*0.4+avgRam*0.35+avgDisk*0.25)
+  )).toFixed(1):'--';
+  $('hScore').textContent=healthScore;
   /* Sync Ring */
   const syncEl=$('syncRing');const syncPctEl=$('syncPct');
   if(syncEl&&total){const pct=onC/total*100;const circ=2*Math.PI*105;syncEl.style.strokeDashoffset=(circ-(circ*pct/100)).toFixed(1);if(syncPctEl)syncPctEl.textContent=pct.toFixed(0)+'%'}
