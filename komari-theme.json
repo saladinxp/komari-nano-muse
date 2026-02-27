@@ -5,7 +5,7 @@
     "version": "0.1.1",
     "author": "Miuler",
     "url": "https://github.com/saladinxp/komari-nano-muse",
-    "preview": "dist/preview.png",
+    "preview": "preview.png",
     "configuration": {
         "type": "managed",
         "name": "[ NANOMUSE ] 主题配置",
