@@ -496,18 +496,31 @@ function conWS(){
   try{
     const p=location.protocol==='https:'?'wss:':'ws:';
     S.ws=new WebSocket(p+'//'+location.host+'/api/clients');
-    S.ws.onopen=()=>{S.wsRetries=0;S.ws.send('get');$('wsStatus').textContent='UPDATING ...';$('sysLink').textContent='ACTIVE';$('rightStatus').textContent='STATUS — ACTIVE'};
+    S.ws.onopen=()=>{S.wsRetries=0;S.ws.send('get');$('wsStatus').textContent='UPDATING ...';$('sysLink').textContent='ACTIVE';$('rightStatus').textContent='STATUS — ACTIVE';if(S._wsPoll)clearInterval(S._wsPoll);S._wsPoll=setInterval(()=>{if(S.ws&&S.ws.readyState===1)S.ws.send('get')},1000)};
     S.ws.onmessage=e=>{
-      try{const raw=JSON.parse(e.data);
-        // Unwrap {status,data:{online,data}} format
-        const d=raw.data||raw;
-        if(d.online)S.onlineSet=new Set(d.online);
-        if(d.data){for(const[k,v]of Object.entries(d.data))S.liveData[k]=flatLive(v)}
+      try{const m=JSON.parse(e.data);
+        /* Match PRTS exactly: server sends {status:'success',data:{online:[],data:{}}} */
+        let payload=null;
+        if(m.status==='success'&&m.data){
+          /* Standard Komari envelope */
+          payload=m.data;
+        }else if(Array.isArray(m.online)){
+          /* Raw payload without status wrapper */
+          payload=m;
+        }else if(m.data&&Array.isArray(m.data.online)){
+          /* data wrapper without status field */
+          payload=m.data;
+        }
+        if(!payload){console.warn('[NM] WS unknown format',Object.keys(m));return}
+        S.onlineSet=new Set(payload.online||[]);
+        if(payload.data&&typeof payload.data==='object'){
+          for(const[k,v]of Object.entries(payload.data))S.liveData[k]=flatLive(v);
+        }
         uCards();rSum();
         if(S.detailUUID)uDetLive();
       }catch(er){console.error('[NM]',er)}
     };
-    S.ws.onclose=()=>{$('wsStatus').textContent='RECONNECT ...';reWS()};
+    S.ws.onclose=()=>{if(S._wsPoll)clearInterval(S._wsPoll);$('wsStatus').textContent='RECONNECT ...';reWS()};
     S.ws.onerror=()=>{S.ws.close()};
   }catch(e){reWS()}
 }
