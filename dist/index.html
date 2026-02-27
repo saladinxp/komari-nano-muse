@@ -314,7 +314,12 @@ body{
 .ds-v.offline{color:var(--r);text-shadow:0 0 10px rgba(255,77,79,0.4)}
 .ds-v.st-active{color:var(--g);text-shadow:0 0 8px rgba(34,197,94,0.3)}.ds-v.st-stable{color:var(--cyan)}.ds-v.st-warning{color:var(--am);text-shadow:0 0 8px rgba(234,179,8,0.3)}.ds-v.st-critical{color:var(--r);text-shadow:0 0 8px rgba(255,77,79,0.3)}
 .ds-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
-.ds-dot.on{background:var(--g);box-shadow:0 0 10px rgba(34,197,94,0.6)}.ds-dot.off{background:var(--r);box-shadow:0 0 8px rgba(255,77,79,0.5)}
+.ds-dot.on{background:var(--g);box-shadow:0 0 10px rgba(34,197,94,0.6);animation:dot-breathe 2.5s ease-in-out infinite}
+.ds-dot.off{background:var(--r);box-shadow:0 0 8px rgba(255,77,79,0.5);animation:dot-breathe-r 2s ease-in-out infinite}
+@keyframes dot-breathe{0%,100%{box-shadow:0 0 6px rgba(34,197,94,0.4)}50%{box-shadow:0 0 14px rgba(34,197,94,0.8),0 0 4px rgba(34,197,94,1)}}
+@keyframes dot-breathe-r{0%,100%{box-shadow:0 0 5px rgba(255,77,79,0.3)}50%{box-shadow:0 0 12px rgba(255,77,79,0.7),0 0 4px rgba(255,77,79,0.9)}}
+/* Health value in strip — extra emphasis */
+.ds-v.ds-health{font-size:20px;font-weight:900;text-shadow:0 0 16px currentColor,0 0 4px currentColor}
 /* Mini core echo */
 .det-core-echo{position:absolute;right:24px;top:50%;transform:translateY(-50%);width:44px;height:44px;opacity:.2}
 .det-core-echo svg{width:100%;height:100%}
@@ -334,6 +339,9 @@ body{
 .det-gauge.highlight .det-gauge-lbl{color:var(--r);font-weight:700}
 .det-gauge.warning{border-color:rgba(234,179,8,0.25);background:rgba(255,252,240,0.5);box-shadow:0 2px 16px rgba(234,179,8,0.08),inset 0 1px 0 rgba(255,255,255,0.5)}
 .det-gauge.warning .det-gauge-lbl{color:var(--am);font-weight:700}
+/* Peak gauge: highest load gets subtle emphasis (even below warning threshold) */
+.det-gauge.peak-gauge:not(.highlight):not(.warning){border-color:rgba(0,216,255,0.3);box-shadow:0 2px 12px rgba(59,130,246,0.06),0 1px 3px rgba(0,0,0,0.03),inset 0 1px 0 rgba(255,255,255,0.6),0 0 16px rgba(0,216,255,0.06)}
+.det-gauge.peak-gauge:not(.highlight):not(.warning) .det-gauge-lbl{color:var(--blue);font-weight:700}
 .det-gauge-arc{position:relative;width:150px;height:82px;margin:0 auto 8px;overflow:hidden}
 .det-gauge-arc svg{width:150px;height:82px}
 .det-ga-bg{fill:none;stroke:rgba(148,163,184,0.15);stroke-width:8;stroke-linecap:round}
@@ -373,6 +381,9 @@ body{
 .chart-label::before{content:'';width:3px;height:10px;border-radius:1.5px;background:var(--cyan)}
 .chart-cur{position:absolute;top:16px;right:18px;font-family:var(--fd);font-size:15px;font-weight:800;color:var(--t)}
 .chart-cur span{font-family:var(--fm);font-size:9px;color:var(--t4);margin-left:2px}
+/* Chart pulse ring — "alive" indicator on current value */
+.chart-pulse{position:absolute;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--blue);transform:translate(-50%,-50%);pointer-events:none;animation:chart-pulse-ring 2.5s ease-in-out infinite;z-index:2}
+@keyframes chart-pulse-ring{0%,100%{opacity:.3;transform:translate(-50%,-50%) scale(1)}50%{opacity:.7;transform:translate(-50%,-50%) scale(1.6)}}
 
 /* ═══ STABILITY PAGE ═══ */
 .stab-ov{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0}
@@ -983,7 +994,7 @@ function rDetInfo(node,uuid){
     <div class="ds-cell ds-name"><div class="ds-name-v"><span class="ds-dot ${on?'on':'off'}"></span>${esc(node.name||uuid)}</div><div class="ds-name-uuid">${esc(uuid.slice(0,8).toUpperCase())}</div></div>
     <div class="ds-cell"><div class="ds-k">STATUS</div><div class="ds-v ${on?'online':'offline'}">${on?'ONLINE':'OFFLINE'}</div></div>
     <div class="ds-cell"><div class="ds-k">GRADE</div><div class="ds-v ${grade.cls}">${grade.text}</div></div>
-    <div class="ds-cell"><div class="ds-k">HEALTH</div><div class="ds-v" style="color:${on?(health>=80?'var(--g)':health>=60?'var(--cyan)':health>=40?'var(--am)':'var(--r)'):'var(--t4)'}">${on?health+'%':'--'}</div></div>
+    <div class="ds-cell"><div class="ds-k">HEALTH</div><div class="ds-v ds-health" style="color:${on?(health>=80?'var(--g)':health>=60?'var(--cyan)':health>=40?'var(--am)':'var(--r)'):'var(--t4)'}">${on?health+'%':'--'}</div></div>
     <div class="ds-cell"><div class="ds-k">LATENCY</div><div class="ds-v" style="color:var(--cyan)">--</div></div>
     <div class="ds-cell"><div class="ds-k">PACKET LOSS</div><div class="ds-v" style="color:var(--cyan)">--</div></div>
     <div class="det-core-echo"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="16" class="dce-ring"/><circle cx="18" cy="18" r="11" class="dce-inner"/><circle cx="18" cy="18" r="2" class="dce-dot"/></svg></div>
@@ -1095,10 +1106,15 @@ function uDetLive(){
     const color=v>=80?'var(--r)':v>=50?'var(--am)':'var(--blue)';
     if(fill){fill.style.strokeDashoffset=on?off.toFixed(1):arcLen.toFixed(1);fill.style.stroke=color}
     if(vEl){vEl.innerHTML=on?v+'<span class="det-gauge-unit">%</span>':'--';vEl.style.color=on&&v>=80?'var(--r)':on&&v>=60?'var(--am)':'#1e293b'}
-    g.classList.remove('highlight','warning');
+    g.classList.remove('highlight','warning','peak-gauge');
     if(on&&v>=80)g.classList.add('highlight');
     else if(on&&v>=60)g.classList.add('warning');
   });
+  /* Smart emphasis: highest-load gauge gets extra border glow even below threshold */
+  if(on){
+    const maxVal=Math.max(...vals);const maxIdx=vals.indexOf(maxVal);
+    if(maxVal>=10&&gauges[maxIdx]){gauges[maxIdx].classList.add('peak-gauge')}
+  }
   /* Update status strip cells */
   const strip=document.querySelector('#pg-detail .det-strip');
   if(strip){
@@ -1192,12 +1208,19 @@ function dCh(canvasId,opts){
     /* Current value label on the right */
     ctx.font='bold 10px Outfit';ctx.fillStyle=color;ctx.textAlign='left';
     ctx.fillText(opts.max?lv.toFixed(0):lv.toFixed(1),lp.x+8,lp.y+3);
-    /* Update chart-cur element if it exists */
+    /* Pulse ring overlay — CSS animated "alive" dot */
     const wrap=canvas.closest('.chart-wrap');
     if(wrap){
       let cur=wrap.querySelector('.chart-cur');
       if(!cur){cur=document.createElement('div');cur.className='chart-cur';wrap.appendChild(cur)}
       cur.innerHTML=(opts.max?lv.toFixed(0):lv.toFixed(1))+'<span>'+(opts.label||'%')+'</span>';
+      /* Position a pulse ring at the current value point */
+      let pulse=wrap.querySelector('.chart-pulse');
+      if(!pulse){pulse=document.createElement('div');pulse.className='chart-pulse';wrap.appendChild(pulse)}
+      const canvasRect=canvas.getBoundingClientRect();const wrapRect=wrap.getBoundingClientRect();
+      pulse.style.left=(lp.x+canvas.offsetLeft)+'px';
+      pulse.style.top=(lp.y+(canvasRect.top-wrapRect.top))+'px';
+      pulse.style.borderColor=color;
     }
   }
 }
