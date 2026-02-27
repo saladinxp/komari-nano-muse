@@ -642,7 +642,7 @@ function uCards(){
     const hc=health>60?'g':health>30?'am':'r';
     const circ=2*Math.PI*21;const off=circ-(circ*health/100);
     const ring=card.querySelector('.nc-ring-fg');
-    if(ring){ring.className='nc-ring-fg '+hc;ring.setAttribute('stroke-dashoffset',off.toFixed(1))}
+    if(ring){ring.setAttribute('class','nc-ring-fg '+hc);ring.setAttribute('stroke-dashoffset',off.toFixed(1))}
     const rv=card.querySelector('.nc-ring-val');
     if(rv){rv.textContent=health;rv.style.color='var(--'+hc+')'}
     /* Update net */
@@ -652,9 +652,9 @@ function uCards(){
     }
     /* Update status dot */
     const dot=card.querySelector('.nc-dot');
-    if(dot){dot.className='nc-dot '+(on?'on':'off')}
+    if(dot){dot.setAttribute('class','nc-dot '+(on?'on':'off'))}
     const badge=card.querySelector('.nc-badge');
-    if(badge){badge.className='nc-badge '+(on?'on':'off');badge.textContent=on?'ONLINE':'OFFLINE'}
+    if(badge){badge.setAttribute('class','nc-badge '+(on?'on':'off'));badge.textContent=on?'ONLINE':'OFFLINE'}
     if(on)card.classList.remove('off');else card.classList.add('off');
   });
 }
