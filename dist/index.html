@@ -311,7 +311,7 @@ body{
 .an{animation:fadeUp .7s cubic-bezier(.16,1,.3,1) forwards;opacity:0}
 .d1{animation-delay:.1s}.d2{animation-delay:.15s}.d3{animation-delay:.2s}.d4{animation-delay:.25s}.d5{animation-delay:.3s}.d6{animation-delay:.35s}.d7{animation-delay:.4s}.d8{animation-delay:.45s}.d9{animation-delay:.5s}
 /* Boot sequence */
-.boot-overlay{position:fixed;inset:0;z-index:9999;background:#0a0e14;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;transition:opacity 1.2s ease,visibility 1.2s}
+.boot-overlay{position:fixed;inset:0;z-index:9999;background:rgba(10,14,20,1);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;transition:opacity .8s ease,visibility .8s}
 .boot-overlay.done{opacity:0;visibility:hidden;pointer-events:none}
 .boot-ring-wrap{position:relative;width:280px;height:280px}
 .boot-ring-wrap svg{width:100%;height:100%}
@@ -324,9 +324,8 @@ body{
 .boot-pct{font-family:var(--fd);font-weight:900;font-size:72px;color:#fff;line-height:1;text-shadow:0 0 60px rgba(0,216,255,0.3),0 0 20px rgba(0,216,255,0.15)}
 .boot-lbl{font-family:var(--fm);font-size:11px;letter-spacing:6px;color:var(--cyan);font-weight:700;margin-top:6px}
 .boot-status{font-family:var(--fm);font-size:9px;letter-spacing:3px;color:rgba(148,163,184,0.5);margin-top:8px}
-/* Page hidden during boot */
-.boot-hidden{opacity:0;transition:opacity .8s ease .2s}
-.boot-revealed{opacity:1}
+/* Main content starts visible but behind overlay */
+.boot-under{opacity:1}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:2px}
 @media(max-width:1100px){.hero{grid-template-columns:1fr;min-height:280px}.h-left,.h-right{display:none}}
 @media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:16px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr)}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}}
@@ -354,7 +353,7 @@ body{
   <div class="boot-status" id="bootStatus">INITIALIZING NANO CORE ...</div>
 </div>
 
-<div class="boot-hidden" id="mainContent">
+<div class="boot-under" id="mainContent">
 <div class="bp-grid"></div>
 <svg class="circuit-lines" viewBox="0 0 1200 800" fill="none" preserveAspectRatio="none">
   <line x1="0" y1="120" x2="1200" y2="120" stroke="#3b82f6" stroke-width="0.5" stroke-dasharray="8 16"/>
@@ -1128,28 +1127,28 @@ function initHeartbeat(){
 /* ── Init ── */
 async function init(){
   try{
-    /* Start boot animation IMMEDIATELY - don't wait for data */
-    const bootPromise = bootSequence();
+    const booted=sessionStorage.getItem('nm-booted');
+    if(booted){
+      const ov=$('bootOverlay');if(ov)ov.style.display='none';
+    }
+    /* Start boot animation IMMEDIATELY */
+    const bootPromise=booted?Promise.resolve():bootSequence();
     /* Fetch data in parallel */
     await Promise.all([fetchP(),fetchN(),fetchMe()]);
     rGF();render();conWS();hRoute();
     initParticles();initHeartbeat();
     /* Wait for boot to finish */
     await bootPromise;
-    /* Reveal main page */
-    const overlay=$('bootOverlay');
-    const main=$('mainContent');
-    if(main){main.classList.remove('boot-hidden');main.classList.add('boot-revealed')}
-    await new Promise(r=>setTimeout(r,200));
-    if(overlay)overlay.classList.add('done');
-    sessionStorage.setItem('nm-booted','1');
-    /* Update sync ring to actual value */
+    if(!booted){
+      const overlay=$('bootOverlay');
+      if(overlay)overlay.classList.add('done');
+      sessionStorage.setItem('nm-booted','1');
+    }
     rSum();
   }catch(e){
     console.error('Init failed:',e);
-    const overlay=$('bootOverlay');const main=$('mainContent');
-    if(main){main.classList.remove('boot-hidden');main.classList.add('boot-revealed')}
-    if(overlay)overlay.classList.add('done');
+    const overlay=$('bootOverlay');
+    if(overlay){overlay.classList.add('done')}
   }
 }
 function bootSequence(){
@@ -1158,48 +1157,52 @@ function bootSequence(){
     const statusEl=$('bootStatus');
     const overlay=$('bootOverlay');
     const bootCirc=2*Math.PI*120;
-    /* Simulate boot: 0→100 over 3 seconds, smooth */
     const duration=3000;const start=performance.now();
     const phases=[
       {at:0,text:'INITIALIZING NANO CORE ...'},
-      {at:0.2,text:'CONNECTING TO NODE ARRAY ...'},
-      {at:0.5,text:'SYNCHRONIZING DATA ...'},
-      {at:0.8,text:'CORE ONLINE'}
+      {at:0.15,text:'CONNECTING TO NODE ARRAY ...'},
+      {at:0.4,text:'SYNCHRONIZING DATA ...'},
+      {at:0.75,text:'CORE ONLINE'}
     ];
     let phaseIdx=0;
     function tick(now){
       const elapsed=now-start;const progress=Math.min(elapsed/duration,1);
-      /* Ease: slow start, accelerate, slow end */
+      /* ease-in-out quad */
       const eased=progress<0.5?2*progress*progress:1-Math.pow(-2*progress+2,2)/2;
-      /* Boot always goes to ~88% (visual target) */
       const target=88;
       const current=target*eased;
-      const pctText=Math.round(current)+'%';
+      /* Update boot ring */
       if(bootRing)bootRing.style.strokeDashoffset=(bootCirc-(bootCirc*current/100)).toFixed(1);
-      if(bootPct)bootPct.textContent=pctText;
-      /* Phase status text */
+      if(bootPct)bootPct.textContent=Math.round(current)+'%';
+      /* Status text */
       while(phaseIdx<phases.length&&progress>=phases[phaseIdx].at){
         if(statusEl)statusEl.textContent=phases[phaseIdx].text;
         phaseIdx++;
       }
-      /* Gradually brighten overlay from pure black to slightly lighter */
+      /* KEY: Overlay opacity decreases proportionally
+         0% progress → opacity 1.0 (full black)
+         50% progress → opacity 0.5 (character silhouette visible)
+         88% progress → opacity 0.15 (character clear, UI bleeding through)
+         100% → opacity 0 (fully revealed) */
       if(overlay){
-        const brightness=Math.min(progress*0.15,0.12);
-        overlay.style.background=`rgba(10,14,20,${1-brightness})`;
+        const overlayOpacity=Math.max(0,1-progress*1.1);
+        overlay.style.background=`rgba(10,14,20,${overlayOpacity.toFixed(3)})`;
+        /* Also fade the boot ring elements as page becomes visible */
+        if(progress>0.7){
+          const ringFade=1-((progress-0.7)/0.3);
+          const ringWrap=overlay.querySelector('.boot-ring-wrap');
+          const statusTxt=overlay.querySelector('.boot-status');
+          if(ringWrap)ringWrap.style.opacity=ringFade.toFixed(2);
+          if(statusTxt)statusTxt.style.opacity=ringFade.toFixed(2);
+        }
       }
       if(progress<1){requestAnimationFrame(tick)}
-      else{setTimeout(resolve,500)}
+      else{setTimeout(resolve,300)}
     }
     requestAnimationFrame(tick);
   });
 }
 function render(){rSum();rCards()}
-/* Check if boot already played this session */
-const skipBoot=sessionStorage.getItem('nm-booted');
-if(skipBoot){
-  const ov=$('bootOverlay');if(ov)ov.style.display='none';
-  const mc=$('mainContent');if(mc){mc.classList.remove('boot-hidden');mc.classList.add('boot-revealed')}
-}
 init();
 
 })();
