@@ -157,9 +157,9 @@ body{
 .sr-outer{fill:none;stroke:rgba(0,216,255,0.12);stroke-width:1;stroke-dasharray:3 9;animation:ring-spin 25s linear infinite;transform-origin:center}
 .sr-outer2{fill:none;stroke:rgba(0,216,255,0.06);stroke-width:0.8;stroke-dasharray:2 12;animation:ring-spin 40s linear infinite;transform-origin:center}
 .sync-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
-.sync-pct{font-family:var(--fd);font-weight:900;font-size:64px;color:var(--t);line-height:1;text-shadow:0 0 40px rgba(0,216,255,0.2),0 2px 4px rgba(0,0,0,0.05)}
+.sync-pct{font-family:var(--fd);font-weight:900;font-size:69px;color:var(--t);line-height:1;text-shadow:0 0 40px rgba(0,216,255,0.2),0 2px 4px rgba(0,0,0,0.06),inset 0 -1px 0 rgba(0,0,0,0.03)}
 .sync-lbl{font-family:var(--fm);font-size:11px;letter-spacing:6px;color:var(--cyan);font-weight:700;margin-top:4px}
-.sync-sub{font-family:var(--fm);font-size:9px;letter-spacing:3px;color:var(--t3);margin-top:10px;position:relative;padding:6px 16px;font-weight:600;background:rgba(0,216,255,0.04);border:1px solid rgba(0,216,255,0.1);border-radius:4px}
+.sync-sub{font-family:var(--fm);font-size:9px;letter-spacing:4px;color:var(--t2);margin-top:10px;position:relative;padding:6px 16px;font-weight:600;background:rgba(0,216,255,0.04);border:1px solid rgba(0,216,255,0.1);border-radius:4px}
 .h-center-lbl{font-family:var(--fm);font-size:7px;letter-spacing:2px;color:var(--t5);opacity:.35;position:absolute}
 /* Right panel */
 .h-right{padding:24px 28px 20px 20px;display:flex;flex-direction:column;gap:10px;align-items:flex-end;text-align:right;
@@ -187,7 +187,7 @@ body{
 .fleet-cell:nth-child(2)::after{background:var(--g);box-shadow:0 0 12px rgba(var(--gr),.5)}
 .fleet-cell:nth-child(3)::after{background:var(--r);box-shadow:0 0 12px rgba(var(--rr),.4)}
 .fleet-cell:nth-child(4)::after{background:var(--am);box-shadow:0 0 12px rgba(var(--amr),.4)}
-.fleet-val{font-family:var(--fd);font-weight:800;font-size:34px;color:var(--t);line-height:1}
+.fleet-val{font-family:var(--fd);font-weight:800;font-size:39px;color:var(--t);line-height:1}
 .fleet-lbl{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--t4);font-weight:600}
 
 /* ═══ CONTENT ═══ */
@@ -195,7 +195,7 @@ body{
 #pg-detail .content-area,#pg-stability .content-area{background:rgba(225,232,242,0.55);border-radius:0 0 18px 18px;min-height:80vh}
 .sec-div{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .sd-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(148,163,184,0.18),transparent)}.sd-line.r{background:linear-gradient(90deg,transparent,rgba(148,163,184,0.18))}
-.sd-label{font-family:var(--fm);font-size:10px;letter-spacing:4px;color:var(--t3);white-space:nowrap;display:flex;align-items:center;gap:6px}
+.sd-label{font-family:var(--fm);font-size:11px;letter-spacing:4px;color:var(--t3);white-space:nowrap;display:flex;align-items:center;gap:6px}
 .sd-dot{width:5px;height:5px;background:var(--cyan);opacity:.6;transform:rotate(45deg)}
 .sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
 .sh-l{display:flex;align-items:center;gap:10px}
@@ -456,7 +456,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       <div class="hero-top">
       <div class="scan-line"></div>
       <div class="h-left an d2">
-        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:16px;height:2px;border-radius:1px;background:var(--cyan);box-shadow:0 0 6px var(--cyan-g)"></span><span style="font-family:var(--fr);font-size:9px;letter-spacing:3px;color:var(--t4);font-weight:600">FLEET STATUS</span></div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:16px;height:2px;border-radius:1px;background:var(--cyan);box-shadow:0 0 6px var(--cyan-g)"></span><span style="font-family:var(--fr);font-size:10px;letter-spacing:3px;color:var(--t4);font-weight:600">FLEET STATUS</span></div>
         <div class="hs"><span class="hs-d on"></span><span class="hs-k">SYS LINK</span><span class="hs-v" id="sysLink">SYNC</span></div>
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">LOAD</span><span class="h-div-l"></span></div>
         <div style="display:flex;align-items:center;gap:14px">
@@ -500,7 +500,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
         <span class="h-center-lbl" style="left:50%;bottom:10px;transform:translateX(-50%)">TCP/443 :: TLS1.3 :: UPLINK:STABLE</span>
       </div>
       <div class="h-right an d3">
-        <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><span style="font-family:var(--fm);font-size:10px;letter-spacing:2.5px;color:var(--t4)">NANO CORE</span><span style="width:16px;height:2px;border-radius:1px;background:var(--am)"></span></div>
+        <div style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><span style="font-family:var(--fm);font-size:11px;letter-spacing:2.5px;color:var(--t4)">NANO CORE</span><span style="width:16px;height:2px;border-radius:1px;background:var(--am)"></span></div>
         <div style="font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--t4);text-align:right" id="rightStatus">STATUS — SYNC</div>
         <div class="hb-box"><svg viewBox="0 0 200 52" preserveAspectRatio="none"><polyline class="hb-line" id="hbL" points="0,26 18,26 26,26 30,8 35,44 40,16 45,36 50,26 72,26 82,26 87,10 92,42 97,18 102,34 107,26 130,26 145,26 150,6 155,46 160,14 165,38 170,26 200,26"/><polyline class="hb-line2" points="0,30 20,30 28,30 33,12 38,40 43,20 48,32 53,28 75,28 85,28 90,14 95,38 100,22 105,30 110,28 135,28 148,28 153,10 158,42 163,18 168,34 173,28 200,28"/></svg></div>
         <div class="h-div" style="justify-content:flex-end"><span class="h-div-l" style="background:linear-gradient(90deg,transparent,rgba(148,163,184,0.2))"></span><span class="h-div-t">REALTIME</span></div>
