@@ -82,7 +82,7 @@ body{
 .hc-br{bottom:14px;right:14px;border-bottom:1.5px solid var(--cyan);border-right:1.5px solid var(--cyan);filter:drop-shadow(0 0 3px var(--cyan-g))}
 
 /* ═══ TOP BAR ═══ */
-.topbar{display:flex;align-items:center;padding:0 36px;height:60px;position:relative;border-bottom:1px solid rgba(59,130,246,0.08)}
+.topbar{display:flex;align-items:center;padding:0 36px;height:60px;position:relative;border-bottom:1px solid rgba(59,130,246,0.12);background:rgba(248,250,253,0.95);backdrop-filter:blur(12px)}
 .topbar::after{content:'';position:absolute;bottom:-1px;left:36px;right:36px;height:1px;
   background:linear-gradient(90deg,transparent,rgba(148,163,184,0.2) 10%,rgba(148,163,184,0.2) 90%,transparent)}
 .tb-logo{font-family:var(--fr);font-size:20px;font-weight:700;letter-spacing:3px;display:flex;align-items:center;gap:10px;min-width:180px}
@@ -159,6 +159,7 @@ body{
 
 /* ═══ CONTENT ═══ */
 .content-area{padding:20px 36px 28px}
+#pg-detail .content-area,#pg-stability .content-area{background:rgba(241,245,251,0.6);border-radius:0 0 18px 18px;min-height:80vh}
 .sec-div{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .sd-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(148,163,184,0.18),transparent)}.sd-line.r{background:linear-gradient(90deg,transparent,rgba(148,163,184,0.18))}
 .sd-label{font-family:var(--fm);font-size:10px;letter-spacing:4px;color:var(--t3);white-space:nowrap;display:flex;align-items:center;gap:6px}
@@ -218,8 +219,8 @@ body{
 
 /* ═══ DETAIL PAGE ═══ */
 .page{display:none}.page.active{display:block}
-.det-back{font-family:var(--fm);font-size:11px;letter-spacing:1px;color:var(--blue);cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:8px 0;transition:.2s}
-.det-back:hover{opacity:.7}
+.det-back{font-family:var(--fm);font-size:11px;letter-spacing:1px;color:var(--blue);cursor:pointer;display:inline-flex;align-items:center;gap:6px;padding:8px 16px;transition:.2s;background:rgba(59,130,246,0.06);border-radius:8px;border:1px solid rgba(59,130,246,0.1);font-weight:600}
+.det-back:hover{background:rgba(59,130,246,0.12);border-color:rgba(59,130,246,0.2)}
 .det-info{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
 .det-card{background:rgba(255,255,255,0.95);border:1px solid rgba(148,163,184,0.2);border-radius:14px;padding:18px 22px;box-shadow:0 2px 8px rgba(59,130,246,0.06),0 1px 3px rgba(0,0,0,0.04);border-left:3px solid var(--blue);transition:all .2s}
 .det-card:hover{box-shadow:0 4px 16px rgba(59,130,246,0.1),0 2px 6px rgba(0,0,0,0.06);transform:translateY(-1px)}
