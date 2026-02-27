@@ -100,8 +100,9 @@ body{
 .tb-btn:hover{border-color:var(--cyan);color:var(--cyan)}
 
 /* ═══ HERO ═══ */
-.hero{display:grid;grid-template-columns:300px 1fr 250px;min-height:440px;position:relative}
-.h-left{padding:28px 22px 24px 32px;display:flex;flex-direction:column;gap:8px;
+.hero{display:flex;flex-direction:column;position:relative}
+.hero-top{display:grid;grid-template-columns:280px 1fr 240px;min-height:380px;position:relative}
+.h-left{padding:24px 20px 20px 28px;display:flex;flex-direction:column;gap:8px;
   border-right:1.5px solid rgba(100,116,139,0.25);
   background:linear-gradient(135deg,rgba(215,226,240,0.75) 0%,rgba(222,232,244,0.6) 100%);position:relative}
 .h-left::before{content:'';position:absolute;inset:0;
@@ -138,9 +139,22 @@ body{
 .wl{fill:none;stroke:var(--cyan);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.45}
 .wf{fill:rgba(0,210,255,0.04)}
 .h-ghost{font-family:var(--fm);font-size:7px;letter-spacing:1.5px;color:var(--t5);opacity:.35;line-height:1.8;margin-top:auto}
-.h-center{position:relative;display:flex;align-items:flex-end;justify-content:center;padding-bottom:12px;overflow:hidden}
+/* Center: SYNC CORE */
+.h-center{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.sync-core{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px}
+.sync-ring-wrap{position:relative;width:200px;height:200px}
+.sync-ring-wrap svg{position:absolute;inset:0;width:100%;height:100%}
+.sr-bg{fill:none;stroke:rgba(148,163,184,0.12);stroke-width:3}
+.sr-fill{fill:none;stroke:var(--cyan);stroke-width:4;stroke-linecap:round;filter:drop-shadow(0 0 12px var(--cyan-g));transition:stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1)}
+.sr-inner{fill:none;stroke:rgba(59,130,246,0.15);stroke-width:1.5;stroke-dasharray:8 6;animation:ring-rev 20s linear infinite;transform-origin:center}
+.sr-outer{fill:none;stroke:rgba(0,210,255,0.1);stroke-width:1;stroke-dasharray:3 9;animation:ring-spin 25s linear infinite;transform-origin:center}
+.sync-val{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+.sync-pct{font-family:var(--fd);font-weight:900;font-size:48px;color:var(--t);line-height:1;text-shadow:0 0 30px rgba(0,210,255,0.15)}
+.sync-lbl{font-family:var(--fm);font-size:9px;letter-spacing:4px;color:var(--cyan);font-weight:700;margin-top:2px}
+.sync-sub{font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--t4);margin-top:8px}
 .h-center-lbl{font-family:var(--fm);font-size:7px;letter-spacing:2px;color:var(--t5);opacity:.35;position:absolute}
-.h-right{padding:28px 32px 24px 22px;display:flex;flex-direction:column;gap:10px;align-items:flex-end;text-align:right;
+/* Right panel */
+.h-right{padding:24px 28px 20px 20px;display:flex;flex-direction:column;gap:10px;align-items:flex-end;text-align:right;
   border-left:1.5px solid rgba(100,116,139,0.25);
   background:linear-gradient(225deg,rgba(215,226,240,0.75) 0%,rgba(222,232,244,0.6) 100%);position:relative}
 .h-right::before{content:'';position:absolute;inset:0;
@@ -156,6 +170,17 @@ body{
 .sr-d{width:5px;height:5px;border-radius:50%}.sr-d.g{background:var(--g);box-shadow:0 0 4px rgba(var(--gr),.4)}.sr-d.am{background:var(--am)}.sr-d.r{background:var(--r)}
 .sr-k{font-family:var(--fm);font-size:8.5px;letter-spacing:2px;color:var(--t4)}
 .sr-v{font-family:var(--fm);font-size:10px;font-weight:600;color:var(--t2)}
+/* Fleet Summary Strip */
+.fleet-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1.5px solid rgba(100,116,139,0.2)}
+.fleet-cell{padding:16px 24px;border-right:1px solid rgba(100,116,139,0.12);display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
+.fleet-cell:last-child{border-right:none}
+.fleet-cell::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:24px;height:2px;border-radius:1px}
+.fleet-cell:nth-child(1)::after{background:var(--cyan);box-shadow:0 0 8px var(--cyan-g)}
+.fleet-cell:nth-child(2)::after{background:var(--g);box-shadow:0 0 8px rgba(var(--gr),.4)}
+.fleet-cell:nth-child(3)::after{background:var(--r);box-shadow:0 0 8px rgba(var(--rr),.3)}
+.fleet-cell:nth-child(4)::after{background:var(--am);box-shadow:0 0 8px rgba(var(--amr),.3)}
+.fleet-val{font-family:var(--fd);font-weight:800;font-size:28px;color:var(--t);line-height:1}
+.fleet-lbl{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--t4);font-weight:600}
 
 /* ═══ CONTENT ═══ */
 .content-area{padding:20px 36px 28px}
@@ -187,7 +212,11 @@ body{
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 .nc{background:rgba(240,244,250,0.92);border:1.5px solid rgba(140,160,185,0.35);border-radius:16px;overflow:hidden;cursor:pointer;transition:all .4s cubic-bezier(.175,.885,.32,1.275);position:relative;
   box-shadow:0 2px 8px rgba(148,163,184,0.08),0 8px 24px rgba(148,163,184,0.04)}
-.nc:hover{transform:translateY(-5px);box-shadow:0 12px 32px rgba(59,130,246,0.08),0 4px 12px rgba(148,163,184,0.06);background:#fff}
+.nc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0;background:linear-gradient(90deg,var(--cyan),var(--blue));opacity:.6;transition:opacity .3s}
+.nc:hover::before{opacity:1;box-shadow:0 0 12px rgba(0,210,255,0.3)}
+.nc:hover{transform:translateY(-5px);box-shadow:0 12px 32px rgba(59,130,246,0.08),0 4px 12px rgba(148,163,184,0.06);background:rgba(248,250,253,0.98)}
+.nc.off::before{background:linear-gradient(90deg,var(--r),#ff6b8a);animation:pulse-glow 2s ease-in-out infinite}
+@keyframes pulse-glow{0%,100%{opacity:.4}50%{opacity:.9}}
 .nc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0;transition:opacity .4s ease;opacity:.7}
 .nc:hover::after{opacity:1}
 .nc:nth-child(6n+1)::after{background:var(--blue)}.nc:nth-child(6n+2)::after{background:var(--am)}.nc:nth-child(6n+3)::after{background:var(--g)}.nc:nth-child(6n+4)::after{background:#8b5cf6}.nc:nth-child(6n+5)::after{background:var(--r)}.nc:nth-child(6n+6)::after{background:var(--cyan)}
@@ -276,7 +305,7 @@ body{
 .d1{animation-delay:.1s}.d2{animation-delay:.15s}.d3{animation-delay:.2s}.d4{animation-delay:.25s}.d5{animation-delay:.3s}.d6{animation-delay:.35s}.d7{animation-delay:.4s}.d8{animation-delay:.45s}.d9{animation-delay:.5s}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:2px}
 @media(max-width:1100px){.hero{grid-template-columns:1fr;min-height:280px}.h-left,.h-right{display:none}}
-@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:16px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr)}.det-panels{grid-template-columns:1fr}}
+@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:16px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr)}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:480px){.stab-ov{grid-template-columns:1fr}}
 </style>
 </head>
@@ -335,15 +364,11 @@ body{
   <!-- ═══ DASHBOARD PAGE ═══ -->
   <div class="page active" id="pg-dashboard">
     <div class="hero">
+      <div class="hero-top">
       <div class="scan-line"></div>
       <div class="h-left an d2">
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="width:16px;height:2px;border-radius:1px;background:var(--cyan);box-shadow:0 0 6px var(--cyan-g)"></span><span style="font-family:var(--fr);font-size:9px;letter-spacing:3px;color:var(--t4);font-weight:600">FLEET STATUS</span></div>
         <div class="hs"><span class="hs-d on"></span><span class="hs-k">SYS LINK</span><span class="hs-v" id="sysLink">SYNC</span></div>
-        <div style="display:flex;gap:16px;align-items:baseline;margin:6px 0 2px">
-          <div style="display:flex;flex-direction:column;gap:1px"><div style="font-family:var(--fd);font-weight:700;font-size:22px;line-height:1" id="hTotal">-</div><div style="font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--t4)">TOTAL</div></div>
-          <div style="display:flex;flex-direction:column;gap:1px"><div style="font-family:var(--fd);font-weight:700;font-size:22px;line-height:1;color:var(--g)" id="hOnline">-</div><div style="font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--t4)">ONLINE</div></div>
-          <div style="display:flex;flex-direction:column;gap:1px"><div style="font-family:var(--fd);font-weight:700;font-size:22px;line-height:1;color:var(--r)" id="hOffline">-</div><div style="font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--t4)">OFFLINE</div></div>
-        </div>
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">LOAD</span><span class="h-div-l"></span></div>
         <div style="display:flex;align-items:center;gap:14px">
           <div class="h-ring-wrap"><svg viewBox="0 0 100 100"><circle class="rg-base" cx="50" cy="50" r="46"/><circle class="rg-track" cx="50" cy="50" r="46"/><circle class="rg-inner" cx="50" cy="50" r="38"/></svg><svg viewBox="0 0 100 100" style="position:absolute;inset:0"><text x="50" y="45" text-anchor="middle" dominant-baseline="central" font-family="var(--fd)" font-weight="800" font-size="18" fill="var(--t)" id="hUptime">--</text><text x="50" y="62" text-anchor="middle" font-family="var(--fm)" font-size="7" letter-spacing="2" fill="var(--t4)">UPTIME%</text></svg></div>
@@ -359,13 +384,26 @@ body{
           <div class="hb-r"><span class="hb-l">DISK</span><div class="hb-t"><div class="hb-f cy" id="heroBarDisk" style="width:0%"></div></div><span class="hb-v" id="heroValDisk">--%</span></div>
           <div class="hb-r"><span class="hb-l">NET</span><div class="hb-t"><div class="hb-f am" id="heroBarNet" style="width:0%"></div></div><span class="hb-v" id="heroValNet">--%</span></div>
         </div>
-        <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">BANDWIDTH</span><span class="h-div-l"></span></div>
-        <div style="display:flex;align-items:baseline;gap:6px"><span style="font-family:var(--fd);font-weight:800;font-size:28px;color:var(--blue)" id="hBw">--</span><span style="font-family:var(--fm);font-size:11px;color:var(--t4);letter-spacing:1px" id="hBwU">TB 本月用量</span></div>
         <div class="h-wave"><svg viewBox="0 0 260 30" preserveAspectRatio="none"><path class="wf" d="M0,30 L0,18 10,16 20,20 30,13 40,17 50,10 60,14 70,8 80,12 90,6 100,11 110,16 120,12 130,18 140,14 150,9 160,13 170,6 180,11 190,15 200,10 210,14 220,8 230,12 240,16 250,11 260,14 260,30Z"/><polyline class="wl" points="0,18 10,16 20,20 30,13 40,17 50,10 60,14 70,8 80,12 90,6 100,11 110,16 120,12 130,18 140,14 150,9 160,13 170,6 180,11 190,15 200,10 210,14 220,8 230,12 240,16 250,11 260,14"/></svg></div>
         <div class="h-ghost">HASH:SHA512 // CACHE:HIT<br>FIREWALL:ACTIVE // NODE:SYNC<br>ROUTE:OPTIMIZED</div>
       </div>
       <div class="h-center">
         <div class="particles-layer" id="ptLayer"></div>
+        <div class="sync-core">
+          <div class="sync-ring-wrap">
+            <svg viewBox="0 0 200 200">
+              <circle cx="100" cy="100" r="92" class="sr-outer"/>
+              <circle cx="100" cy="100" r="85" class="sr-bg"/>
+              <circle cx="100" cy="100" r="85" class="sr-fill" id="syncRing" style="stroke-dasharray:534;stroke-dashoffset:534;transform:rotate(-90deg);transform-origin:center"/>
+              <circle cx="100" cy="100" r="75" class="sr-inner"/>
+            </svg>
+            <div class="sync-val">
+              <div class="sync-pct" id="syncPct">--</div>
+              <div class="sync-lbl">SYNC RATE</div>
+            </div>
+          </div>
+          <div class="sync-sub" id="syncPhase">◇ DORMANT PHASE · 沉眠阶段</div>
+        </div>
         <span class="h-center-lbl" style="left:50%;bottom:10px;transform:translateX(-50%)">TCP/443 :: TLS1.3 :: UPLINK:STABLE</span>
       </div>
       <div class="h-right an d3">
@@ -385,6 +423,14 @@ body{
         <div class="h-sr"><span class="sr-d g"></span><span class="sr-k">JITTER</span><span class="sr-v" id="hJit">--</span></div>
         <div class="h-sr"><span class="sr-d am"></span><span class="sr-k">LOSS</span><span class="sr-v" id="hLoss">--</span></div>
         <div style="font-family:var(--fm);font-size:9px;letter-spacing:3px;color:var(--t4);margin-top:auto;display:flex;align-items:center;gap:6px;justify-content:flex-end"><div style="width:12px;height:2px;background:var(--blue)"></div><span id="wsStatus">CONNECTING ...</span></div>
+      </div>
+      </div>
+      <!-- Fleet Summary Strip -->
+      <div class="fleet-strip">
+        <div class="fleet-cell"><div class="fleet-val" id="fTotal">--</div><div class="fleet-lbl">TOTAL NODES</div></div>
+        <div class="fleet-cell"><div class="fleet-val" id="fUprate">--%</div><div class="fleet-lbl">ONLINE RATE</div></div>
+        <div class="fleet-cell"><div class="fleet-val" id="fAlerts">--</div><div class="fleet-lbl">ALERTS</div></div>
+        <div class="fleet-cell"><div class="fleet-val" id="fAvgLoad">--%</div><div class="fleet-lbl">AVG LOAD</div></div>
       </div>
     </div>
 
@@ -577,13 +623,18 @@ function rSum(){
     }
   });
   const offC=total-onC;onN=onC||1;
-  $('hTotal').textContent=total;
-  $('hOnline').textContent=onC;
-  $('hOffline').textContent=offC;
   const avgCpu=Math.round(cpuS/onN),avgRam=Math.round(ramS/onN),avgDisk=Math.round(diskS/onN);
   $('hAvgCpu').textContent=avgCpu+'%';$('hAvgRam').textContent=avgRam+'%';$('hPeak').textContent=Math.round(peakCpu)+'%';
   const upPct=total?((onC/total)*100).toFixed(1):'--';
   $('hUptime').textContent=upPct;
+  /* Sync Ring */
+  const syncEl=$('syncRing');const syncPctEl=$('syncPct');
+  if(syncEl&&total){const pct=onC/total*100;const circ=2*Math.PI*85;syncEl.style.strokeDashoffset=(circ-(circ*pct/100)).toFixed(1);if(syncPctEl)syncPctEl.textContent=pct.toFixed(0)+'%'}
+  /* Fleet Strip */
+  const fT=$('fTotal');if(fT)fT.textContent=total;
+  const fU=$('fUprate');if(fU)fU.textContent=total?(onC/total*100).toFixed(1)+'%':'--';
+  const fA=$('fAlerts');if(fA)fA.textContent=offC;
+  const fL=$('fAvgLoad');if(fL)fL.textContent=avgCpu+'%';
   /* Hero bars */
   const setBar=(id,vid,v)=>{const e=$(id);if(e)e.style.width=Math.min(100,v)+'%';const ve=$(vid);if(ve)ve.textContent=Math.round(v)+'%'};
   setBar('heroBarCpu','heroValCpu',avgCpu);
@@ -595,10 +646,6 @@ function rSum(){
   /* Bandwidth display */
   const fSplit=fS(bwUp).split(' ');$('hNetUp').textContent=fSplit[0];$('hNetUpU').textContent=fSplit[1]||'MB/s';
   const fSplit2=fS(bwDn).split(' ');$('hNetDn').textContent=fSplit2[0];$('hNetDnU').textContent=fSplit2[1]||'MB/s';
-  /* Monthly bandwidth estimate (rough: current rate * uptime) */
-  const monthBw=totalNet*3600*24*30;
-  const bwStr=fB(monthBw,2).split(' ');
-  $('hBw').textContent=bwStr[0];$('hBwU').textContent=(bwStr[1]||'TB')+' 本月估算';
 }
 
 /* ── Render Cards ── */
