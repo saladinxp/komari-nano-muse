@@ -2066,21 +2066,21 @@ function renderTLModal(){
   function mrow(icon,label,val){return '<div class="tl-modal-row"><span class="tl-modal-icon">'+icon+'</span><span class="tl-modal-label">'+label+'</span><span class="tl-modal-val">'+val+'</span></div>'}
   function mtag(text,cls){return '<span class="tl-modal-tag '+cls+'">'+text+'</span>'}
   var h='';
-  h+=mrow('📍','位置：',esc((d.country||'--')+', '+(d.regionFull||d.region||'--')+', '+(d.city||'--')));
-  h+=mrow('🖥','IP 地址：',esc(d.ip));
-  h+=mrow('✦','ASN：',esc(d.asn+', '+d.isp));
-  h+=mrow('🌐','浏览器：',esc(d.browser)+' ('+esc(d.os)+')');
-  h+=mrow('📱','屏幕：',d.screen+' · '+d.cores+' Cores');
-  h+=mrow('🌍','时区：',esc(d.tz||'--')+(d.utc?' (UTC'+d.utc+')':''));
-  h+=mrow('🗣','语言：',esc(d.lang));
-  if(d.conn&&d.conn!=='--')h+=mrow('📶','网络：',d.conn);
-  if(d.currency&&d.currency!=='--')h+=mrow('💰','货币：',d.currency);
+  h+=mrow('📍','Location:',esc((d.country||'--')+', '+(d.regionFull||d.region||'--')+', '+(d.city||'--')));
+  h+=mrow('🖥','IP:',esc(d.ip));
+  h+=mrow('✦','ASN:',esc(d.asn+', '+d.isp));
+  h+=mrow('🌐','Browser:',esc(d.browser)+' ('+esc(d.os)+')');
+  h+=mrow('📱','Display:',d.screen+' · '+d.cores+' Cores');
+  h+=mrow('🌍','Timezone:',esc(d.tz||'--')+(d.utc?' (UTC'+d.utc+')':''));
+  h+=mrow('🗣','Lang:',esc(d.lang));
+  if(d.conn&&d.conn!=='--')h+=mrow('📶','Network:',d.conn);
+  if(d.currency&&d.currency!=='--')h+=mrow('💰','Currency:',d.currency);
   var ispLow=(d.isp||'').toLowerCase();
-  var ipType='住宅',typeClass='green';
-  if(/cloud|hosting|server|data.?cent|hetzner|ovh|vultr|digital.?ocean|amazon|google|azure|linode|choopa/i.test(ispLow)){ipType='数据中心';typeClass='amber'}
-  else if(/mobile|cellular|wireless/i.test(ispLow)){ipType='移动网络';typeClass='blue'}
-  h+=mrow('🏷','IP 类型：',mtag(ipType,typeClass));
-  h+=mrow('✅','状态：',mtag('正常','green'));
+  var ipType='Residential',typeClass='green';
+  if(/cloud|hosting|server|data.?cent|hetzner|ovh|vultr|digital.?ocean|amazon|google|azure|linode|choopa/i.test(ispLow)){ipType='Datacenter';typeClass='amber'}
+  else if(/mobile|cellular|wireless/i.test(ispLow)){ipType='Mobile';typeClass='blue'}
+  h+=mrow('🏷','IP Type:',mtag(ipType,typeClass));
+  h+=mrow('✅','Status:',mtag('Clean','green'));
   body.innerHTML=h;
 }
 (function(){
