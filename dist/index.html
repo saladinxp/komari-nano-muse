@@ -413,9 +413,9 @@ body{
 .det-back:hover{background:linear-gradient(180deg,rgba(235,240,248,0.98),rgba(215,224,236,0.95));border-color:rgba(59,130,246,0.25);box-shadow:0 2px 6px rgba(0,0,0,0.1),0 4px 12px rgba(59,130,246,0.08),inset 0 1px 0 rgba(255,255,255,0.9),inset 0 -1px 0 rgba(0,0,0,0.05);color:var(--blue)}
 .det-back:active{transform:translateY(1px);box-shadow:0 0px 2px rgba(0,0,0,0.1),inset 0 1px 2px rgba(0,0,0,0.06)}
 .det-info{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
-.det-card{background:rgba(237,242,250,0.92);border:1.5px solid rgba(140,160,185,0.3);border-radius:14px;padding:18px 22px;box-shadow:0 2px 8px rgba(59,130,246,0.06),0 1px 3px rgba(0,0,0,0.04);border-left:3px solid var(--blue);transition:all .2s}
+.det-card{background:rgba(237,242,250,0.78);border:1.5px solid rgba(140,160,185,0.22);border-radius:14px;padding:18px 22px;box-shadow:0 2px 8px rgba(59,130,246,0.04),0 1px 3px rgba(0,0,0,0.03);border-left:3px solid var(--blue);transition:all .2s}
 .det-card:hover{box-shadow:0 4px 16px rgba(59,130,246,0.1),0 2px 6px rgba(0,0,0,0.06);transform:translateY(-1px)}
-.det-label{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--blue);margin-bottom:6px;font-weight:700;opacity:.8}
+.det-label{font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--blue);margin-bottom:6px;font-weight:700;opacity:.85}
 .det-val{font-family:var(--fd);font-weight:700;font-size:17px;color:#1e293b}
 /* ═══ DETAIL PAGE v2 — Tactical + Engineering ═══ */
 /* Status strip — embedded control bar, not floating card */
@@ -453,7 +453,7 @@ body{
 
 /* Gauge strip — half-arc tactical gauges (LARGE) + GLASS */
 .det-gauges{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:24px 0}
-.det-gauge{background:rgba(255,255,255,0.42);border:1px solid rgba(255,255,255,0.5);border-radius:16px;padding:28px 20px 18px;text-align:center;position:relative;box-shadow:0 2px 12px rgba(59,130,246,0.06),0 1px 3px rgba(0,0,0,0.03),inset 0 1px 0 rgba(255,255,255,0.6);transition:all .3s;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.det-gauge{background:rgba(255,255,255,0.82);border:1px solid rgba(43,124,255,0.25);border-radius:16px;padding:28px 20px 18px;text-align:center;position:relative;box-shadow:0 24px 60px rgba(8,22,44,0.14),0 0 0 1px rgba(43,124,255,0.10),0 1px 3px rgba(0,0,0,0.04);transition:all .3s;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 /* Glass highlight: top edge glow */
 .det-gauge::before{content:'';position:absolute;top:0;left:12px;right:12px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.7) 30%,rgba(255,255,255,0.7) 70%,transparent);border-radius:16px 16px 0 0;pointer-events:none}
 /* Glass edge glow: soft outer luminance */
