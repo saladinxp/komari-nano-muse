@@ -1076,7 +1076,7 @@ async function fetchP(){
       if(v && vb){
         v.src = ts.bg_video;
         const vop = parseFloat(ts.bg_video_opacity)||0.7;
-        v.oncanplay=()=>{vb.style.opacity=vop};
+        v.oncanplay=()=>{vb.style.opacity=vop;const ab=document.getElementById('animeBg');if(ab)ab.style.display='none'};
       }
     }
     if(ts.footer_text){
