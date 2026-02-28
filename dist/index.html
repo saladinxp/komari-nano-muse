@@ -1612,7 +1612,7 @@ function dCh(canvasId,opts){
   let labels=opts.labels||[];
   if(!data.length)return;
   /* Downsample if too many points — LTTB-like: pick max in each bucket */
-  const maxPts=Math.min(data.length,Math.round(w*0.6));
+  const maxPts=Math.min(data.length,120);
   if(data.length>maxPts){
     const bSz=data.length/maxPts;const nd=[];const nl=[];
     for(let i=0;i<maxPts;i++){
@@ -1639,11 +1639,10 @@ function dCh(canvasId,opts){
       /* Nearly flat — show 0 to 2x or at least 5 */
       max=Math.max(dMax*2,5);
     }else{
-      /* Use p95 as the visual anchor, add ~60% headroom above it */
-      /* This keeps the bulk of data in the lower 60% of chart */
-      max=p95+range*0.6;
-      /* Ensure peak is visible (don't clip extreme spikes) */
-      if(dMax>max)max=dMax*1.15;
+      /* Use p95 as anchor, add full range as headroom above */
+      max=p95+range;
+      /* Ensure peak is visible */
+      if(dMax>max)max=dMax*1.1;
     }
     /* Round to nice number */
     if(max>=100){max=Math.ceil(max/10)*10}
@@ -1674,7 +1673,7 @@ function dCh(canvasId,opts){
       const p1=points[i];
       const p2=points[i+1];
       const p3=points[Math.min(points.length-1,i+2)];
-      const tension=0.35;
+      const tension=0.25;
       const cp1x=p1.x+(p2.x-p0.x)*tension;
       const cp1y=p1.y+(p2.y-p0.y)*tension;
       const cp2x=p2.x-(p3.x-p1.x)*tension;
