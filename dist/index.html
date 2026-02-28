@@ -477,6 +477,11 @@ body{
 .tl-row{display:flex;align-items:baseline;gap:6px;font-family:var(--fm);font-size:9.5px;line-height:1.5;letter-spacing:0.5px}
 .tl-key{color:var(--t4);white-space:nowrap;min-width:28px;flex-shrink:0;font-weight:500}
 .tl-val{color:var(--t);font-weight:600;word-break:break-all}
+.tl-tag{display:inline-block;padding:1px 6px;border-radius:3px;font-size:8px;font-weight:700;letter-spacing:1px;line-height:1.6}
+.tl-tag-safe{background:rgba(34,197,94,0.15);color:#16a34a;border:1px solid rgba(34,197,94,0.25)}
+.tl-tag-warn{background:rgba(234,179,8,0.15);color:#ca8a04;border:1px solid rgba(234,179,8,0.25)}
+.tl-tag-danger{background:rgba(239,68,68,0.15);color:#dc2626;border:1px solid rgba(239,68,68,0.25)}
+.tl-tag-info{background:rgba(59,130,246,0.1);color:#2563eb;border:1px solid rgba(59,130,246,0.2)}
 @media(max-width:768px){.tl-status{display:none}.term-link{flex-wrap:wrap;gap:10px}}
 
 /* ═══ STABILITY PAGE — Heatmap Matrix ═══ */
@@ -822,6 +827,8 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
           <div class="tl-row"><span class="tl-key">LOC</span><span class="tl-val" id="tlLocFull">--</span></div>
           <div class="tl-row"><span class="tl-key">IP</span><span class="tl-val" id="tlIP">--</span></div>
           <div class="tl-row"><span class="tl-key">ASN</span><span class="tl-val" id="tlASN">--</span></div>
+          <div class="tl-row"><span class="tl-key">TYPE</span><span class="tl-val" id="tlType">--</span></div>
+          <div class="tl-row"><span class="tl-key">RISK</span><span class="tl-val" id="tlRisk">--</span></div>
           <div class="tl-row"><span class="tl-key">UA</span><span class="tl-val" id="tlBrowser">--</span></div>
           <div class="tl-row"><span class="tl-key">OS</span><span class="tl-val" id="tlOS">--</span></div>
         </div>
@@ -2004,6 +2011,31 @@ async function fetchTermLink(){
     const asnE=$('tlASN');if(asnE)asnE.textContent=d.asn+', '+d.isp;
     const brE=$('tlBrowser');if(brE)brE.textContent=d.browser;
     const osE=$('tlOS');if(osE)osE.textContent=d.os;
+    /* IPQS risk detection */
+    try{
+      const qr=await fetch('https://ipqualityscore.com/api/json/ip/1qJgKYWI3KGMwDcntBmDlJI7MCVcKqAy/'+d.ip+'?strictness=0&allow_public_access_points=true');
+      const q=await qr.json();
+      if(q&&q.success){
+        const typeEl=$('tlType');
+        if(typeEl){
+          var tags=[];
+          if(q.is_crawler)tags.push('<span class="tl-tag tl-tag-warn">Crawler</span>');
+          else tags.push('<span class="tl-tag tl-tag-info">'+(q.mobile?'Mobile':'Desktop')+'</span>');
+          if(q.vpn)tags.push('<span class="tl-tag tl-tag-warn">VPN</span>');
+          if(q.proxy)tags.push('<span class="tl-tag tl-tag-warn">Proxy</span>');
+          if(q.tor)tags.push('<span class="tl-tag tl-tag-danger">Tor</span>');
+          if(!q.vpn&&!q.proxy&&!q.tor&&!q.is_crawler)tags.push('<span class="tl-tag tl-tag-safe">'+(q.connection_type||'Residential')+'</span>');
+          typeEl.innerHTML=tags.join(' ');
+        }
+        const riskEl=$('tlRisk');
+        if(riskEl){
+          var score=q.fraud_score||0;
+          var cls=score<=25?'tl-tag-safe':score<=75?'tl-tag-warn':'tl-tag-danger';
+          var label=score<=25?'Low Risk':score<=75?'Medium':'High Risk';
+          riskEl.innerHTML='<span class="tl-tag '+cls+'">'+score+'% '+label+'</span>';
+        }
+      }
+    }catch(eq){console.log('[NM] IPQS failed',eq)}
   }catch(e){console.log('[NM] Terminal link failed',e)}
 }
 function parseUA(ua){
