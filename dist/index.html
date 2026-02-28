@@ -82,13 +82,10 @@ body{
   pointer-events:none}
 
 /* Background video layer */
-.video-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:70vw;height:100vh;z-index:4;pointer-events:none;opacity:0;transition:opacity 2s ease}
+.video-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:85vw;height:100vh;z-index:6;pointer-events:none;opacity:0;transition:opacity 2s ease}
 .video-bg video{width:100%;height:100%;object-fit:cover;object-position:center 30%;
-  mask-image:radial-gradient(ellipse 90% 90% at 50% 40%,black 35%,transparent 72%);
-  -webkit-mask-image:radial-gradient(ellipse 90% 90% at 50% 40%,black 35%,transparent 72%)}
-.video-bg::after{content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(180,200,220,0.10) 3px,rgba(180,200,220,0.10) 4px);
-  pointer-events:none}
+  mask-image:radial-gradient(ellipse 95% 95% at 50% 42%,black 45%,transparent 80%);
+  -webkit-mask-image:radial-gradient(ellipse 95% 95% at 50% 42%,black 45%,transparent 80%)}
 .energy-glow{position:fixed;left:50%;top:15%;transform:translateX(-30%);
   width:600px;height:600px;z-index:1;pointer-events:none;
   background:radial-gradient(circle,rgba(0,210,255,0.15) 0%,rgba(37,99,235,0.06) 35%,transparent 65%)}
@@ -572,13 +569,7 @@ body.alert-active .mech::before{content:'';position:absolute;top:0;left:24px;rig
 body.alert-active .mech::after{content:'';position:absolute;bottom:0;left:24px;right:24px;height:1px;background:linear-gradient(90deg,transparent,rgba(180,80,90,0.10) 30%,rgba(180,80,90,0.10) 70%,transparent);z-index:2;pointer-events:none}
 body.alert-active 
 /* Background video layer */
-.video-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:70vw;height:100vh;z-index:4;pointer-events:none;opacity:0;transition:opacity 2s ease}
-.video-bg video{width:100%;height:100%;object-fit:cover;object-position:center 30%;
-  mask-image:radial-gradient(ellipse 90% 90% at 50% 40%,black 35%,transparent 72%);
-  -webkit-mask-image:radial-gradient(ellipse 90% 90% at 50% 40%,black 35%,transparent 72%)}
-.video-bg::after{content:'';position:absolute;inset:0;
-  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(180,200,220,0.10) 3px,rgba(180,200,220,0.10) 4px);
-  pointer-events:none}
+
 .energy-glow{background:radial-gradient(circle,rgba(180,160,220,0.1) 0%,rgba(120,100,180,0.04) 35%,transparent 65%)}
 body.alert-active .energy-glow2{background:radial-gradient(circle,rgba(140,120,180,0.06) 0%,rgba(100,80,160,0.03) 40%,transparent 65%)}
 /* Core ring — energy contracts and shifts to cold white-blue (#7bb2ff zone) */
@@ -1086,7 +1077,7 @@ async function fetchP(){
       const ab=document.getElementById('animeBg');
       if(v && vb){
         v.src = ts.bg_video;
-        const vop = parseFloat(ts.bg_video_opacity)||0.35;
+        const vop = parseFloat(ts.bg_video_opacity)||0.7;
         v.oncanplay=()=>{vb.style.opacity=vop;if(ab)ab.style.display='none'};
       }
     }
