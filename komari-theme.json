@@ -18,7 +18,7 @@
                 "key": "version_tag",
                 "name": "[ SYS.VER ] 版本标识",
                 "type": "string",
-                "default": "v0.7.1",
+                "default": "v0.7.2",
                 "help": "面板版本号 — 显示于导航栏、页脚及HUD面板"
             },
             {
