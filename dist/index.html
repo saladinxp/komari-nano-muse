@@ -2011,33 +2011,32 @@ async function fetchTermLink(){
     const asnE=$('tlASN');if(asnE)asnE.textContent=d.asn+', '+d.isp;
     const brE=$('tlBrowser');if(brE)brE.textContent=d.browser;
     const osE=$('tlOS');if(osE)osE.textContent=d.os;
-    /* IPQS risk detection */
+    /* proxycheck.io risk detection (CORS enabled) */
     try{
-      const qr=await fetch('https://www.ipqualityscore.com/api/json/ip/1qJgKYWI3KGMwDcntBmDlJI7MCVcKqAy/'+d.ip+'?strictness=0&allow_public_access_points=true&user_agent='+encodeURIComponent(ua)+'&user_language='+encodeURIComponent(navigator.language||''));
+      const qr=await fetch('https://proxycheck.io/v2/'+d.ip+'?key=989605-2d4v5q-8631mg-9w4673&vpn=1&asn=1&risk=1');
       const q=await qr.json();
-      if(q&&q.success){
-        d.ipqs=q;
+      if(q&&q.status==='ok'&&q[d.ip]){
+        var r=q[d.ip];
+        d.proxycheck=r;
         const typeEl=$('tlType');
         if(typeEl){
           var tags=[];
-          var ct=q.connection_type||'';
+          var ct=r.type||'';
           if(ct)tags.push('<span class="tl-tag tl-tag-info">'+ct+'</span>');
-          if(q.vpn)tags.push('<span class="tl-tag tl-tag-warn">VPN</span>');
-          if(q.proxy)tags.push('<span class="tl-tag tl-tag-warn">Proxy</span>');
-          if(q.tor)tags.push('<span class="tl-tag tl-tag-danger">Tor</span>');
-          if(q.is_crawler)tags.push('<span class="tl-tag tl-tag-warn">Crawler</span>');
-          if(!q.vpn&&!q.proxy&&!q.tor&&tags.length<=1)tags.push('<span class="tl-tag tl-tag-safe">Clean</span>');
+          if(r.proxy==='yes')tags.push('<span class="tl-tag tl-tag-warn">Proxy</span>');
+          if(r.vpn==='yes')tags.push('<span class="tl-tag tl-tag-warn">VPN</span>');
+          if(r.proxy!=='yes'&&r.vpn!=='yes')tags.push('<span class="tl-tag tl-tag-safe">Clean</span>');
           typeEl.innerHTML=tags.join(' ');
         }
         const riskEl=$('tlRisk');
         if(riskEl){
-          var score=q.fraud_score||0;
-          var cls=score<=25?'tl-tag-safe':score<=75?'tl-tag-warn':'tl-tag-danger';
-          var label=score<=25?'Low':score<=75?'Medium':'High';
-          riskEl.innerHTML='<span class="tl-tag '+cls+'">'+score+'% '+label+'</span>';
+          var score=parseInt(r.risk)||0;
+          var cls=score<=33?'tl-tag-safe':score<=66?'tl-tag-warn':'tl-tag-danger';
+          var label=score<=33?'Low':score<=66?'Medium':'High';
+          riskEl.innerHTML='<span class="tl-tag '+cls+'">'+score+'/100 '+label+'</span>';
         }
       }
-    }catch(eq){console.log('[NM] IPQS failed',eq)}
+    }catch(eq){console.log('[NM] proxycheck failed',eq)}
   }catch(e){console.log('[NM] Terminal link failed',e)}
 }
 function parseUA(ua){
