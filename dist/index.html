@@ -2013,25 +2013,27 @@ async function fetchTermLink(){
     const osE=$('tlOS');if(osE)osE.textContent=d.os;
     /* IPQS risk detection */
     try{
-      const qr=await fetch('https://ipqualityscore.com/api/json/ip/1qJgKYWI3KGMwDcntBmDlJI7MCVcKqAy/'+d.ip+'?strictness=0&allow_public_access_points=true');
+      const qr=await fetch('https://www.ipqualityscore.com/api/json/ip/1qJgKYWI3KGMwDcntBmDlJI7MCVcKqAy/'+d.ip+'?strictness=0&allow_public_access_points=true&user_agent='+encodeURIComponent(ua)+'&user_language='+encodeURIComponent(navigator.language||''));
       const q=await qr.json();
       if(q&&q.success){
+        d.ipqs=q;
         const typeEl=$('tlType');
         if(typeEl){
           var tags=[];
-          if(q.is_crawler)tags.push('<span class="tl-tag tl-tag-warn">Crawler</span>');
-          else tags.push('<span class="tl-tag tl-tag-info">'+(q.mobile?'Mobile':'Desktop')+'</span>');
+          var ct=q.connection_type||'';
+          if(ct)tags.push('<span class="tl-tag tl-tag-info">'+ct+'</span>');
           if(q.vpn)tags.push('<span class="tl-tag tl-tag-warn">VPN</span>');
           if(q.proxy)tags.push('<span class="tl-tag tl-tag-warn">Proxy</span>');
           if(q.tor)tags.push('<span class="tl-tag tl-tag-danger">Tor</span>');
-          if(!q.vpn&&!q.proxy&&!q.tor&&!q.is_crawler)tags.push('<span class="tl-tag tl-tag-safe">'+(q.connection_type||'Residential')+'</span>');
+          if(q.is_crawler)tags.push('<span class="tl-tag tl-tag-warn">Crawler</span>');
+          if(!q.vpn&&!q.proxy&&!q.tor&&tags.length<=1)tags.push('<span class="tl-tag tl-tag-safe">Clean</span>');
           typeEl.innerHTML=tags.join(' ');
         }
         const riskEl=$('tlRisk');
         if(riskEl){
           var score=q.fraud_score||0;
           var cls=score<=25?'tl-tag-safe':score<=75?'tl-tag-warn':'tl-tag-danger';
-          var label=score<=25?'Low Risk':score<=75?'Medium':'High Risk';
+          var label=score<=25?'Low':score<=75?'Medium':'High';
           riskEl.innerHTML='<span class="tl-tag '+cls+'">'+score+'% '+label+'</span>';
         }
       }
