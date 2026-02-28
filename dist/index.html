@@ -475,7 +475,7 @@ body{
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .tl-rows{display:flex;flex-direction:column;gap:5px;margin:6px 0}
 .tl-row{display:flex;align-items:baseline;gap:6px;font-family:var(--fm);font-size:9.5px;line-height:1.5;letter-spacing:0.5px}
-.tl-key{color:var(--t3);white-space:nowrap;min-width:60px;flex-shrink:0}
+.tl-key{color:var(--t4);white-space:nowrap;min-width:28px;flex-shrink:0;font-weight:500}
 .tl-val{color:var(--t);font-weight:600;word-break:break-all}
 @media(max-width:768px){.tl-status{display:none}.term-link{flex-wrap:wrap;gap:10px}}
 
@@ -819,11 +819,11 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
           <div class="tl-loc" id="tlLoc" style="font-size:14px">RESOLVING ...</div>
         </div>
         <div class="tl-rows" id="tlRows">
-          <div class="tl-row"><span class="tl-key">📍 位置：</span><span class="tl-val" id="tlLocFull">--</span></div>
-          <div class="tl-row"><span class="tl-key">🖥 IP 地址：</span><span class="tl-val" id="tlIP">--</span></div>
-          <div class="tl-row"><span class="tl-key">✦ ASN：</span><span class="tl-val" id="tlASN">--</span></div>
-          <div class="tl-row"><span class="tl-key">🌐 浏览器：</span><span class="tl-val" id="tlBrowser">--</span></div>
-          <div class="tl-row"><span class="tl-key">💻 系统：</span><span class="tl-val" id="tlOS">--</span></div>
+          <div class="tl-row"><span class="tl-key">LOC</span><span class="tl-val" id="tlLocFull">--</span></div>
+          <div class="tl-row"><span class="tl-key">IP</span><span class="tl-val" id="tlIP">--</span></div>
+          <div class="tl-row"><span class="tl-key">ASN</span><span class="tl-val" id="tlASN">--</span></div>
+          <div class="tl-row"><span class="tl-key">UA</span><span class="tl-val" id="tlBrowser">--</span></div>
+          <div class="tl-row"><span class="tl-key">OS</span><span class="tl-val" id="tlOS">--</span></div>
         </div>
         <div class="hp-ln"></div>
         <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
@@ -1998,7 +1998,7 @@ async function fetchTermLink(){
     d.flag=countryFlag(d.cc);
     S.termData=d;
     const fl=$('tlFlag');if(fl)fl.textContent=d.flag;
-    const loc=$('tlLoc');if(loc)loc.textContent='欢迎来自 '+(d.city||d.region||'--')+' 的朋友!';
+    const loc=$('tlLoc');if(loc)loc.textContent='Welcome, '+(d.city||d.region||'--');
     const locF=$('tlLocFull');if(locF)locF.textContent=(d.country||'--')+', '+(d.regionFull||d.region||'--')+', '+(d.city||'--');
     const ipE=$('tlIP');if(ipE)ipE.textContent=d.ip;
     const asnE=$('tlASN');if(asnE)asnE.textContent=d.asn+', '+d.isp;
@@ -2028,7 +2028,7 @@ function countryFlag(cc){
 function renderTLModal(){
   const d=S.termData;if(!d)return;
   const g=$('tlGreeting');
-  if(g)g.textContent='✨ 欢迎来自 '+(d.city||d.regionFull||'--')+' 的朋友!';
+  if(g)g.textContent='Welcome, '+(d.city||d.regionFull||'--');
   const body=$('tlModalBody');if(!body)return;
   function mrow(icon,label,val){return '<div class="tl-modal-row"><span class="tl-modal-icon">'+icon+'</span><span class="tl-modal-label">'+label+'</span><span class="tl-modal-val">'+val+'</span></div>'}
   function mtag(text,cls){return '<span class="tl-modal-tag '+cls+'">'+text+'</span>'}
