@@ -33,6 +33,20 @@
                 "type": "title"
             },
             {
+                "key": "bg_video",
+                "name": "[ VIDEO ] 背景视频链接",
+                "type": "string",
+                "default": "",
+                "help": "Hero区域背景视频 — 支持MP4/WebM，留空使用静态角色图。填写后角色图自动隐藏"
+            },
+            {
+                "key": "bg_video_opacity",
+                "name": "[ VIDEO ] 视频透明度",
+                "type": "string",
+                "default": "0.35",
+                "help": "背景视频透明度 0.0~1.0，建议0.2~0.5"
+            },
+            {
                 "key": "char_url",
                 "name": "[ CHAR ] 角色图片链接",
                 "type": "string",
