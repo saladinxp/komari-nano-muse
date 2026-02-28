@@ -1608,9 +1608,24 @@ function dCh(canvasId,opts){
   canvas.style.width=rect.width+'px';canvas.style.height='180px';
   ctx.scale(dpr,dpr);
   const w=rect.width,h=180,pad={t:10,r:10,b:25,l:45};
-  const data=opts.data||[];
+  let data=opts.data||[];
+  let labels=opts.labels||[];
   if(!data.length)return;
-  const max=opts.max||Math.max(...data)*1.1||1;
+  /* Downsample if too many points — LTTB-like: pick max in each bucket */
+  const maxPts=Math.min(data.length,Math.round(w*0.6));
+  if(data.length>maxPts){
+    const bSz=data.length/maxPts;const nd=[];const nl=[];
+    for(let i=0;i<maxPts;i++){
+      const s=Math.floor(i*bSz),e=Math.min(Math.floor((i+1)*bSz),data.length);
+      let mI=s;for(let j=s+1;j<e;j++){if(data[j]>data[mI])mI=j}
+      /* Use average for smoother look, but keep peak info */
+      let sum=0;for(let j=s;j<e;j++)sum+=data[j];
+      nd.push(sum/(e-s));
+      nl.push(labels[Math.floor((s+e)/2)]||'');
+    }
+    data=nd;labels=nl;
+  }
+  const max=opts.max||Math.max(...data)*1.15||1;
   const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
   const color=opts.color||'#2563eb';
   /* Grid */
@@ -1622,58 +1637,76 @@ function dCh(canvasId,opts){
     ctx.fillText(Math.round(max*(1-i/4)),pad.l-6,y+3);
   }
   /* Build path points */
-  const pts=data.map((v,i)=>({x:pad.l+(i/(data.length-1||1))*cw,y:pad.t+ch*(1-v/max)}));
-  /* Glow layer (wider, softer) */
+  const pts=data.map((v,i)=>({x:pad.l+(i/(data.length-1||1))*cw,y:pad.t+ch*(1-Math.min(v,max)/max)}));
+  /* Smooth bezier helper */
+  function drawSmooth(points){
+    if(points.length<2)return;
+    ctx.moveTo(points[0].x,points[0].y);
+    if(points.length===2){ctx.lineTo(points[1].x,points[1].y);return}
+    /* Catmull-Rom → cubic bezier for smooth curve */
+    for(let i=0;i<points.length-1;i++){
+      const p0=points[Math.max(0,i-1)];
+      const p1=points[i];
+      const p2=points[i+1];
+      const p3=points[Math.min(points.length-1,i+2)];
+      const tension=0.35;
+      const cp1x=p1.x+(p2.x-p0.x)*tension;
+      const cp1y=p1.y+(p2.y-p0.y)*tension;
+      const cp2x=p2.x-(p3.x-p1.x)*tension;
+      const cp2y=p2.y-(p3.y-p1.y)*tension;
+      ctx.bezierCurveTo(cp1x,cp1y,cp2x,cp2y,p2.x,p2.y);
+    }
+  }
+  /* Glow layer */
   ctx.save();
   ctx.shadowColor=color;ctx.shadowBlur=14;ctx.shadowOffsetY=0;
-  ctx.beginPath();ctx.strokeStyle=color+'50';ctx.lineWidth=5;ctx.lineJoin='round';ctx.lineCap='round';
-  pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+  ctx.beginPath();ctx.strokeStyle=color+'40';ctx.lineWidth=5;ctx.lineJoin='round';ctx.lineCap='round';
+  drawSmooth(pts);
   ctx.stroke();
   ctx.restore();
   /* Main line */
   ctx.save();
   ctx.shadowColor=color;ctx.shadowBlur=6;ctx.shadowOffsetY=1;
-  ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
-  pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+  ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';
+  drawSmooth(pts);
   ctx.stroke();
   ctx.restore();
-  /* Fill gradient */
+  /* Fill gradient under curve */
   ctx.beginPath();
-  pts.forEach((p,i)=>i===0?ctx.moveTo(p.x,p.y):ctx.lineTo(p.x,p.y));
+  drawSmooth(pts);
   ctx.lineTo(pts[pts.length-1].x,pad.t+ch);ctx.lineTo(pts[0].x,pad.t+ch);ctx.closePath();
   const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+ch);
-  grad.addColorStop(0,color+'20');grad.addColorStop(1,color+'03');
+  grad.addColorStop(0,color+'25');grad.addColorStop(0.6,color+'08');grad.addColorStop(1,color+'02');
   ctx.fillStyle=grad;ctx.fill();
-  /* Peak dot with glow ring */
-  const peakVal=Math.max(...data);const peakIdx=data.indexOf(peakVal);
-  if(peakIdx>=0&&data.length>1){
-    const pp=pts[peakIdx];
+  /* Peak dot with glow ring — use original data for accurate peak */
+  const origData=opts.data||[];
+  const peakVal=Math.max(...origData);const peakIdx=origData.indexOf(peakVal);
+  if(peakIdx>=0&&pts.length>1){
+    /* Map peakIdx back to downsampled position */
+    const ratio=peakIdx/(origData.length-1||1);
+    const px=pad.l+ratio*cw;const py=pad.t+ch*(1-Math.min(peakVal,max)/max);
     ctx.save();ctx.shadowColor=color;ctx.shadowBlur=10;
-    ctx.beginPath();ctx.arc(pp.x,pp.y,5,0,Math.PI*2);ctx.fillStyle=color+'30';ctx.fill();
+    ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fillStyle=color+'30';ctx.fill();
     ctx.restore();
-    ctx.beginPath();ctx.arc(pp.x,pp.y,3.5,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
-    ctx.beginPath();ctx.arc(pp.x,pp.y,1.5,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
-    /* Peak value label */
+    ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+    ctx.beginPath();ctx.arc(px,py,1.5,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
     ctx.font='bold 9px Outfit';ctx.fillStyle=color;ctx.textAlign='center';
-    ctx.fillText(opts.max?peakVal.toFixed(0):peakVal.toFixed(1),pp.x,pp.y-10);
+    ctx.fillText(opts.max?peakVal.toFixed(0):peakVal.toFixed(1),px,py-10);
   }
   /* Current value dot (last point) */
   if(pts.length>1){
-    const lp=pts[pts.length-1];const lv=data[data.length-1];
+    const lp=pts[pts.length-1];const lv=origData[origData.length-1]||data[data.length-1];
     ctx.save();ctx.shadowColor=color;ctx.shadowBlur=8;
     ctx.beginPath();ctx.arc(lp.x,lp.y,4,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
     ctx.restore();
     ctx.beginPath();ctx.arc(lp.x,lp.y,2,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
-    /* Current value label on the right */
     ctx.font='bold 10px Outfit';ctx.fillStyle=color;ctx.textAlign='left';
     ctx.fillText(opts.max?lv.toFixed(0):lv.toFixed(1),lp.x+8,lp.y+3);
-    /* Pulse ring overlay — CSS animated "alive" dot */
     const wrap=canvas.closest('.chart-wrap');
     if(wrap){
       let cur=wrap.querySelector('.chart-cur');
       if(!cur){cur=document.createElement('div');cur.className='chart-cur';wrap.appendChild(cur)}
       cur.innerHTML=(opts.max?lv.toFixed(0):lv.toFixed(1))+'<span>'+(opts.label||'%')+'</span>';
-      /* Position a pulse ring at the current value point */
       let pulse=wrap.querySelector('.chart-pulse');
       if(!pulse){pulse=document.createElement('div');pulse.className='chart-pulse';wrap.appendChild(pulse)}
       const canvasRect=canvas.getBoundingClientRect();const wrapRect=wrap.getBoundingClientRect();
