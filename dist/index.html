@@ -15,9 +15,9 @@
 <meta name="twitter:description" content="Real-time server fleet monitoring dashboard">
 <meta name="twitter:image" content="https://lol.moe/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<!-- NanoMuse v0.7.3 — Komari Monitor Theme -->
+<!-- NanoMuse v0.7.4 — Komari Monitor Theme -->
 <style>
-/* ═══ NanoMuse v0.7.3 — CSS ═══ */
+/* ═══ NanoMuse v0.7.4 — CSS ═══ */
 :root{
   --bg:#cad3e0;
   --cyan:#00d8ff;--cyan-g:rgba(0,216,255,0.5);
@@ -52,7 +52,7 @@
   border-radius:18px}
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-  font-family:var(--fb);background:#c8d1de;color:var(--t);
+  font-family:var(--fb);background:#bfc9d8;color:var(--t);
   min-height:100vh;display:flex;justify-content:center;align-items:flex-start;
   padding:20px;overflow-x:hidden;position:relative;
   background-image:
@@ -123,7 +123,8 @@ body{
 
 /* ═══ HERO ═══ */
 .hero{display:flex;flex-direction:column;position:relative}
-.hero-top{display:grid;grid-template-columns:280px 1fr 240px;min-height:380px;position:relative}
+.hero-top::after{content:'';position:absolute;bottom:0;left:0;right:0;height:120px;background:linear-gradient(to bottom,transparent 0%,rgba(195,205,218,0.4) 50%,rgba(195,205,218,0.85) 100%);pointer-events:none;z-index:3}
+.hero-top{display:grid;grid-template-columns:280px 1fr 240px;min-height:82vh;position:relative}
 .h-left{padding:24px 20px 20px 28px;display:flex;flex-direction:column;gap:8px;
   border-right:1px solid rgba(100,116,139,0.18);
   background:linear-gradient(135deg,rgba(200,214,232,0.85) 0%,rgba(210,222,238,0.7) 100%);position:relative}
@@ -181,7 +182,7 @@ body{
 .sync-ring-wrap svg{position:absolute;inset:0;width:100%;height:100%}
 /* Conic energy flow — slow rotating gradient behind ring */
 .sync-ring-wrap::before{content:'';position:absolute;inset:-50px;border-radius:50%;
-  background:conic-gradient(from 0deg,rgba(0,216,255,0) 0deg,rgba(43,124,255,0.3) 55deg,rgba(0,216,255,0.4) 120deg,rgba(43,124,255,0) 200deg,rgba(0,216,255,0.25) 310deg,rgba(43,124,255,0) 360deg);
+  background:conic-gradient(from 0deg,rgba(0,216,255,0) 0deg,rgba(43,124,255,0.2) 55deg,rgba(0,216,255,0.28) 120deg,rgba(43,124,255,0) 200deg,rgba(0,216,255,0.15) 310deg,rgba(43,124,255,0) 360deg);
   animation:ring-energy 16s linear infinite;pointer-events:none;filter:blur(2px)}
 @keyframes ring-energy{to{transform:rotate(360deg)}}
 /* Outer radial glow pulse */
@@ -223,7 +224,7 @@ body{
 .sr-k{font-family:var(--fm);font-size:8.5px;letter-spacing:2px;color:var(--t4)}
 .sr-v{font-family:var(--fm);font-size:10px;font-weight:600;color:var(--t2)}
 /* Fleet Summary Strip */
-.fleet-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:1.5px solid rgba(100,116,139,0.2);
+.fleet-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:none;margin-top:-40px;position:relative;z-index:4;
   background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   box-shadow:0 4px 20px rgba(59,130,246,0.06),0 1px 4px rgba(0,0,0,0.04);
   position:relative}
@@ -236,7 +237,7 @@ body{
 .fleet-cell:nth-child(2)::after{background:var(--g);box-shadow:0 0 12px rgba(var(--gr),.5)}
 .fleet-cell:nth-child(3)::after{background:var(--r);box-shadow:0 0 12px rgba(var(--rr),.4)}
 .fleet-cell:nth-child(4)::after{background:var(--am);box-shadow:0 0 12px rgba(var(--amr),.4)}
-.fleet-val{font-family:var(--fd);font-weight:800;font-size:42px;color:var(--t);line-height:1;
+.fleet-val{font-family:var(--fd);font-weight:800;font-size:46px;color:var(--t);line-height:1;
   text-shadow:0 0 25px rgba(59,130,246,0.12);transition:text-shadow .3s}
 .fleet-cell:hover .fleet-val{text-shadow:0 0 24px rgba(59,130,246,0.15)}
 .fleet-lbl{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--t3);font-weight:600}
@@ -323,9 +324,12 @@ body{
 .nc{background:rgba(255,255,255,0.42);border:1px solid rgba(148,190,230,0.25);border-radius:4px;overflow:hidden;cursor:pointer;transition:all .4s cubic-bezier(.175,.885,.32,1.275);position:relative;
   box-shadow:0 2px 8px rgba(148,163,184,0.08),0 8px 24px rgba(148,163,184,0.04),inset 0 1px 0 rgba(255,255,255,0.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
   clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
+.nc .nc-ebar{position:absolute;left:0;top:10%;bottom:10%;width:3px;border-radius:0 2px 2px 0;background:linear-gradient(180deg,var(--cyan),var(--g));opacity:.6;transition:opacity .3s}
+.nc:hover .nc-ebar{opacity:1;box-shadow:0 0 8px rgba(0,216,255,0.3)}
+.nc.off .nc-ebar{background:linear-gradient(180deg,var(--r),var(--am));opacity:.5}
 .nc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:0;background:linear-gradient(90deg,transparent,var(--cyan),var(--blue),transparent);opacity:.45;transition:opacity .3s}
 .nc:hover::before{opacity:1;box-shadow:0 0 12px rgba(0,210,255,0.3)}
-.nc:hover{transform:translateY(-6px);box-shadow:0 12px 36px rgba(59,130,246,0.14),0 4px 12px rgba(148,163,184,0.06),0 0 20px rgba(0,216,255,0.08),inset 0 1px 0 rgba(255,255,255,0.7);background:rgba(255,255,255,0.58);border-color:rgba(0,216,255,0.4)}
+.nc:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(59,130,246,0.10),0 0 12px rgba(0,216,255,0.06),inset 0 1px 0 rgba(255,255,255,0.7);background:rgba(255,255,255,0.55);border-color:rgba(0,216,255,0.3)}
 /* Cut corner accent triangle */
 .nc::after{content:'';position:absolute;top:0;right:0;width:14px;height:14px;background:linear-gradient(225deg,rgba(0,216,255,0.25) 50%,transparent 50%);transition:all .3s;pointer-events:none}
 .nc:hover::after{background:linear-gradient(225deg,rgba(0,216,255,0.5) 50%,transparent 50%)}
@@ -750,7 +754,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       <span class="tb-tab" data-page="stability"><span class="tb-num">03</span>STABILITY</span>
       <span class="tb-tab" data-page="worldmap"><span class="tb-num">04</span>MAP</span>
     </div>
-    <div class="tb-right"><button class="tb-badge" id="verBadge">v0.7.3</button><button class="tb-btn" id="searchBtn">⌕</button></div>
+    <div class="tb-right"><button class="tb-badge" id="verBadge">v0.7.4</button><button class="tb-btn" id="searchBtn">⌕</button></div>
   </div>
 
   <!-- ═══ DASHBOARD PAGE ═══ -->
@@ -978,7 +982,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
 </div><!-- /mainContent -->
 <script>
-/* ═══ NanoMuse v0.7.3 — JS ═══ */
+/* ═══ NanoMuse v0.7.4 — JS ═══ */
 ;(function(){
 'use strict';
 
@@ -990,7 +994,7 @@ const S={
   ws:null,_wsI:null,wsRetries:0,
   _lastF:[],
   detailUUID:null,detailNode:null,detailHours:6,detailTab:'load',detailPingHours:6,detailWsData:[],
-  VER:'v0.7.3',
+  VER:'v0.7.4',
   fleetLoadHist:[]
 };
 const STAB={hours:24,sort:'name',data:null,tasks:[],taskId:null,loading:false,_tasksFromApi:false};
