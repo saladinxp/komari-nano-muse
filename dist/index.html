@@ -1628,25 +1628,27 @@ function dCh(canvasId,opts){
   /* Smart Y-axis: add breathing room so small fluctuations look calm */
   let max=opts.max;
   if(!max){
+    const sorted=data.slice().filter(v=>v>0).sort((a,b)=>a-b);
     const dMax=Math.max(...data);
-    const dMin=Math.min(...data.filter(v=>v>0))||0;
-    const range=dMax-dMin;
-    if(range<1){
-      /* Nearly flat — just show 0 to reasonable ceiling */
+    const dMin=sorted[0]||0;
+    const median=sorted[Math.floor(sorted.length/2)]||dMax;
+    const p95=sorted[Math.floor(sorted.length*0.95)]||dMax;
+    const range=p95-dMin;
+    if(dMax<=0){max=10}
+    else if(range<1){
+      /* Nearly flat — show 0 to 2x or at least 5 */
       max=Math.max(dMax*2,5);
-    }else if(dMin>0&&range/dMax<0.5){
-      /* Narrow band (e.g. 60-100ms): expand both directions */
-      const center=(dMax+dMin)/2;
-      const expand=range*1.8;
-      max=Math.min(center+expand, dMax*2.5);
     }else{
-      /* Normal: top = peak * 2~3x so baseline looks calm */
-      const median=data.slice().sort((a,b)=>a-b)[Math.floor(data.length/2)]||dMax;
-      max=Math.max(dMax*1.5, median*3, dMax+range*0.8);
+      /* Use p95 as the visual anchor, add ~60% headroom above it */
+      /* This keeps the bulk of data in the lower 60% of chart */
+      max=p95+range*0.6;
+      /* Ensure peak is visible (don't clip extreme spikes) */
+      if(dMax>max)max=dMax*1.15;
     }
     /* Round to nice number */
-    const mag=Math.pow(10,Math.floor(Math.log10(max||1)));
-    max=Math.ceil(max/mag)*mag;
+    if(max>=100){max=Math.ceil(max/10)*10}
+    else if(max>=10){max=Math.ceil(max/5)*5}
+    else{max=Math.ceil(max)}
     if(max<=0)max=10;
   }
   const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;
