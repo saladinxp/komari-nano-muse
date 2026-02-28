@@ -15,9 +15,9 @@
 <meta name="twitter:description" content="Real-time server fleet monitoring dashboard">
 <meta name="twitter:image" content="https://lol.moe/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<!-- NanoMuse v0.7.5 — Komari Monitor Theme -->
+<!-- NanoMuse v0.7.6 — Komari Monitor Theme -->
 <style>
-/* ═══ NanoMuse v0.7.5 — CSS ═══ */
+/* ═══ NanoMuse v0.7.6 — CSS ═══ */
 :root{
   --bg:#cad3e0;
   --cyan:#00d8ff;--cyan-g:rgba(0,216,255,0.5);
@@ -304,6 +304,14 @@ body{
 .sh-l{display:flex;align-items:center;gap:10px}
 .sh-tag{font-family:var(--fm);font-size:10px;letter-spacing:2px;color:#fff;padding:3px 10px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:4px;font-weight:600}
 .sh-title{font-family:var(--fd);font-weight:700;font-size:14px;letter-spacing:3px}
+
+/* Threat Level indicator */
+.threat-bar{display:flex;align-items:center;justify-content:center;gap:10px;padding:8px 20px;margin-bottom:12px;font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--t3);position:relative}
+.threat-bar::before,.threat-bar::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(148,163,184,0.15),transparent)}
+.threat-level{font-weight:800;letter-spacing:4px;padding:2px 12px;border:1px solid;border-radius:3px;font-size:11px}
+.threat-level.low{color:var(--g);border-color:rgba(var(--gr),0.25);background:rgba(var(--gr),0.05)}
+.threat-level.medium{color:var(--am);border-color:rgba(var(--amr),0.25);background:rgba(var(--amr),0.05)}
+.threat-level.high{color:var(--r);border-color:rgba(var(--rr),0.25);background:rgba(var(--rr),0.05)}
 .node-scan-line{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,216,255,0.15),transparent);margin:8px 0 16px;position:relative;overflow:hidden}
 .node-scan-line::after{content:'';position:absolute;top:0;left:-30%;width:30%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,216,255,0.4),rgba(255,255,255,0.3),rgba(0,216,255,0.4),transparent);animation:node-scan 8s ease-in-out infinite}
 @keyframes node-scan{0%{left:-30%}100%{left:100%}}
@@ -367,10 +375,12 @@ body{
 .nc-f{display:flex;justify-content:space-between;padding:8px 14px;border-top:1px solid rgba(148,190,230,0.2);font-family:var(--fm);font-size:9px;color:var(--t3);letter-spacing:1px;position:relative}
 .nc-f::after{content:'';position:absolute;top:-1px;right:14px;width:14px;height:2px;background:var(--cyan);border-radius:1px;opacity:.35}
 .nc-ut{display:flex;align-items:center;gap:4px}.nc-utd{width:4px;height:4px;border-radius:50%;background:var(--g)}
-.nc.off{opacity:.7}.nc.off:hover{opacity:.88}
-.nc.off{background:rgba(255,240,240,0.5);border-color:rgba(239,68,68,0.25);box-shadow:inset 3px 0 0 var(--r),0 2px 8px rgba(239,68,68,0.06),inset 0 1px 0 rgba(255,255,255,0.4)}
-.nc.off.ovl{background:rgba(255,248,235,0.5);border-color:rgba(245,158,11,0.25);box-shadow:inset 3px 0 0 var(--am),0 2px 8px rgba(245,158,11,0.06),inset 0 1px 0 rgba(255,255,255,0.4)}
+.nc.off{opacity:.8}.nc.off:hover{opacity:.92}
+.nc.off{background:rgba(255,255,255,0.30);border-color:rgba(239,68,68,0.2);box-shadow:inset 0 0 0 1px rgba(239,68,68,0.1),0 1px 4px rgba(148,163,184,0.06)}
+.nc.off.ovl{background:rgba(255,255,255,0.30);border-color:rgba(245,158,11,0.18);box-shadow:inset 0 0 0 1px rgba(245,158,11,0.1),0 1px 4px rgba(148,163,184,0.06)}
 .nc.off.ovl::before{background:linear-gradient(90deg,transparent,var(--am),#f59e0b,transparent)}
+.nc.off:not(.ovl){animation:card-alert-breathe 10s ease-in-out infinite}
+@keyframes card-alert-breathe{0%,100%{border-color:rgba(239,68,68,0.15)}50%{border-color:rgba(239,68,68,0.35)}}
 .footer{position:relative;display:flex;align-items:center;justify-content:center;padding:16px 36px;gap:14px;
   font-family:var(--fm);font-size:10px;letter-spacing:3px;color:var(--t3);
   margin-top:8px;
@@ -757,7 +767,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       <span class="tb-tab" data-page="stability"><span class="tb-num">03</span>STABILITY</span>
       <span class="tb-tab" data-page="worldmap"><span class="tb-num">04</span>MAP</span>
     </div>
-    <div class="tb-right"><button class="tb-badge" id="verBadge">v0.7.5</button><button class="tb-btn" id="searchBtn">⌕</button></div>
+    <div class="tb-right"><button class="tb-badge" id="verBadge">v0.7.6</button><button class="tb-btn" id="searchBtn">⌕</button></div>
   </div>
 
   <!-- ═══ DASHBOARD PAGE ═══ -->
@@ -914,7 +924,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       <!-- Fleet Summary Strip -->
       <div class="fleet-strip">
         <div class="fleet-cell"><div class="fleet-val" style="color:var(--cyan)" id="fTotal">--</div><div class="fleet-lbl">TOTAL NODES</div></div>
-        <div class="fleet-cell"><div class="fleet-val" style="color:var(--g)" id="fUprate">--%</div><div class="fleet-lbl">ONLINE RATE</div></div>
+        <div class="fleet-cell" style="transform:scale(1.06)"><div class="fleet-val" style="color:var(--g)" id="fUprate">--%</div><div class="fleet-lbl">ONLINE RATE</div></div>
         <div class="fleet-cell"><div class="fleet-val" style="color:var(--r)" id="fAlerts">--</div><div class="fleet-lbl">ALERTS</div></div>
         <div class="fleet-cell"><div class="fleet-val" style="color:var(--am)" id="fAvgLoad">--%</div><div class="fleet-lbl">AVG LOAD</div></div>
       </div>
@@ -922,6 +932,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
     <div class="content-area">
       <div class="sec-div an d5"><span class="sd-line"></span><span class="sd-label"><span class="sd-dot"></span>NODE ARRAY · 节点列表</span><span class="sd-line r"></span></div>
+      <div class="threat-bar an d5">SYSTEM THREAT LEVEL <span class="threat-level low" id="threatLevel">LOW</span></div>
       <div class="sec-head an d5"><div class="sh-l"><span class="sh-tag">SEC-01</span><span class="sh-title">NODE ARRAY</span></div><div class="pills" id="groupPills"></div></div>
       <div class="cards" id="nodeCards"></div>
     </div>
@@ -985,7 +996,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
 </div><!-- /mainContent -->
 <script>
-/* ═══ NanoMuse v0.7.5 — JS ═══ */
+/* ═══ NanoMuse v0.7.6 — JS ═══ */
 ;(function(){
 'use strict';
 
@@ -997,7 +1008,7 @@ const S={
   ws:null,_wsI:null,wsRetries:0,
   _lastF:[],
   detailUUID:null,detailNode:null,detailHours:6,detailTab:'load',detailPingHours:6,detailWsData:[],
-  VER:'v0.7.5',
+  VER:'v0.7.6',
   fleetLoadHist:[]
 };
 const STAB={hours:24,sort:'name',data:null,tasks:[],taskId:null,loading:false,_tasksFromApi:false};
@@ -1185,6 +1196,7 @@ function rSum(){
   const fT=$('fTotal');if(fT)fT.textContent=total;
   const fU=$('fUprate');if(fU)fU.textContent=total?(onC/total*100).toFixed(1)+'%':'--';
   const fA=$('fAlerts');if(fA)fA.textContent=offC;
+    const tl=$('threatLevel');if(tl){if(offC>=5){tl.textContent='HIGH';tl.className='threat-level high'}else if(offC>=2){tl.textContent='MEDIUM';tl.className='threat-level medium'}else{tl.textContent='LOW';tl.className='threat-level low'}}
   const fL=$('fAvgLoad');if(fL)fL.textContent=avgCpu+'%';
   /* Hero bars */
   const setBar=(id,vid,v)=>{const e=$(id);if(e)e.style.width=Math.min(100,v)+'%';const ve=$(vid);if(ve)ve.textContent=Math.round(v)+'%'};
