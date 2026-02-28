@@ -2011,13 +2011,13 @@ async function fetchTermLink(){
     const asnE=$('tlASN');if(asnE)asnE.textContent=d.asn+', '+d.isp;
     const brE=$('tlBrowser');if(brE)brE.textContent=d.browser;
     const osE=$('tlOS');if(osE)osE.textContent=d.os;
-    /* proxycheck.io risk detection (CORS enabled) */
+    /* proxycheck.io risk detection (CORS client-side, no IP needed) */
     try{
-      const qr=await fetch('https://proxycheck.io/v2/'+d.ip+'?key=989605-2d4v5q-8631mg-9w4673&vpn=1&asn=1&risk=1');
+      const qr=await fetch('https://proxycheck.io/v2/?key=public-77j8w6-n1t639-8dnh61&vpn=1&asn=1&risk=1');
       const q=await qr.json();
-      if(q&&q.status==='ok'&&q[d.ip]){
-        var r=q[d.ip];
-        d.proxycheck=r;
+      var rip=q.ip||d.ip;
+      if(q&&(q.status==='ok'||q.status==='warning')&&q[rip]){
+        var r=q[rip];
         const typeEl=$('tlType');
         if(typeEl){
           var tags=[];
