@@ -40,10 +40,10 @@
 @keyframes ptFloat{0%{opacity:0;transform:translateY(15px) scale(0)}20%{opacity:.5;transform:translateY(0) scale(1)}80%{opacity:.2;transform:translateY(-35px) scale(.5)}100%{opacity:0;transform:translateY(-50px) scale(0)}}
 .particles-layer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:4}
 @keyframes charReveal{
-  0%{opacity:0;filter:blur(18px) brightness(1.3) saturate(1.3) contrast(1.1)}
-  25%{opacity:0.6;filter:blur(6px) brightness(1.05) saturate(1.5) contrast(1.15)}
-  60%{opacity:0.9;filter:blur(1px) brightness(1.0) saturate(1.6) contrast(1.2)}
-  100%{opacity:1;filter:brightness(0.93) saturate(1.7) contrast(1.28)}
+  0%{opacity:0;filter:blur(18px) brightness(1.3) saturate(0.5) contrast(0.7)}
+  25%{opacity:0.5;filter:blur(6px) brightness(1.05) saturate(0.7) contrast(0.8)}
+  60%{opacity:0.85;filter:blur(1px) brightness(1.0) saturate(0.8) contrast(0.85)}
+  100%{opacity:1;filter:brightness(0.97) saturate(0.8) contrast(0.85)}
 }
 .anime-bg{animation:charReveal 4.5s cubic-bezier(0.25,0.46,0.45,0.94) forwards}
 .char-veil{position:absolute;inset:0;z-index:1;pointer-events:none;
@@ -70,14 +70,15 @@ body{
 .anime-bg{
   position:fixed;top:-2%;left:50%;transform:translateX(-50%);
   width:60vw;height:90vh;z-index:5;pointer-events:none;
-  opacity:0;filter:brightness(0.95) contrast(0.8) saturate(0.7);
+  opacity:0;filter:brightness(0.97) contrast(0.85) saturate(0.8);
+  mix-blend-mode:screen;
 }
 .anime-bg img{width:100%;height:100%;object-fit:cover;object-position:center 30%;
-  mask-image:radial-gradient(ellipse 85% 95% at 50% 42%,black 40%,transparent 72%);
-  -webkit-mask-image:radial-gradient(ellipse 85% 95% at 50% 42%,black 40%,transparent 72%)}
-/* Cold fog layer over girl — makes her feel like hologram projection */
+  mask-image:radial-gradient(ellipse 85% 95% at 50% 42%,black 42%,transparent 74%);
+  -webkit-mask-image:radial-gradient(ellipse 85% 95% at 50% 42%,black 42%,transparent 74%)}
+/* Cold hologram scanlines over girl */
 .anime-bg::after{content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 90% 80% at 50% 45%,rgba(200,210,222,0.3) 0%,rgba(200,210,222,0.15) 40%,transparent 70%);
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(200,215,230,0.08) 3px,rgba(200,215,230,0.08) 4px);
   pointer-events:none}
 .energy-glow{position:fixed;left:50%;top:15%;transform:translateX(-30%);
   width:600px;height:600px;z-index:1;pointer-events:none;
@@ -172,12 +173,23 @@ body{
 .h-center::before{content:'';position:absolute;top:30%;left:50%;transform:translate(-50%,-40%);width:280px;height:320px;background:radial-gradient(ellipse 60% 70%,rgba(0,216,255,0.08) 0%,rgba(37,99,235,0.04) 40%,transparent 70%);pointer-events:none;z-index:1;animation:core-pulse 3s ease-in-out infinite}
 .sync-core{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:6px;animation:core-breathe 4s ease-in-out infinite}
 @keyframes core-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.015)}}
-.sync-ring-wrap{position:relative;width:260px;height:260px}
+.sync-ring-wrap{position:relative;width:280px;height:280px}
 .sync-ring-wrap svg{position:absolute;inset:0;width:100%;height:100%}
-/* Energy glow behind ring */
-.sync-ring-wrap::before{content:'';position:absolute;inset:-40px;border-radius:50%;background:radial-gradient(circle,rgba(0,216,255,0.15) 0%,rgba(0,216,255,0.06) 40%,transparent 70%);animation:core-pulse 3s ease-in-out infinite;pointer-events:none}
-.sync-ring-wrap::after{content:'';position:absolute;inset:-65px;border-radius:50%;background:radial-gradient(circle,rgba(0,216,255,0.04) 0%,rgba(37,99,235,0.02) 50%,transparent 75%);animation:core-pulse 3s ease-in-out infinite 0.5s;pointer-events:none}
+/* Conic energy flow — slow rotating gradient behind ring */
+.sync-ring-wrap::before{content:'';position:absolute;inset:-30px;border-radius:50%;
+  background:conic-gradient(from 0deg,rgba(0,216,255,0) 0deg,rgba(43,124,255,0.18) 60deg,rgba(0,216,255,0.22) 120deg,rgba(43,124,255,0) 220deg,rgba(0,216,255,0.12) 320deg,rgba(43,124,255,0) 360deg);
+  animation:ring-energy 18s linear infinite;pointer-events:none;filter:blur(1px)}
+@keyframes ring-energy{to{transform:rotate(360deg)}}
+/* Outer radial glow pulse */
+.sync-ring-wrap::after{content:'';position:absolute;inset:-60px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,216,255,0.10) 0%,rgba(37,99,235,0.04) 45%,transparent 70%);
+  animation:core-pulse 3s ease-in-out infinite 0.5s;pointer-events:none}
 @keyframes core-pulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+/* Scan line across ring */
+.sync-scan{position:absolute;width:380px;height:2px;top:50%;left:50%;transform:translate(-50%,-50%);
+  background:linear-gradient(90deg,transparent,rgba(0,216,255,0.5),transparent);
+  filter:blur(0.3px);opacity:.5;animation:sync-scan-move 5s ease-in-out infinite;pointer-events:none;z-index:2}
+@keyframes sync-scan-move{0%,100%{transform:translate(-50%,-50%) translateX(-20px);opacity:.3}50%{transform:translate(-50%,-50%) translateX(20px);opacity:.7}}
 .sr-bg{fill:none;stroke:rgba(148,163,184,0.15);stroke-width:3}
 .sr-fill{fill:none;stroke:url(#syncGrad);stroke-width:5;stroke-linecap:round;filter:drop-shadow(0 0 24px var(--cyan-g)) drop-shadow(0 0 10px rgba(0,216,255,0.5)) drop-shadow(0 0 3px rgba(0,216,255,0.7)) drop-shadow(0 0 50px rgba(0,216,255,0.12));transition:stroke-dashoffset 1.5s cubic-bezier(.4,0,.2,1)}
 .sr-ticks{fill:none;stroke:rgba(148,163,184,0.2);stroke-width:0.5}
@@ -512,6 +524,7 @@ body{
 .tl-tag-danger{background:rgba(239,68,68,0.15);color:#dc2626;border:1px solid rgba(239,68,68,0.25)}
 .tl-tag-info{background:rgba(59,130,246,0.1);color:#2563eb;border:1px solid rgba(59,130,246,0.2)}
 @media(max-width:768px){.tl-status{display:none}.term-link{flex-wrap:wrap;gap:10px}}
+@media(prefers-reduced-motion:reduce){.sync-ring-wrap::before,.sync-scan,.sr-inner,.sr-outer,.sr-outer2{animation:none!important}}
 
 /* ═══ STABILITY PAGE — Heatmap Matrix ═══ */
 .stab-ov{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0}
@@ -793,6 +806,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
         <div class="particles-layer" id="ptLayer"></div>
         <div class="sync-core">
           <div class="sync-ring-wrap">
+            <div class="sync-scan"></div>
             <svg viewBox="0 0 260 260">
               <defs><linearGradient id="syncGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00d8ff"/><stop offset="100%" stop-color="#2563eb"/></linearGradient></defs>
               <circle cx="130" cy="130" r="122" class="sr-outer2"/>
