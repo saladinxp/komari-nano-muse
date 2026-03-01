@@ -905,14 +905,14 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
         <div class="h-div"><span class="h-div-l"></span><span class="h-div-t">BANDWIDTH</span><span class="h-div-l"></span></div>
         <div class="hp-ln"></div>
         <div style="display:flex;gap:0;width:100%">
-          <div style="flex:1;padding:6px 0">
+          <div style="flex:1;min-width:0;padding:6px 0">
             <div style="font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--t4);margin-bottom:2px">INBOUND</div>
-            <div style="display:flex;align-items:baseline;gap:4px"><span style="font-family:var(--fm);font-size:12px;font-weight:700;color:var(--g)">↑</span><span style="font-family:var(--fd);font-weight:800;font-size:22px;line-height:1.1;color:var(--g)" id="hNetUp">--</span><span style="font-family:var(--fm);font-size:9px;color:var(--t4)" id="hNetUpU">KB/s</span></div>
+            <div style="display:flex;align-items:baseline;gap:3px;flex-wrap:nowrap"><span style="font-family:var(--fm);font-size:12px;font-weight:700;color:var(--g)">↑</span><span style="font-family:var(--fd);font-weight:800;font-size:min(22px,4.5vw);line-height:1.1;color:var(--g);white-space:nowrap" id="hNetUp">--</span><span style="font-family:var(--fm);font-size:9px;color:var(--t4);white-space:nowrap" id="hNetUpU">KB/s</span></div>
           </div>
-          <div style="width:1px;background:rgba(148,163,184,0.12);margin:4px 12px"></div>
-          <div style="flex:1;padding:6px 0">
+          <div style="width:1px;background:rgba(148,163,184,0.12);margin:4px 8px;flex-shrink:0"></div>
+          <div style="flex:1;min-width:0;padding:6px 0">
             <div style="font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--t4);margin-bottom:2px">OUTBOUND</div>
-            <div style="display:flex;align-items:baseline;gap:4px"><span style="font-family:var(--fm);font-size:12px;font-weight:700;color:var(--blue)">↓</span><span style="font-family:var(--fd);font-weight:800;font-size:22px;line-height:1.1;color:var(--blue)" id="hNetDn">--</span><span style="font-family:var(--fm);font-size:9px;color:var(--t4)" id="hNetDnU">KB/s</span></div>
+            <div style="display:flex;align-items:baseline;gap:3px;flex-wrap:nowrap"><span style="font-family:var(--fm);font-size:12px;font-weight:700;color:var(--blue)">↓</span><span style="font-family:var(--fd);font-weight:800;font-size:min(22px,4.5vw);line-height:1.1;color:var(--blue);white-space:nowrap" id="hNetDn">--</span><span style="font-family:var(--fm);font-size:9px;color:var(--t4);white-space:nowrap" id="hNetDnU">KB/s</span></div>
           </div>
         </div>
 
