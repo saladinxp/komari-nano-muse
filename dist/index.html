@@ -1108,7 +1108,7 @@ async function fetchP(){
           const wait = Math.max(0, 5000 - elapsed);
           setTimeout(()=>{
             vb.style.opacity=vop;
-            if(ab){ab.style.transition='opacity 1.5s ease';ab.style.opacity='0'}
+            if(ab){ab.style.animation='none';ab.style.opacity='1';void ab.offsetWidth;ab.style.transition='opacity 1.5s ease';ab.style.opacity='0'}
           }, wait);
         };
       }
