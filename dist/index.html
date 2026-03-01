@@ -1106,7 +1106,7 @@ async function fetchP(){
         function doSwitch(){
           if(!videoReady||!timerReady)return;
           vb.style.opacity=vop;
-          if(ab){ab.style.animation='none';ab.style.opacity='1';void ab.offsetWidth;ab.style.transition='opacity 1.5s ease';ab.style.opacity='0'}
+          if(ab){ab.style.animation='none';ab.style.opacity='1';void ab.offsetWidth;ab.style.transition='opacity 1.5s ease';ab.style.opacity='0';ab.dataset.videoHidden='1'}
         }
         /* Mark video ready (oncanplay may fire multiple times, only need once) */
         v.oncanplay=()=>{videoReady=true;doSwitch()};
@@ -2123,12 +2123,14 @@ function initCharParallax(){
   const char=document.querySelector('.anime-bg');
   const veil=document.querySelector('.char-veil');
   if(!char)return;
+  if(char.dataset.videoHidden==='1')return;
   const hero=document.querySelector('.hero-top');
   if(!hero)return;
   let ticking=false;
   window.addEventListener('scroll',()=>{
     if(ticking)return;ticking=true;
     requestAnimationFrame(()=>{
+      if(char.dataset.videoHidden==='1'){ticking=false;return}
       const sy=window.scrollY;
       const hH=hero.offsetHeight||600;
       const t40=hH*0.35, t80=hH*0.75;
