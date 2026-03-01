@@ -1366,7 +1366,8 @@ function rCards(fl){
 /* ── Update Cards (WS incremental) ── */
 function uCards(){
   const fl=gF();const newUuids=fl.map(n=>n.uuid);
-  if(JSON.stringify(newUuids)!==JSON.stringify(S._lastF)){rCards(fl);return}
+  const same=newUuids.length===S._lastF?.length&&newUuids.every(u=>S._lastF.includes(u));
+  if(!same){rCards(fl);return}
   fl.forEach(n=>{
     const card=document.querySelector(`.nc[data-uuid="${n.uuid}"]`);if(!card)return;
     const on=S.onlineSet.has(n.uuid);
