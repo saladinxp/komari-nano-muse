@@ -1006,6 +1006,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 /* ═══ NanoMuse v0.8.0 — JS ═══ */
 ;(function(){
 'use strict';
+window._pageStart = performance.now();
 
 /* ── State ── */
 const S={
@@ -1101,7 +1102,15 @@ async function fetchP(){
       if(v && vb){
         v.src = ts.bg_video;
         const vop = parseFloat(ts.bg_video_opacity)||0.7;
-        v.oncanplay=()=>{vb.style.opacity=vop;const ab=document.getElementById('animeBg');if(ab)ab.style.display='none'};
+        v.oncanplay=()=>{
+          /* Wait for charReveal (4.5s) to finish before transitioning */
+          const elapsed = performance.now() - window._pageStart;
+          const wait = Math.max(0, 5000 - elapsed);
+          setTimeout(()=>{
+            vb.style.opacity=vop;
+            if(ab){ab.style.transition='opacity 1.5s ease';ab.style.opacity='0'}
+          }, wait);
+        };
       }
     }
     if(ts.footer_text){
