@@ -690,8 +690,37 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .boot-under{opacity:1}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:2px}
 @media(max-width:1100px){.hero{grid-template-columns:1fr;min-height:280px}.h-left,.h-right{display:none}}
-@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:16px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr)}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}.det-strip{flex-wrap:wrap}.ds-cell{min-width:auto;padding:10px 14px}.det-core-echo{display:none}.det-charts-grid{grid-template-columns:1fr}.wmap-overview{grid-template-columns:repeat(2,1fr)}.wmap-node-list{grid-template-columns:1fr}}
-@media(max-width:480px){.stab-ov{grid-template-columns:1fr}}
+@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:16px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr)}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}.det-strip{flex-wrap:wrap}.ds-cell{min-width:auto;padding:10px 14px}.det-core-echo{display:none}.det-charts-grid{grid-template-columns:1fr}.wmap-overview{grid-template-columns:repeat(2,1fr)}.wmap-node-list{grid-template-columns:1fr}
+/* ── Mobile: Hero & Character ── */
+.hero-top{min-height:60vh}
+.h-center{min-height:55vh}
+.anime-bg{width:90vw;height:70vh;top:-5%}
+.sync-ring-wrap{width:240px;height:240px}
+.sync-pct{font-size:48px}
+.sync-lbl{font-size:8px}
+.sync-sub{font-size:8px}
+/* ── Mobile: pills overflow ── */
+.sec-head{flex-wrap:wrap;gap:8px}
+.pills{flex-wrap:wrap}
+.pill{font-size:10px;padding:4px 10px}
+/* ── Mobile: Fleet strip ── */
+.fleet-strip .fs-val{font-size:28px}
+}
+@media(max-width:480px){.stab-ov{grid-template-columns:1fr}
+.hero-top{min-height:50vh}
+.h-center{min-height:45vh}
+.anime-bg{width:100vw;height:60vh}
+.sync-ring-wrap{width:200px;height:200px}
+.sync-pct{font-size:40px}
+.fleet-strip{grid-template-columns:repeat(2,1fr);gap:8px;padding:12px 16px}
+.fleet-strip .fs-val{font-size:24px}
+.fleet-strip .fs-lbl{font-size:7px}
+.tb-logo{min-width:auto;font-size:16px}
+.tb-badge{font-size:9px;padding:2px 8px}
+.sec-head .sh-l{flex-shrink:0}
+.pills{gap:4px}
+.pill{font-size:9px;padding:3px 8px}
+}
 </style>
 </head>
 <body class="booting">
