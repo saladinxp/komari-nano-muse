@@ -1102,20 +1102,17 @@ async function fetchP(){
       if(v && vb){
         v.src = ts.bg_video;
         const vop = parseFloat(ts.bg_video_opacity)||0.7;
-        let videoReady=false, timerReady=false;
-        function doSwitch(){
-          if(!videoReady||!timerReady)return;
-          vb.style.opacity=vop;
-          if(ab){ab.style.animation='none';ab.style.opacity='1';void ab.offsetWidth;ab.style.transition='opacity 1.5s ease';ab.style.opacity='0';ab.dataset.videoHidden='1'}
-        }
-        /* Mark video ready (oncanplay may fire multiple times, only need once) */
-        v.oncanplay=()=>{videoReady=true;doSwitch()};
-        /* Also check readyState in case oncanplay already fired before listener */
-        if(v.readyState>=3){videoReady=true}
-        /* Wait for charReveal (4.5s) to finish + 0.5s buffer */
+        /* After charReveal (4.5s) finishes, wait for video then crossfade */
         const elapsed=performance.now()-window._pageStart;
         const wait=Math.max(0,5000-elapsed);
-        setTimeout(()=>{timerReady=true;doSwitch()},wait);
+        setTimeout(()=>{
+          function crossfade(){
+            vb.style.opacity=vop;
+            if(ab){ab.dataset.videoHidden='1';ab.style.cssText+='animation:none !important;transition:opacity 1.5s ease !important;opacity:0 !important'}
+          }
+          if(v.readyState>=3){crossfade();return}
+          v.oncanplay=()=>crossfade();
+        },wait);
       }
     }
     if(ts.footer_text){
