@@ -1403,6 +1403,13 @@ function uCards(){
       const fake=genFake(n.uuid);
       if(fake&&fake.atk)card.classList.add('atk');else card.classList.add('ovl');
     }
+    /* Update meta chips (region/group/os) — fix fake OS persisting after node comes online */
+    const metaEl=card.querySelector('.nc-meta');
+    if(metaEl){
+      const osStr=on?(d.os||n.os||''):(genFake(n.uuid).os);
+      const region=n.region||'';const group=n.group||'';
+      metaEl.innerHTML=['region','group','os'].map(k=>{const v=k==='region'?region:k==='group'?group:osStr;return v?`<span class="nc-chip">${esc(v)}</span>`:''}).join('');
+    }
     /* Update footer: uptime vs alert label + hardware */
     const footer=card.querySelector('.nc-f');
     if(footer){
