@@ -1798,34 +1798,20 @@ function dCh(canvasId,opts){
   }
   /* Build path points */
   const pts=data.map((v,i)=>({x:pad.l+(i/(data.length-1||1))*cw,y:pad.t+ch*(1-Math.min(v,max)/max)}));
-  /* X-axis time labels — show date if span > 12h or times wrap around */
+  /* X-axis time labels */
   if(labels.length>1){
     ctx.fillStyle='#94a3b8';ctx.font='8px JetBrains Mono';ctx.textAlign='center';
     const tickCount=Math.min(5,labels.length);
-    /* Detect if we need dates: check if any adjacent pair wraps (HH decreases) */
-    let needDate=false;
-    const tickIdxs=[];
-    for(let i=0;i<tickCount;i++) tickIdxs.push(Math.round(i*(labels.length-1)/(tickCount-1)));
-    for(let i=1;i<tickIdxs.length;i++){
-      const a=labels[tickIdxs[i-1]]||'';const b=labels[tickIdxs[i]]||'';
-      const aDate=(a.split(' ')[0]||'');const bDate=(b.split(' ')[0]||'');
-      if(aDate!==bDate){needDate=true;break}
-      /* Also check if hour goes backward (e.g. 23:00 → 01:00 same date string edge case) */
-      const aH=parseInt((a.split(' ')[1]||a).split(':')[0])||0;
-      const bH=parseInt((b.split(' ')[1]||b).split(':')[0])||0;
-      if(bH<aH-1){needDate=true;break}
-    }
+    /* Only show date prefix if first and last label have different dates */
+    const fParts=(labels[0]||'').split(' ');
+    const lParts=(labels[labels.length-1]||'').split(' ');
+    const needDate=fParts.length>1&&lParts.length>1&&fParts[0]!==lParts[0];
     for(let i=0;i<tickCount;i++){
-      const idx=tickIdxs[i];
+      const idx=Math.round(i*(labels.length-1)/(tickCount-1));
       const x=pad.l+(idx/(labels.length-1||1))*cw;
       const lbl=labels[idx]||'';
       const parts=lbl.split(' ');
-      let display;
-      if(needDate){
-        display=lbl;
-      }else{
-        display=parts.length>1?parts[parts.length-1]:lbl;
-      }
+      const display=needDate?lbl:(parts.length>1?parts[parts.length-1]:lbl);
       ctx.fillText(display,x,h-4);
     }
   }
