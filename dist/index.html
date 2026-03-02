@@ -1865,23 +1865,39 @@ function dCh(canvasId,opts){
   if(labels.length>1){
     ctx.fillStyle='#94a3b8';ctx.font='8px JetBrains Mono';ctx.textAlign='center';
     const tickCount=Math.min(5,labels.length);
-    /* Use raw timestamps to detect cross-day: check if first and last are on different calendar days */
-    const rt=opts.rawTimes||[];
+    const tickIdxs=[];
+    for(let i=0;i<tickCount;i++) tickIdxs.push(Math.round(i*(labels.length-1)/(tickCount-1)));
+    /* Detect if times go backwards (cross-day) by checking raw timestamps or label hours */
     let needDate=false;
-    if(rt.length>1&&rt[0]&&rt[rt.length-1]){
-      const d1=new Date(rt[0]);const d2=new Date(rt[rt.length-1]);
-      needDate=d1.getDate()!==d2.getDate()||d1.getMonth()!==d2.getMonth()||d1.getFullYear()!==d2.getFullYear();
+    const rt=opts.rawTimes||[];
+    if(rt.length>1){
+      /* Method 1: raw timestamps — check if any adjacent tick pair goes backward */
+      for(let i=1;i<tickIdxs.length;i++){
+        if(rt[tickIdxs[i]]<rt[tickIdxs[i-1]]){needDate=true;break}
+      }
+      /* Method 2: also check if first and last are on different calendar days */
+      if(!needDate&&rt[0]&&rt[rt.length-1]){
+        const d1=new Date(rt[0]);const d2=new Date(rt[rt.length-1]);
+        if(d1.getDate()!==d2.getDate()||d1.getMonth()!==d2.getMonth())needDate=true;
+      }
+    }else{
+      /* Fallback: parse hours from labels and detect backward jump */
+      for(let i=1;i<tickIdxs.length;i++){
+        const a=labels[tickIdxs[i-1]]||'';const b=labels[tickIdxs[i]]||'';
+        const aH=parseInt((a.match(/(\d+):/)||[])[1])||0;
+        const bH=parseInt((b.match(/(\d+):/)||[])[1])||0;
+        if(bH<aH-1){needDate=true;break}
+      }
     }
     for(let i=0;i<tickCount;i++){
-      const idx=Math.round(i*(labels.length-1)/(tickCount-1));
+      const idx=tickIdxs[i];
       const x=pad.l+(idx/(labels.length-1||1))*cw;
       const lbl=labels[idx]||'';
       let display;
       if(needDate){
-        /* Show MM/DD HH:MM */
-        display=lbl;
+        display=lbl; /* MM/DD HH:MM */
       }else{
-        /* Same day: show only HH:MM — strip date prefix */
+        /* Same day: strip date prefix, show only HH:MM */
         const parts=lbl.split(' ');
         display=parts.length>1?parts[parts.length-1]:lbl;
       }
