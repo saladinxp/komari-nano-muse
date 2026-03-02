@@ -1690,13 +1690,6 @@ function rLoadCharts(records){
   records.sort((a,b)=>{const ta=new Date(a.time||a.timestamp||0).getTime();const tb=new Date(b.time||b.timestamp||0).getTime();return ta-tb});
   const labels=records.map(r=>{const t=r.time||r.timestamp;return fTL(t)});
   const rawTimes=records.map(r=>{const t=r.time||r.timestamp;return t?new Date(t).getTime():0});
-  /* DEBUG: check data distribution */
-  if(rawTimes.length>2){
-    const gaps=[];for(let i=1;i<rawTimes.length;i++)gaps.push(rawTimes[i]-rawTimes[i-1]);
-    const minGap=Math.min(...gaps),maxGap=Math.max(...gaps),avgGap=gaps.reduce((a,b)=>a+b,0)/gaps.length;
-    console.log('[NM] records:'+rawTimes.length+' minGap:'+Math.round(minGap/1000)+'s maxGap:'+Math.round(maxGap/1000)+'s avgGap:'+Math.round(avgGap/1000)+'s span:'+Math.round((rawTimes[rawTimes.length-1]-rawTimes[0])/3600000)+'h');
-    console.log('[NM] first:'+labels[0]+' last:'+labels[labels.length-1]);
-  }
   /* CPU: Komari may return 0-100 or 0-1 decimal — check max of first 20 samples */
   const cpuSamples=records.slice(0,20).map(r=>r.cpu||0);
   const cpuMax=Math.max(...cpuSamples);
