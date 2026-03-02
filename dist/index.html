@@ -696,7 +696,23 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .boot-under{opacity:1}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:2px}
 @media(max-width:1100px){.hero{grid-template-columns:1fr;min-height:280px}.h-left,.h-right{display:none}}
-@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:16px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr)}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}.det-strip{flex-wrap:wrap}.ds-cell{min-width:auto;padding:10px 14px}.det-core-echo{display:none}.det-charts-grid{grid-template-columns:1fr}.wmap-overview{grid-template-columns:repeat(2,1fr)}.wmap-node-list{grid-template-columns:1fr}
+@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:12px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr);gap:10px}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}.det-strip{flex-wrap:wrap;border-radius:10px;min-height:auto}.ds-cell{min-width:auto;padding:8px 12px;font-size:90%}.det-core-echo{display:none}.det-charts-grid{grid-template-columns:1fr}.wmap-overview{grid-template-columns:repeat(2,1fr)}.wmap-node-list{grid-template-columns:1fr}
+/* Mobile detail page */
+.chart-wrap{padding:12px;border-radius:12px;border-left-width:2px}
+.chart-wrap canvas{height:150px}
+.det-gauge{padding:18px 12px 14px;border-radius:12px}
+.det-gauge-arc{width:120px;height:66px}
+.det-gauge-arc svg{width:120px;height:66px}
+.det-gauge-val{font-size:24px}
+.det-gauge-lbl{font-size:9px}
+.det-card{padding:14px 16px;border-radius:10px}
+.det-val{font-size:14px}
+.det-label{font-size:9px;letter-spacing:2px}
+.mech{width:min(1440px,100vw);border-radius:0}
+/* Mobile cards footer */
+.nc-fd{font-size:90%}
+.nc-fd-val{font-size:10px}
+.nc-fd-lbl{font-size:6px}
 /* ── Mobile: Hero & Character ── */
 .hero-top{min-height:60vh}
 .h-center{min-height:55vh}
@@ -726,6 +742,20 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .sec-head .sh-l{flex-shrink:0}
 .pills{gap:4px}
 .pill{font-size:9px;padding:3px 8px}
+/* 480px detail page */
+.chart-wrap{padding:10px;border-left-width:2px}
+.chart-wrap canvas{height:130px}
+.det-gauges{gap:8px}
+.det-gauge{padding:14px 8px 12px}
+.det-gauge-arc{width:100px;height:55px}
+.det-gauge-arc svg{width:100px;height:55px}
+.det-gauge-val{font-size:20px}
+.det-gauge-unit{font-size:10px}
+.det-gauge-lbl{font-size:8px;letter-spacing:1.5px}
+.det-strip{margin-bottom:16px}
+.ds-cell{padding:6px 10px}
+.content-area{padding:8px}
+.nc-fd-val{font-size:9px}
 }
 </style>
 </head>
@@ -1769,10 +1799,11 @@ function dCh(canvasId,opts){
   const ctx=canvas.getContext('2d');
   const dpr=window.devicePixelRatio||1;
   const rect=canvas.parentElement.getBoundingClientRect();
-  canvas.width=rect.width*dpr;canvas.height=180*dpr;
-  canvas.style.width=rect.width+'px';canvas.style.height='180px';
+  const chH=parseInt(getComputedStyle(canvas).height)||180;
+  canvas.width=rect.width*dpr;canvas.height=chH*dpr;
+  canvas.style.width=rect.width+'px';canvas.style.height=chH+'px';
   ctx.scale(dpr,dpr);
-  const w=rect.width,h=180,pad={t:10,r:16,b:30,l:45};
+  const w=rect.width,h=chH,pad={t:10,r:16,b:30,l:45};
   let data=opts.data||[];
   let labels=opts.labels||[];
   if(!data.length)return;
