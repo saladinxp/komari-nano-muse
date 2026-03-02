@@ -1814,20 +1814,23 @@ function dCh(canvasId,opts){
   const w=rect.width,h=chH,pad={t:10,r:16,b:30,l:45};
   let data=opts.data||[];
   let labels=opts.labels||[];
+  let rawTimes=opts.rawTimes||[];
   if(!data.length)return;
   /* Downsample if too many points — LTTB-like: pick max in each bucket */
   const maxPts=Math.min(data.length,120);
   if(data.length>maxPts){
-    const bSz=data.length/maxPts;const nd=[];const nl=[];
+    const bSz=data.length/maxPts;const nd=[];const nl=[];const nr=[];
     for(let i=0;i<maxPts;i++){
       const s=Math.floor(i*bSz),e=Math.min(Math.floor((i+1)*bSz),data.length);
       let mI=s;for(let j=s+1;j<e;j++){if(data[j]>data[mI])mI=j}
       /* Use average for smoother look, but keep peak info */
       let sum=0;for(let j=s;j<e;j++)sum+=data[j];
       nd.push(sum/(e-s));
-      nl.push(labels[Math.floor((s+e)/2)]||'');
+      const mid=Math.floor((s+e)/2);
+      nl.push(labels[mid]||'');
+      nr.push(rawTimes[mid]||0);
     }
-    data=nd;labels=nl;
+    data=nd;labels=nl;rawTimes=nr;
   }
   /* Smart Y-axis: add breathing room so small fluctuations look calm */
   let max=opts.max;
@@ -1864,51 +1867,38 @@ function dCh(canvasId,opts){
     ctx.fillStyle='#64748b';ctx.font='9px JetBrains Mono';ctx.textAlign='right';
     ctx.fillText(Math.round(max*(1-i/4)),pad.l-6,y+3);
   }
-  /* Build path points */
-  const pts=data.map((v,i)=>({x:pad.l+(i/(data.length-1||1))*cw,y:pad.t+ch*(1-Math.min(v,max)/max)}));
+  /* Build path points — use real timestamps for x position if available */
+  let pts;
+  if(rawTimes.length===data.length&&rawTimes[0]&&rawTimes[rawTimes.length-1]){
+    const tMin=rawTimes[0],tMax=rawTimes[rawTimes.length-1],tRange=tMax-tMin||1;
+    pts=data.map((v,i)=>({x:pad.l+((rawTimes[i]-tMin)/tRange)*cw,y:pad.t+ch*(1-Math.min(v,max)/max)}));
+  }else{
+    pts=data.map((v,i)=>({x:pad.l+(i/(data.length-1||1))*cw,y:pad.t+ch*(1-Math.min(v,max)/max)}));
+  }
   /* X-axis time labels */
-  if(labels.length>1){
+  if(rawTimes.length>1&&rawTimes[0]&&rawTimes[rawTimes.length-1]){
     ctx.fillStyle='#94a3b8';ctx.font='8px JetBrains Mono';ctx.textAlign='center';
-    const tickCount=Math.min(5,labels.length);
-    const tickIdxs=[];
-    for(let i=0;i<tickCount;i++) tickIdxs.push(Math.round(i*(labels.length-1)/(tickCount-1)));
-    /* Detect if times go backwards (cross-day) by checking raw timestamps or label hours */
+    const tickCount=Math.min(5,data.length);
+    const tMin=rawTimes[0],tMax=rawTimes[rawTimes.length-1],tRange=tMax-tMin||1;
+    /* Detect cross-day */
     let needDate=false;
-    const rt=opts.rawTimes||[];
-    if(rt.length>1){
-      /* Method 1: raw timestamps — check if any adjacent tick pair goes backward */
-      for(let i=1;i<tickIdxs.length;i++){
-        if(rt[tickIdxs[i]]<rt[tickIdxs[i-1]]){needDate=true;break}
-      }
-      /* Method 2: also check if first and last are on different calendar days */
-      if(!needDate&&rt[0]&&rt[rt.length-1]){
-        const d1=new Date(rt[0]);const d2=new Date(rt[rt.length-1]);
-        if(d1.getDate()!==d2.getDate()||d1.getMonth()!==d2.getMonth())needDate=true;
-      }
-    }else{
-      /* Fallback: parse hours from labels and detect backward jump */
-      for(let i=1;i<tickIdxs.length;i++){
-        const a=labels[tickIdxs[i-1]]||'';const b=labels[tickIdxs[i]]||'';
-        const aH=parseInt((a.match(/(\d+):/)||[])[1])||0;
-        const bH=parseInt((b.match(/(\d+):/)||[])[1])||0;
-        if(bH<aH-1){needDate=true;break}
-      }
-    }
+    const d1=new Date(tMin);const d2=new Date(tMax);
+    if(d1.getDate()!==d2.getDate()||d1.getMonth()!==d2.getMonth())needDate=true;
+    /* Generate evenly spaced time ticks */
     for(let i=0;i<tickCount;i++){
-      const idx=tickIdxs[i];
-      const x=pad.l+(idx/(labels.length-1||1))*cw;
-      const lbl=labels[idx]||'';
-      let display;
+      const t=tMin+i*tRange/(tickCount-1);
+      const x=pad.l+(i/(tickCount-1))*cw;
+      const d=new Date(t);
+      const hh=String(d.getHours()).padStart(2,'0');
+      const mm=String(d.getMinutes()).padStart(2,'0');
+      let display=hh+':'+mm;
       if(needDate){
-        display=lbl; /* MM/DD HH:MM */
-      }else{
-        /* Same day: strip date prefix, show only HH:MM */
-        const sp=lbl.indexOf(' ');
-        display=sp>=0?lbl.substring(sp+1):lbl;
+        const M=String(d.getMonth()+1).padStart(2,'0');
+        const D=String(d.getDate()).padStart(2,'0');
+        display=M+'/'+D+' '+display;
       }
-      /* Prevent last label from being clipped */
-      if(i===tickCount-1){ctx.textAlign='right';ctx.fillText(display,Math.min(x,w-pad.r),h-4);ctx.textAlign='center'}
-      else if(i===0){ctx.textAlign='left';ctx.fillText(display,Math.max(x,pad.l),h-4);ctx.textAlign='center'}
+      if(i===0){ctx.textAlign='left';ctx.fillText(display,Math.max(x,pad.l),h-4);ctx.textAlign='center'}
+      else if(i===tickCount-1){ctx.textAlign='right';ctx.fillText(display,Math.min(x,w-pad.r),h-4);ctx.textAlign='center'}
       else{ctx.fillText(display,x,h-4)}
     }
   }
