@@ -1097,6 +1097,7 @@ function fB(b,d=2){if(!b&&b!==0)return'--';const u=['B','KB','MB','GB','TB','PB'
 function fS(bps){if(!bps&&bps!==0)return'--';const a=Math.abs(bps);if(a>=1073741824)return(a/1073741824).toFixed(2)+' GB/s';if(a>=1048576)return(a/1048576).toFixed(1)+' MB/s';if(a>=1024)return(a/1024).toFixed(1)+' KB/s';return a.toFixed(0)+' B/s'}
 function fUs(s){if(!s)return'--';const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600);return d>0?d+'d '+h+'h':h+'h'}
 function fT(ts){if(!ts)return'--';const d=new Date(ts*1000);return d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}
+function fTL(t){if(!t)return'--';const d=new Date(t);const M=String(d.getMonth()+1).padStart(2,'0');const D=String(d.getDate()).padStart(2,'0');const h=String(d.getHours()).padStart(2,'0');const m=String(d.getMinutes()).padStart(2,'0');return M+'/'+D+' '+h+':'+m}
 function pc(u,t){if(!t)return 0;return Math.min(100,Math.round(u/t*100))}
 function mColor(v){if(v>=80)return'red';if(v>=60)return'amber';if(v>=30)return'green';return'blue'}
 function mH(label,value,isOff,hw){const c=isOff?'red':mColor(value);const v=isOff?value:Math.min(100,value);const hwHtml=hw?`<span class="nc-hw">${esc(hw)}</span>`:'';return`<div class="nc-m"><span class="nc-ml">${label}</span><div class="nc-mt"><div class="nc-mf ${c}" style="width:${v}%"></div>${hwHtml}</div><span class="nc-mv"${v>=80?' style="color:var(--r)"':''}>${Math.round(v)}%</span></div>`}
@@ -1685,7 +1686,7 @@ function rLoadCharts(records){
     <div class="chart-wrap"><div class="chart-label">CPU %</div><canvas id="chCpu"></canvas></div>
     <div class="chart-wrap"><div class="chart-label">NETWORK</div><canvas id="chNet"></canvas></div>
   </div>`;
-  const labels=records.map(r=>{const t=r.time||r.timestamp;if(!t)return'--';const d=new Date(t);return d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})});
+  const labels=records.map(r=>{const t=r.time||r.timestamp;return fTL(t)});
   const rawTimes=records.map(r=>{const t=r.time||r.timestamp;return t?new Date(t).getTime():0});
   /* CPU: Komari may return 0-100 or 0-1 decimal — check max of first 20 samples */
   const cpuSamples=records.slice(0,20).map(r=>r.cpu||0);
@@ -1731,7 +1732,7 @@ function rPingCharts(pd){
     byTask.forEach((v,tid)=>{
       if(!v.records.length)return;
       const cid='chPing'+tid;
-      const labels=v.records.map(r=>{const t=r.time;if(!t)return'--';const d=new Date(t);return d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})});
+      const labels=v.records.map(r=>fTL(r.time));
       const rawTimes=v.records.map(r=>{const t=r.time;return t?new Date(t).getTime():0});
       dCh(cid,{labels,rawTimes,data:v.records.map(r=>r.value>=0?r.value:0),color:PING_COLORS[idx%PING_COLORS.length],label:'ms'});
       idx++;
@@ -1739,7 +1740,7 @@ function rPingCharts(pd){
   }else{
     /* Single task or no task info — original single chart */
     cc.innerHTML=`<div class="chart-wrap"><div class="chart-label">▎LATENCY (ms)${tasks.length?'<span style="float:right;font-size:12px;opacity:.7">'+esc(tasks[0].name)+'</span>':''}</div><canvas id="chPing"></canvas></div>`;
-    const labels=records.map(r=>{const t=r.time;if(!t)return'--';const d=new Date(t);return d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})});
+    const labels=records.map(r=>fTL(r.time));
     const rawTimes=records.map(r=>{const t=r.time;return t?new Date(t).getTime():0});
     dCh('chPing',{labels,rawTimes,data:records.map(r=>r.value>=0?r.value:0),color:'#2563eb'});
   }
@@ -1898,10 +1899,13 @@ function dCh(canvasId,opts){
         display=lbl; /* MM/DD HH:MM */
       }else{
         /* Same day: strip date prefix, show only HH:MM */
-        const parts=lbl.split(' ');
-        display=parts.length>1?parts[parts.length-1]:lbl;
+        const sp=lbl.indexOf(' ');
+        display=sp>=0?lbl.substring(sp+1):lbl;
       }
-      ctx.fillText(display,x,h-4);
+      /* Prevent last label from being clipped */
+      if(i===tickCount-1){ctx.textAlign='right';ctx.fillText(display,Math.min(x,w-pad.r),h-4);ctx.textAlign='center'}
+      else if(i===0){ctx.textAlign='left';ctx.fillText(display,Math.max(x,pad.l),h-4);ctx.textAlign='center'}
+      else{ctx.fillText(display,x,h-4)}
     }
   }
   /* Smooth bezier helper */
