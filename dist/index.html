@@ -371,16 +371,21 @@ body{
 .nc-meters{display:flex;flex-direction:column;gap:6px;margin:4px 0}
 .nc-m{display:flex;align-items:center;gap:8px}
 .nc-ml{font-family:var(--fm);font-size:9px;letter-spacing:1.5px;color:var(--t3);width:32px;flex-shrink:0}
-.nc-mt{flex:1;height:5px;border-radius:2.5px;overflow:hidden;background:rgba(148,163,184,0.12);position:relative}
-.nc-mf{height:100%;border-radius:2px}
+.nc-mt{flex:1;height:5px;border-radius:2.5px;overflow:visible;background:rgba(148,163,184,0.12);position:relative}
+.nc-mf{height:100%;border-radius:2px;position:relative;z-index:1}
 .nc-mf.blue{background:linear-gradient(90deg,var(--cyan),var(--blue));box-shadow:0 0 4px rgba(0,210,255,.15)}
 .nc-mf.green{background:var(--g)}.nc-mf.amber{background:var(--am)}.nc-mf.red{background:var(--r)}
+.nc-hw{position:absolute;top:50%;right:6px;transform:translateY(-50%);font-family:var(--fm);font-size:7.5px;font-weight:500;letter-spacing:0.05em;color:rgba(80,100,130,0.6);z-index:0;pointer-events:none;white-space:nowrap}
 .nc-mv{font-family:var(--fm);font-size:10px;font-weight:600;width:36px;text-align:right;flex-shrink:0}
 .nc-net{display:flex;gap:12px;margin-top:5px;font-family:var(--fm);font-size:9.5px;color:var(--t2)}
 .nc-net span{display:flex;align-items:center;gap:3px}.au{color:var(--g);font-weight:700}.ad{color:var(--blue);font-weight:700}
-.nc-f{display:flex;justify-content:space-between;padding:8px 14px;border-top:1px solid rgba(148,190,230,0.2);font-family:var(--fm);font-size:9px;color:var(--t3);letter-spacing:1px;position:relative}
-.nc-traffic{display:flex;justify-content:center;gap:16px;padding:4px 14px 8px;font-family:var(--fm);font-size:8px;color:var(--t4);letter-spacing:1px}
-.nc-f::after{content:'';position:absolute;top:-1px;right:14px;width:14px;height:2px;background:var(--cyan);border-radius:1px;opacity:.35}
+.nc-fd{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid rgba(148,190,230,0.15);font-family:var(--fm)}
+.nc-fd-cell{padding:6px 8px;display:flex;flex-direction:column;align-items:center;gap:1px}
+.nc-fd-cell+.nc-fd-cell{border-left:1px solid rgba(148,190,230,0.1)}
+.nc-fd-lbl{font-size:6.5px;letter-spacing:2px;color:var(--t4);text-transform:uppercase}
+.nc-fd-val{font-size:11px;font-weight:600;color:var(--t)}
+.nc-f-off{display:flex;justify-content:space-between;padding:8px 14px;border-top:1px solid rgba(148,190,230,0.2);font-family:var(--fm);font-size:9px;color:var(--t3);letter-spacing:1px;position:relative}
+.nc-f-off::after{content:'';position:absolute;top:-1px;right:14px;width:14px;height:2px;background:var(--cyan);border-radius:1px;opacity:.35}
 .nc-ut{display:flex;align-items:center;gap:4px}.nc-utd{width:4px;height:4px;border-radius:50%;background:var(--g)}
 .nc.off{opacity:.8}.nc.off:hover{opacity:.92}
 .nc.off{background:rgba(255,255,255,0.28);border-color:rgba(239,68,68,0.18);box-shadow:inset 0 0 0 1px rgba(239,68,68,0.08),0 1px 3px rgba(148,163,184,0.05)}
@@ -613,11 +618,11 @@ body.alert-active .scan-line{background:linear-gradient(90deg,transparent,rgba(1
 .nc.off.atk{background:rgba(255,240,240,0.4);border-color:rgba(210,80,80,0.15);
   box-shadow:inset 3px 0 0 rgba(210,70,70,0.7),0 2px 8px rgba(200,60,60,0.06),inset 0 0 12px rgba(210,80,80,0.04),inset 0 1px 0 rgba(255,255,255,0.3)}
 .nc.off.atk::before{background:linear-gradient(90deg,rgba(210,70,70,0.8),rgba(220,100,120,0.7));animation:pulse-glow 1.8s ease-in-out infinite}
-.nc.off.atk .nc-f{border-top-color:rgba(210,80,80,0.1)}
+.nc.off.atk .nc-f-off{border-top-color:rgba(210,80,80,0.1)}
 /* OVERLOAD */
 .nc.off.ovl{background:rgba(255,250,235,0.4);border-color:rgba(200,150,20,0.15);
   box-shadow:inset 3px 0 0 rgba(200,140,10,0.6),0 2px 8px rgba(200,140,10,0.05),inset 0 0 12px rgba(200,150,20,0.03),inset 0 1px 0 rgba(255,255,255,0.3)}
-.nc.off.ovl .nc-f{border-top-color:rgba(200,150,20,0.1)}
+.nc.off.ovl .nc-f-off{border-top-color:rgba(200,150,20,0.1)}
 /* Plain offline — subtle desaturated red hint */
 .nc.off:not(.atk):not(.ovl){border-color:rgba(180,100,100,0.15);
   box-shadow:inset 3px 0 0 rgba(200,80,80,0.5),0 2px 6px rgba(180,80,80,0.04),inset 0 1px 0 rgba(255,255,255,0.3)}
@@ -1061,7 +1066,7 @@ function fUs(s){if(!s)return'--';const d=Math.floor(s/86400),h=Math.floor((s%864
 function fT(ts){if(!ts)return'--';const d=new Date(ts*1000);return d.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'})}
 function pc(u,t){if(!t)return 0;return Math.min(100,Math.round(u/t*100))}
 function mColor(v){if(v>=80)return'red';if(v>=60)return'amber';if(v>=30)return'green';return'blue'}
-function mH(label,value,isOff){const c=isOff?'red':mColor(value);const v=isOff?value:Math.min(100,value);return`<div class="nc-m"><span class="nc-ml">${label}</span><div class="nc-mt"><div class="nc-mf ${c}" style="width:${v}%"></div></div><span class="nc-mv"${v>=80?' style="color:var(--r)"':''}>${Math.round(v)}%</span></div>`}
+function mH(label,value,isOff,hw){const c=isOff?'red':mColor(value);const v=isOff?value:Math.min(100,value);const hwHtml=hw?`<span class="nc-hw">${esc(hw)}</span>`:'';return`<div class="nc-m"><span class="nc-ml">${label}</span><div class="nc-mt"><div class="nc-mf ${c}" style="width:${v}%"></div>${hwHtml}</div><span class="nc-mv"${v>=80?' style="color:var(--r)"':''}>${Math.round(v)}%</span></div>`}
 function uMt(card,label,value){const rows=card.querySelectorAll('.nc-m');for(const r of rows){if(r.querySelector('.nc-ml').textContent===label){const bar=r.querySelector('.nc-mf');const vEl=r.querySelector('.nc-mv');const v=Math.min(100,value);const c=mColor(v);bar.className='nc-mf '+c;bar.style.width=v+'%';vEl.textContent=Math.round(v)+'%';vEl.style.color=v>=80?'var(--r)':'';break}}}
 function varHash(uuid){let h=0;for(let i=0;i<uuid.length;i++){h=((h<<5)-h)+uuid.charCodeAt(i);h|=0}return Math.abs(h)}
 /* ── flatLive: convert nested WS/recent data → flat format for rendering ── */
@@ -1346,7 +1351,9 @@ function rCards(fl){
     const totalUp=on?fB(d.network_total_up||0,1):'--';
     const totalDn=on?fB(d.network_total_down||0,1):'--';
     const uptime=on&&d.uptime?fUs(d.uptime):'--';
-    const hw=on?[(n.cpu_cores||'?')+'C',fB(d.memory_total||n.mem_total||0,0),fB(d.disk_total||n.disk_total||0,0)].join(' / '):(fake?fB(fake.mem,0)+' / '+fB(fake.dsk,0):'--');
+    const hwCpu=on?(n.cpu_cores||'?')+' Cores':'';
+    const hwRam=on?fB(d.memory_total||n.mem_total||0,0):'';
+    const hwDisk=on?fB(d.disk_total||n.disk_total||0,0):'';
     const osStr=on?(d.os||n.os||''):(fake?fake.os:'');
     const region=n.region||'';const group=n.group||'';
     const chips=['region','group','os'].map(k=>{const v=k==='region'?region:k==='group'?group:osStr;return v?`<span class="nc-chip">${esc(v)}</span>`:''}).join('');
@@ -1357,11 +1364,10 @@ function rCards(fl){
       <div class="nc-meta">${chips}</div>
       <div class="nc-body">
         <div class="nc-ring"><svg viewBox="0 0 52 52"><circle class="nc-ring-bg" cx="26" cy="26" r="21"/><circle class="nc-ring-fg ${hc}" cx="26" cy="26" r="21" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/></svg><div class="nc-ring-val" style="color:var(--${hc})">${health}</div><div class="nc-ring-lbl">HEALTH</div></div>
-        <div class="nc-data"><div class="nc-meters">${mH('CPU',cpu,!on)}${mH('RAM',ram,!on)}${mH('DISK',disk,!on)}</div>
+        <div class="nc-data"><div class="nc-meters">${mH('CPU',cpu,!on,hwCpu)}${mH('RAM',ram,!on,hwRam)}${mH('DISK',disk,!on,hwDisk)}</div>
         <div class="nc-net"><span${on?'':' style="opacity:.4"'}><span class="au">↑</span>${netUp}</span><span${on?'':' style="opacity:.4"'}><span class="ad">↓</span>${netDn}</span></div></div>
       </div>
-      <div class="nc-f">${on?`<span class="nc-ut"><span class="nc-utd"></span>${uptime}</span>`:`<span style="color:var(--r)">⚠ ${fake&&fake.atk?'UNDER ATTACK':'OVERLOAD'}</span>`}<span>${esc(hw)}</span></div>
-      ${on?`<div class="nc-traffic"><span><span class="au">↑</span>${totalUp}</span><span><span class="ad">↓</span>${totalDn}</span></div>`:''}
+      ${on?`<div class="nc-fd"><div class="nc-fd-cell"><span class="nc-fd-lbl">UPTIME</span><span class="nc-fd-val" style="color:var(--g)">${uptime}</span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">TX TOTAL</span><span class="nc-fd-val"><span class="au">↑</span>${totalUp}</span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">RX TOTAL</span><span class="nc-fd-val"><span class="ad">↓</span>${totalDn}</span></div></div>`:`<div class="nc-f-off"><span style="color:var(--r)">⚠ ${fake&&fake.atk?'UNDER ATTACK':'OVERLOAD'}</span></div>`}
     </div>`;
   });
   c.innerHTML=html;
@@ -1397,12 +1403,28 @@ function uCards(){
     if(netEl&&on){
       netEl.innerHTML=`<span><span class="au">↑</span>${fS(d.network_tx||0)}</span><span><span class="ad">↓</span>${fS(d.network_rx||0)}</span>`;
     }
-    /* Update total traffic */
-    let trafficEl=card.querySelector('.nc-traffic');
+    /* Update three-column footer */
+    let fdEl=card.querySelector('.nc-fd');
+    let fOffEl=card.querySelector('.nc-f-off');
     if(on){
-      if(!trafficEl){trafficEl=document.createElement('div');trafficEl.className='nc-traffic';card.appendChild(trafficEl)}
-      trafficEl.innerHTML=`<span><span class="au">↑</span>${fB(d.network_total_up||0,1)}</span><span><span class="ad">↓</span>${fB(d.network_total_down||0,1)}</span>`;
-    }else if(trafficEl){trafficEl.remove()}
+      if(fOffEl){fOffEl.remove()}
+      const uptime=d.uptime?fUs(d.uptime):'--';
+      const tUp=fB(d.network_total_up||0,1);
+      const tDn=fB(d.network_total_down||0,1);
+      if(!fdEl){fdEl=document.createElement('div');fdEl.className='nc-fd';card.appendChild(fdEl)}
+      fdEl.innerHTML=`<div class="nc-fd-cell"><span class="nc-fd-lbl">UPTIME</span><span class="nc-fd-val" style="color:var(--g)">${uptime}</span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">TX TOTAL</span><span class="nc-fd-val"><span class="au">↑</span>${tUp}</span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">RX TOTAL</span><span class="nc-fd-val"><span class="ad">↓</span>${tDn}</span></div>`;
+    }else{
+      if(fdEl){fdEl.remove()}
+    }
+    /* Update hw specs in meter bars */
+    if(on){
+      const hwSpecs=[(n.cpu_cores||'?')+' Cores',fB(d.memory_total||n.mem_total||0,0),fB(d.disk_total||n.disk_total||0,0)];
+      card.querySelectorAll('.nc-mt').forEach((mt,idx)=>{
+        let hw=mt.querySelector('.nc-hw');
+        if(!hw){hw=document.createElement('span');hw.className='nc-hw';mt.appendChild(hw)}
+        hw.textContent=hwSpecs[idx]||'';
+      });
+    }
     /* Update status dot */
     const dot=card.querySelector('.nc-dot');
     if(dot){dot.setAttribute('class','nc-dot '+(on?'on':'off'))}
@@ -1419,19 +1441,6 @@ function uCards(){
       const osStr=on?(d.os||n.os||''):(genFake(n.uuid).os);
       const region=n.region||'';const group=n.group||'';
       metaEl.innerHTML=['region','group','os'].map(k=>{const v=k==='region'?region:k==='group'?group:osStr;return v?`<span class="nc-chip">${esc(v)}</span>`:''}).join('');
-    }
-    /* Update footer: uptime vs alert label + hardware */
-    const footer=card.querySelector('.nc-f');
-    if(footer){
-      const d2=S.liveData[n.uuid]||{};
-      const uptime=on&&d2.uptime?fUs(d2.uptime):'--';
-      const hw=on?[(n.cpu_cores||'?')+'C',fB(d2.memory_total||n.mem_total||0,0),fB(d2.disk_total||n.disk_total||0,0)].join(' / '):(()=>{const fk=genFake(n.uuid);return fB(fk.mem,0)+' / '+fB(fk.dsk,0)})();
-      if(on){
-        footer.innerHTML=`<span class="nc-ut"><span class="nc-utd"></span>${uptime}</span><span>${esc(hw)}</span>`;
-      }else{
-        const fk=genFake(n.uuid);
-        footer.innerHTML=`<span style="color:var(--r)">⚠ ${fk.atk?'UNDER ATTACK':'OVERLOAD'}</span><span>${esc(hw)}</span>`;
-      }
     }
   });
 }
