@@ -1688,6 +1688,14 @@ function rLoadCharts(records){
   </div>`;
   const labels=records.map(r=>{const t=r.time||r.timestamp;return fTL(t)});
   const rawTimes=records.map(r=>{const t=r.time||r.timestamp;return t?new Date(t).getTime():0});
+  /* DEBUG: log first/last 3 records time to diagnose */
+  console.log('[NanoMuse DEBUG] records count:',records.length);
+  console.log('[NanoMuse DEBUG] first 3 raw times:',records.slice(0,3).map(r=>r.time||r.timestamp));
+  console.log('[NanoMuse DEBUG] last 3 raw times:',records.slice(-3).map(r=>r.time||r.timestamp));
+  console.log('[NanoMuse DEBUG] first 3 labels:',labels.slice(0,3));
+  console.log('[NanoMuse DEBUG] last 3 labels:',labels.slice(-3));
+  console.log('[NanoMuse DEBUG] first 3 rawTimes ms:',rawTimes.slice(0,3));
+  console.log('[NanoMuse DEBUG] last 3 rawTimes ms:',rawTimes.slice(-3));
   /* CPU: Komari may return 0-100 or 0-1 decimal — check max of first 20 samples */
   const cpuSamples=records.slice(0,20).map(r=>r.cpu||0);
   const cpuMax=Math.max(...cpuSamples);
