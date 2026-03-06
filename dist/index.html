@@ -1998,8 +1998,10 @@ async function fetchStabTasks(){
 }
 async function fetchStability(hours){
   try{
+    /* Limit data points to prevent OOM: 24h=2000, 7d=4000, 30d=6000 */
+    const mc=hours<=24?2000:hours<=168?4000:6000;
     const r=await fetch('/api/rpc2',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({jsonrpc:'2.0',method:'common:getRecords',params:{type:'ping',hours,maxCount:4000},id:1})});
+      body:JSON.stringify({jsonrpc:'2.0',method:'common:getRecords',params:{type:'ping',hours,maxCount:mc},id:1})});
     const d=await r.json();STAB.data=d.result||d;
     if(!STAB._tasksFromApi)extractTasksFromData(STAB.data);
     renderStability();
@@ -2027,19 +2029,22 @@ function renderStabTasks(){
 }
 function stabAggByDay(records){
   if(!records)return{};
-  /* Build per-node per-day aggregation */
+  /* Build per-node per-day aggregation — optimized for large datasets */
   const byNode={};
-  records.forEach(r=>{
-    if(STAB.taskId!==null&&r.task_id!==STAB.taskId)return;
-    const uuid=r.client||r.uuid||r.node_uuid;if(!uuid)return;
-    const t=r.time||r.created_at||r.timestamp;if(!t)return;
-    const day=new Date(t).toISOString().slice(0,10); /* YYYY-MM-DD */
-    if(!byNode[uuid])byNode[uuid]={days:{},total:0,loss:0};
-    if(!byNode[uuid].days[day])byNode[uuid].days[day]={total:0,loss:0};
-    byNode[uuid].days[day].total++;
-    byNode[uuid].total++;
-    if(r.value<0){byNode[uuid].days[day].loss++;byNode[uuid].loss++}
-  });
+  for(let i=0,len=records.length;i<len;i++){
+    const r=records[i];
+    if(STAB.taskId!==null&&r.task_id!==STAB.taskId)continue;
+    const uuid=r.client||r.uuid||r.node_uuid;if(!uuid)continue;
+    const t=r.time||r.created_at||r.timestamp;if(!t)continue;
+    /* Extract YYYY-MM-DD from ISO string directly, avoid new Date() */
+    const day=typeof t==='string'&&t.length>=10?t.slice(0,10):new Date(t).toISOString().slice(0,10);
+    let n=byNode[uuid];
+    if(!n){n={days:{},total:0,loss:0};byNode[uuid]=n}
+    let d=n.days[day];
+    if(!d){d={total:0,loss:0};n.days[day]=d}
+    d.total++;n.total++;
+    if(r.value<0){d.loss++;n.loss++}
+  }
   return byNode;
 }
 function renderStability(){
