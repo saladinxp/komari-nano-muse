@@ -2251,6 +2251,7 @@ function fBilling(n){
 
 S._billView=S._billView||'group';
 function setBillView(v){S._billView=v;document.querySelectorAll('.bill-view-btn').forEach(function(b){b.classList.toggle('a',b.getAttribute('data-view')===v)});rBilling()}
+window.setBillView=setBillView;
 
 function rBilling(){
   var sumEl=$('billSummary');var contentEl=$('billContent');
