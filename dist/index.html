@@ -15,9 +15,9 @@
 <meta name="twitter:description" content="Real-time server fleet monitoring dashboard">
 <meta name="twitter:image" content="https://lol.moe/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<!-- NanoMuse v0.9.3 — Komari Monitor Theme -->
+<!-- NanoMuse v0.9.4 — Komari Monitor Theme -->
 <style>
-/* ═══ NanoMuse v0.9.3 — CSS ═══ */
+/* ═══ NanoMuse v0.9.4 — CSS ═══ */
 :root{
   --bg:#cad3e0;
   --cyan:#00d8ff;--cyan-g:rgba(0,216,255,0.5);
@@ -630,6 +630,18 @@ body.alert-active .scan-line{background:linear-gradient(90deg,transparent,rgba(1
 .bill-free{font-family:var(--fm);font-weight:500;color:var(--t4)}
 .bill-cycle{font-size:11px;color:var(--t3)}
 .bill-total-row td{font-weight:700;border-top:2px solid rgba(37,99,235,0.2);background:rgba(37,99,235,0.02)}
+
+.bill-group{margin-bottom:28px}
+.bill-group-hdr{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:0 2px}
+.bill-group-name{font-family:var(--fr);font-size:13px;letter-spacing:2.5px;color:var(--t);font-weight:700}
+.bill-group-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(37,99,235,0.15),transparent)}
+.bill-group-stats{font-family:var(--fm);font-size:10px;letter-spacing:1px;color:var(--t3)}
+.bill-group-cost{font-family:var(--fm);font-size:12px;font-weight:700;color:var(--blue);margin-left:auto}
+.bill-view-toggle{display:flex;gap:0;margin-bottom:20px}
+.bill-view-btn{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;padding:8px 18px;cursor:pointer;border:1px solid rgba(100,116,139,0.15);background:var(--glass);color:var(--t3);font-weight:500;transition:.2s}
+.bill-view-btn:first-child{border-radius:6px 0 0 6px}
+.bill-view-btn:last-child{border-radius:0 6px 6px 0}
+.bill-view-btn.a{background:var(--blue);color:#fff;border-color:var(--blue);font-weight:700}
 .fleet-cost-cell{cursor:pointer;transition:.3s}
 .fleet-cost-cell:hover{background:rgba(37,99,235,0.04)}
 /* ── Layer 2: Fleet strip ALERTS cell pulse ── */
@@ -1067,11 +1079,8 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       <div class="det-back" onclick="nav('/')">← BACK TO DASHBOARD</div>
       <div class="sec-div"><span class="sd-line"></span><span class="sd-label"><span class="sd-dot"></span>BILLING · 费用总览</span><span class="sd-line r"></span></div>
       <div class="bill-summary" id="billSummary"></div>
-      <div style="background:var(--glass);border:1px solid var(--gborder);border-radius:12px;overflow:hidden">
-        <table class="bill-table"><thead><tr>
-          <th>NODE</th><th>STATUS</th><th>GROUP</th><th>PRICE</th><th>CYCLE</th><th>MONTHLY</th><th>EXPIRES</th>
-        </tr></thead><tbody id="billBody"></tbody></table>
-      </div>
+      <div class="bill-view-toggle"><button class="bill-view-btn a" onclick="setBillView('group')">BY GROUP</button><button class="bill-view-btn" onclick="setBillView('flat')">ALL NODES</button></div>
+      <div id="billContent"></div>
     </div>
   </div>
   <!-- ═══ WORLD MAP PAGE ═══ -->
@@ -1113,7 +1122,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
 </div><!-- /mainContent -->
 <script>
-/* ═══ NanoMuse v0.9.3 — JS ═══ */
+/* ═══ NanoMuse v0.9.4 — JS ═══ */
 ;(function(){
 'use strict';
 window._pageStart = performance.now();
@@ -2240,20 +2249,31 @@ function fBilling(n){
   return{str:cur+p+cycleStr,monthly:monthly,currency:cur};
 }
 
+S._billView=S._billView||'group';
+function setBillView(v){S._billView=v;document.querySelectorAll('.bill-view-btn').forEach(function(b){b.classList.toggle('a',b.textContent===(v==='group'?'BY GROUP':'ALL NODES'))});rBilling()}
+
 function rBilling(){
-  var sumEl=$('billSummary');var bodyEl=$('billBody');
-  if(!sumEl||!bodyEl)return;
-  var totals={};var nodeRows=[];var freeCount=0;
+  var sumEl=$('billSummary');var contentEl=$('billContent');
+  if(!sumEl||!contentEl)return;
+  var totals={};var nodeRows=[];var freeCount=0;var groupData={};
   S.nodes.forEach(function(n){
     if(n.hidden)return;
     var b=fBilling(n);
     var on=S.onlineSet.has(n.uuid);
+    var g=n.group||'未分组';
     if(b.monthly>0&&b.currency){
       if(!totals[b.currency])totals[b.currency]=0;
       totals[b.currency]+=b.monthly;
     }
     if(b.str==='免费')freeCount++;
-    nodeRows.push({node:n,billing:b,online:on});
+    var row={node:n,billing:b,online:on,group:g};
+    nodeRows.push(row);
+    if(!groupData[g])groupData[g]={rows:[],totals:{}};
+    groupData[g].rows.push(row);
+    if(b.monthly>0&&b.currency){
+      if(!groupData[g].totals[b.currency])groupData[g].totals[b.currency]=0;
+      groupData[g].totals[b.currency]+=b.monthly;
+    }
   });
   /* Summary cards */
   var sh='';
@@ -2267,11 +2287,73 @@ function rBilling(){
   }
   sh+='<div class="bill-sum-card"><div class="bill-sum-val">'+nodeRows.length+'</div><div class="bill-sum-lbl">TOTAL NODES</div></div>';
   sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--g)">'+nodeRows.filter(function(r){return r.online}).length+'</div><div class="bill-sum-lbl">ONLINE</div></div>';
+  var groupCount=Object.keys(groupData).length;
+  sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--am)">'+groupCount+'</div><div class="bill-sum-lbl">GROUPS</div></div>';
   if(freeCount>0)sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--t4)">'+freeCount+'</div><div class="bill-sum-lbl">FREE TIER</div></div>';
   sumEl.innerHTML=sh;
-  /* Table */
-  nodeRows.sort(function(a,b){return b.billing.monthly-a.billing.monthly});
+
+  if(S._billView==='group'){rBillGroup(groupData,totalEntries)}
+  else{rBillFlat(nodeRows,totalEntries)}
+}
+
+function billTableRow(r){
+  var n=r.node;var b=r.billing;
+  var priceStr=b.str||'<span style="color:var(--t4)">--</span>';
+  var monthlyStr=b.monthly>0?'<span class="bill-monthly">'+b.currency+b.monthly.toFixed(2)+'</span>':(b.str==='免费'?'<span class="bill-free">免费</span>':'<span style="color:var(--t4)">--</span>');
+  var cycleStr='';
+  if(n.billing_cycle){var cd=parseInt(n.billing_cycle);if(cd<=31)cycleStr='月付';else if(cd<=93)cycleStr='季付';else if(cd<=186)cycleStr='半年付';else if(cd<=366)cycleStr='年付';else cycleStr=Math.round(cd/365)+'年付';}
+  var expStr=n.expiration_date||'--';
+  var h='<tr><td class="bill-node-name" onclick="openDet(''+n.uuid+'')">'+esc(n.name||n.uuid)+'</td>';
+  h+='<td><span class="bill-badge '+(r.online?'on':'off')+'">'+(r.online?'ONLINE':'OFFLINE')+'</span></td>';
+  h+='<td>'+priceStr+'</td>';
+  h+='<td class="bill-cycle">'+cycleStr+'</td>';
+  h+='<td>'+monthlyStr+'</td>';
+  h+='<td style="color:var(--t3);font-size:11px">'+esc(expStr)+'</td></tr>';
+  return h;
+}
+
+function rBillGroup(groupData,totalEntries){
+  var contentEl=$('billContent');
+  var groupNames=Object.keys(groupData).sort(function(a,b){
+    var aTotal=0,bTotal=0;
+    Object.values(groupData[a].totals).forEach(function(v){aTotal+=v});
+    Object.values(groupData[b].totals).forEach(function(v){bTotal+=v});
+    return bTotal-aTotal;
+  });
   var h='';
+  groupNames.forEach(function(gName){
+    var gd=groupData[gName];
+    var gCostParts=Object.entries(gd.totals).map(function(e){return e[0]+e[1].toFixed(2)+'/月'});
+    var gCostStr=gCostParts.length?gCostParts.join(' + '):'--';
+    h+='<div class="bill-group">';
+    h+='<div class="bill-group-hdr"><span class="bill-group-name">'+esc(gName)+'</span><span class="bill-group-line"></span><span class="bill-group-stats">'+gd.rows.length+' NODES</span><span class="bill-group-cost">'+gCostStr+'</span></div>';
+    h+='<div style="background:var(--glass);border:1px solid var(--gborder);border-radius:12px;overflow:hidden">';
+    h+='<table class="bill-table"><thead><tr><th>NODE</th><th>STATUS</th><th>PRICE</th><th>CYCLE</th><th>MONTHLY</th><th>EXPIRES</th></tr></thead><tbody>';
+    gd.rows.sort(function(a,b){return b.billing.monthly-a.billing.monthly});
+    gd.rows.forEach(function(r){h+=billTableRow(r)});
+    /* Group subtotal */
+    Object.entries(gd.totals).forEach(function(e){
+      h+='<tr class="bill-total-row"><td colspan="4" style="text-align:right;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)">'+esc(gName)+' SUBTOTAL ('+e[0]+')</td><td class="bill-monthly" style="font-size:14px">'+e[0]+e[1].toFixed(2)+'/月</td><td></td></tr>';
+    });
+    h+='</tbody></table></div></div>';
+  });
+  /* Grand total */
+  if(totalEntries.length>0){
+    h+='<div style="margin-top:8px;padding:16px 24px;background:rgba(37,99,235,0.04);border:1px solid rgba(37,99,235,0.12);border-radius:10px;display:flex;justify-content:flex-end;align-items:center;gap:24px">';
+    h+='<span style="font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--t3);font-weight:600">GRAND TOTAL</span>';
+    totalEntries.forEach(function(e){
+      h+='<span style="font-family:var(--fd);font-size:22px;font-weight:800;color:var(--blue)">'+e[0]+e[1].toFixed(2)+'<span style="font-size:12px;opacity:.5;margin-left:2px">/月</span></span>';
+    });
+    h+='</div>';
+  }
+  contentEl.innerHTML=h;
+}
+
+function rBillFlat(nodeRows,totalEntries){
+  var contentEl=$('billContent');
+  nodeRows.sort(function(a,b){return b.billing.monthly-a.billing.monthly});
+  var h='<div style="background:var(--glass);border:1px solid var(--gborder);border-radius:12px;overflow:hidden">';
+  h+='<table class="bill-table"><thead><tr><th>NODE</th><th>STATUS</th><th>GROUP</th><th>PRICE</th><th>CYCLE</th><th>MONTHLY</th><th>EXPIRES</th></tr></thead><tbody>';
   nodeRows.forEach(function(r){
     var n=r.node;var b=r.billing;
     var priceStr=b.str||'<span style="color:var(--t4)">--</span>';
@@ -2279,7 +2361,7 @@ function rBilling(){
     var cycleStr='';
     if(n.billing_cycle){var cd=parseInt(n.billing_cycle);if(cd<=31)cycleStr='月付';else if(cd<=93)cycleStr='季付';else if(cd<=186)cycleStr='半年付';else if(cd<=366)cycleStr='年付';else cycleStr=Math.round(cd/365)+'年付';}
     var expStr=n.expiration_date||'--';
-    h+='<tr><td class="bill-node-name" onclick="openDet(\''+n.uuid+'\')">'+esc(n.name||n.uuid)+'</td>';
+    h+='<tr><td class="bill-node-name" onclick="openDet(''+n.uuid+'')">'+esc(n.name||n.uuid)+'</td>';
     h+='<td><span class="bill-badge '+(r.online?'on':'off')+'">'+(r.online?'ONLINE':'OFFLINE')+'</span></td>';
     h+='<td style="color:var(--t3)">'+esc(n.group||'--')+'</td>';
     h+='<td>'+priceStr+'</td>';
@@ -2287,11 +2369,11 @@ function rBilling(){
     h+='<td>'+monthlyStr+'</td>';
     h+='<td style="color:var(--t3);font-size:11px">'+esc(expStr)+'</td></tr>';
   });
-  /* Totals row */
   totalEntries.forEach(function(e){
     h+='<tr class="bill-total-row"><td colspan="5" style="text-align:right;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)">TOTAL ('+e[0]+')</td><td class="bill-monthly" style="font-size:15px">'+e[0]+e[1].toFixed(2)+'/月</td><td></td></tr>';
   });
-  bodyEl.innerHTML=h;
+  h+='</tbody></table></div>';
+  contentEl.innerHTML=h;
 }
 
 function updateFleetCost(){
