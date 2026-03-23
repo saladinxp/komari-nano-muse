@@ -2303,7 +2303,7 @@ function billTableRow(r){
   var cycleStr='';
   if(n.billing_cycle){var cd=parseInt(n.billing_cycle);if(cd<=31)cycleStr='月付';else if(cd<=93)cycleStr='季付';else if(cd<=186)cycleStr='半年付';else if(cd<=366)cycleStr='年付';else cycleStr=Math.round(cd/365)+'年付';}
   var expStr=n.expiration_date||'--';
-  var h='<tr><td class="bill-node-name" onclick="openDet(''+n.uuid+'')">'+esc(n.name||n.uuid)+'</td>';
+  var h='<tr><td class="bill-node-name" onclick="openDet(\''+n.uuid+'\')">'+esc(n.name||n.uuid)+'</td>';
   h+='<td><span class="bill-badge '+(r.online?'on':'off')+'">'+(r.online?'ONLINE':'OFFLINE')+'</span></td>';
   h+='<td>'+priceStr+'</td>';
   h+='<td class="bill-cycle">'+cycleStr+'</td>';
@@ -2361,7 +2361,7 @@ function rBillFlat(nodeRows,totalEntries){
     var cycleStr='';
     if(n.billing_cycle){var cd=parseInt(n.billing_cycle);if(cd<=31)cycleStr='月付';else if(cd<=93)cycleStr='季付';else if(cd<=186)cycleStr='半年付';else if(cd<=366)cycleStr='年付';else cycleStr=Math.round(cd/365)+'年付';}
     var expStr=n.expiration_date||'--';
-    h+='<tr><td class="bill-node-name" onclick="openDet(''+n.uuid+'')">'+esc(n.name||n.uuid)+'</td>';
+    h+='<tr><td class="bill-node-name" onclick="openDet(\''+n.uuid+'\')">'+esc(n.name||n.uuid)+'</td>';
     h+='<td><span class="bill-badge '+(r.online?'on':'off')+'">'+(r.online?'ONLINE':'OFFLINE')+'</span></td>';
     h+='<td style="color:var(--t3)">'+esc(n.group||'--')+'</td>';
     h+='<td>'+priceStr+'</td>';
