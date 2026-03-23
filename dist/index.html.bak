@@ -15,9 +15,9 @@
 <meta name="twitter:description" content="Real-time server fleet monitoring dashboard">
 <meta name="twitter:image" content="https://lol.moe/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<!-- NanoMuse v0.9.3 — Komari Monitor Theme -->
+<!-- NanoMuse v0.9.2 — Komari Monitor Theme -->
 <style>
-/* ═══ NanoMuse v0.9.3 — CSS ═══ */
+/* ═══ NanoMuse v0.9.2 — CSS ═══ */
 :root{
   --bg:#cad3e0;
   --cyan:#00d8ff;--cyan-g:rgba(0,216,255,0.5);
@@ -230,7 +230,7 @@ body{
 .sr-k{font-family:var(--fm);font-size:8.5px;letter-spacing:2px;color:var(--t4)}
 .sr-v{font-family:var(--fm);font-size:10px;font-weight:600;color:var(--t2)}
 /* Fleet Summary Strip */
-.fleet-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border-top:none;margin-top:-40px;position:relative;z-index:4;
+.fleet-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-top:none;margin-top:-40px;position:relative;z-index:4;
   background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   box-shadow:0 4px 20px rgba(59,130,246,0.06),0 1px 4px rgba(0,0,0,0.04);
   position:relative}
@@ -243,7 +243,6 @@ body{
 .fleet-cell:nth-child(2)::after{background:var(--g);box-shadow:0 0 12px rgba(var(--gr),.5)}
 .fleet-cell:nth-child(3)::after{background:var(--r);box-shadow:0 0 12px rgba(var(--rr),.4)}
 .fleet-cell:nth-child(4)::after{background:var(--am);box-shadow:0 0 12px rgba(var(--amr),.4)}
-.fleet-cell:nth-child(5)::after{background:var(--blue);box-shadow:0 0 12px rgba(var(--blue-r),.4)}
 .fleet-val{font-family:var(--fd);font-weight:800;font-size:46px;color:var(--t);line-height:1;
   text-shadow:0 0 25px rgba(59,130,246,0.12);transition:text-shadow .3s}
 .fleet-cell:hover .fleet-val{text-shadow:0 0 24px rgba(59,130,246,0.15)}
@@ -251,7 +250,7 @@ body{
 
 /* ═══ CONTENT ═══ */
 .content-area{padding:20px 36px 28px}
-#pg-detail .content-area,#pg-stability .content-area,#pg-billing .content-area,#pg-worldmap .content-area{background:rgba(225,232,242,0.55);border-radius:0 0 18px 18px;min-height:80vh;position:relative;overflow:hidden}
+#pg-detail .content-area,#pg-stability .content-area,#pg-worldmap .content-area{background:rgba(225,232,242,0.55);border-radius:0 0 18px 18px;min-height:80vh;position:relative;overflow:hidden}
 /* ═══ WORLD MAP ═══ */
 .wmap-container{position:relative;background:linear-gradient(135deg,rgba(210,222,238,0.85),rgba(220,230,244,0.75));border:1px solid rgba(148,163,184,0.2);border-radius:6px;overflow:hidden;min-height:420px;box-shadow:0 4px 20px rgba(0,0,0,0.05),inset 0 1px 0 rgba(255,255,255,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .wmap-container::before{content:'';position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.035;mix-blend-mode:soft-light;background-size:48px 48px;background-image:radial-gradient(circle,rgba(100,116,139,0.5) 1px,transparent 1px)}
@@ -608,30 +607,6 @@ body.alert-active .sync-ring-wrap::after{background:radial-gradient(circle,rgba(
 /* Scan line shifts to warmer warning tone */
 body.alert-active .scan-line{background:linear-gradient(90deg,transparent,rgba(180,100,120,0.10),rgba(140,80,100,0.06),transparent)}
 
-
-/* ═══ BILLING PAGE ═══ */
-#pg-billing .content-area{background:rgba(225,232,242,0.55);border-radius:0 0 18px 18px;min-height:80vh;position:relative;overflow:hidden}
-#pg-billing .content-area>*{position:relative;z-index:1}
-.bill-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
-.bill-sum-card{background:var(--glass);border:1px solid var(--gborder);border-radius:12px;padding:20px 24px;text-align:center}
-.bill-sum-val{font-family:var(--fd);font-weight:800;font-size:32px;color:var(--t);line-height:1.1}
-.bill-sum-lbl{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--t3);font-weight:600;margin-top:6px}
-.bill-table{width:100%;border-collapse:separate;border-spacing:0;font-family:var(--fd);font-size:13px}
-.bill-table thead{position:sticky;top:0;z-index:2}
-.bill-table th{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--t3);font-weight:600;padding:10px 14px;text-align:left;background:rgba(225,232,242,0.95);border-bottom:1px solid rgba(100,116,139,0.15)}
-.bill-table td{padding:10px 14px;border-bottom:1px solid rgba(100,116,139,0.06);color:var(--t);vertical-align:middle}
-.bill-table tr:hover td{background:rgba(37,99,235,0.03)}
-.bill-node-name{font-weight:600;cursor:pointer}
-.bill-node-name:hover{color:var(--blue)}
-.bill-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-family:var(--fm);font-size:9px;letter-spacing:1px;font-weight:600}
-.bill-badge.on{background:rgba(34,197,94,0.1);color:var(--g)}
-.bill-badge.off{background:rgba(255,77,79,0.1);color:var(--r)}
-.bill-monthly{font-family:var(--fm);font-weight:700;color:var(--blue)}
-.bill-free{font-family:var(--fm);font-weight:500;color:var(--t4)}
-.bill-cycle{font-size:11px;color:var(--t3)}
-.bill-total-row td{font-weight:700;border-top:2px solid rgba(37,99,235,0.2);background:rgba(37,99,235,0.02)}
-.fleet-cost-cell{cursor:pointer;transition:.3s}
-.fleet-cost-cell:hover{background:rgba(37,99,235,0.04)}
 /* ── Layer 2: Fleet strip ALERTS cell pulse ── */
 .fleet-cell.alert-pulse .fleet-val{animation:alert-num-breathe 2s ease-in-out infinite}
 .fleet-cell.alert-pulse::after{background:var(--r)!important;box-shadow:0 0 12px rgba(var(--rr),.5)!important;animation:alert-bar-breathe 2s ease-in-out infinite}
@@ -675,7 +650,7 @@ body.alert-active .det-strip::after{background:linear-gradient(90deg,rgba(180,80
 .boot-tw-cursor{color:var(--cyan);animation:cursorBlink 0.6s step-end infinite;margin-left:2px;font-size:13px}
 @keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
 /* Boot panel control — hide everything during boot */
-body.booting .topbar,body.booting .fleet-strip,body.booting .h-left,body.booting .h-right,body.booting #pg-billing,
+body.booting .topbar,body.booting .fleet-strip,body.booting .h-left,body.booting .h-right,
 body.booting .content-area,body.booting .footer,body.booting .sync-core,
 body.booting .stab-ov,body.booting .hero-stats{
   opacity:0!important;visibility:hidden!important;animation:none!important}
@@ -866,7 +841,6 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       <span class="tb-tab" data-page="detail"><span class="tb-num">02</span>DETAIL</span>
       <span class="tb-tab" data-page="stability"><span class="tb-num">03</span>STABILITY</span>
       <span class="tb-tab" data-page="worldmap"><span class="tb-num">04</span>MAP</span>
-      <span class="tb-tab" data-page="billing"><span class="tb-num">05</span>BILLING</span>
     </div>
     <div class="tb-right"><button class="tb-badge" id="verBadge">v0.9.2</button><button class="tb-btn" id="searchBtn">⌕</button></div>
   </div>
@@ -1028,7 +1002,6 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
         <div class="fleet-cell" style="transform:scale(1.06)"><div class="fleet-val" style="color:var(--g)" id="fUprate">--%</div><div class="fleet-lbl">ONLINE RATE</div></div>
         <div class="fleet-cell"><div class="fleet-val" style="color:var(--r)" id="fAlerts">--</div><div class="fleet-lbl">ALERTS</div></div>
         <div class="fleet-cell"><div class="fleet-val" style="color:var(--am)" id="fAvgLoad">--%</div><div class="fleet-lbl">AVG LOAD</div></div>
-        <div class="fleet-cell fleet-cost-cell" onclick="nav('/billing')"><div class="fleet-val" style="color:var(--blue);font-size:32px" id="fCost">--</div><div class="fleet-lbl">MONTHLY COST</div></div>
       </div>
     </div>
 
@@ -1060,20 +1033,6 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
     </div>
   </div>
 
-
-  <!-- ═══ BILLING PAGE ═══ -->
-  <div class="page" id="pg-billing">
-    <div class="content-area" style="padding:28px 36px">
-      <div class="det-back" onclick="nav('/')">← BACK TO DASHBOARD</div>
-      <div class="sec-div"><span class="sd-line"></span><span class="sd-label"><span class="sd-dot"></span>BILLING · 费用总览</span><span class="sd-line r"></span></div>
-      <div class="bill-summary" id="billSummary"></div>
-      <div style="background:var(--glass);border:1px solid var(--gborder);border-radius:12px;overflow:hidden">
-        <table class="bill-table"><thead><tr>
-          <th>NODE</th><th>STATUS</th><th>GROUP</th><th>PRICE</th><th>CYCLE</th><th>MONTHLY</th><th>EXPIRES</th>
-        </tr></thead><tbody id="billBody"></tbody></table>
-      </div>
-    </div>
-  </div>
   <!-- ═══ WORLD MAP PAGE ═══ -->
   <div class="page" id="pg-worldmap">
     <div class="content-area">
@@ -1113,7 +1072,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
 </div><!-- /mainContent -->
 <script>
-/* ═══ NanoMuse v0.9.3 — JS ═══ */
+/* ═══ NanoMuse v0.9.2 — JS ═══ */
 ;(function(){
 'use strict';
 window._pageStart = performance.now();
@@ -1327,7 +1286,6 @@ function rSum(){
   const fA=$('fAlerts');if(fA)fA.textContent=offC;
     const tl=$('threatLevel');if(tl){if(offC>=5){tl.textContent='HIGH';tl.className='threat-level high'}else if(offC>=2){tl.textContent='MEDIUM';tl.className='threat-level medium'}else{tl.textContent='LOW';tl.className='threat-level low'}}
   const fL=$('fAvgLoad');if(fL)fL.textContent=avgCpu+'%';
-  updateFleetCost();
   /* Hero bars */
   const setBar=(id,vid,v)=>{const e=$(id);if(e)e.style.width=Math.min(100,v)+'%';const ve=$(vid);if(ve)ve.textContent=Math.round(v)+'%'};
   setBar('heroBarCpu','heroValCpu',avgCpu);
@@ -1528,7 +1486,6 @@ function rGF(){
   let h=S.groups.map(g=>`<button class="pill${g===S.currentGroup?' a':''}" data-g="${esc(g)}">${esc(g)}</button>`).join('');
   h+='<button class="pill" style="margin-left:auto;opacity:.7" onclick="nav(\'/stability\')">◈ STABILITY</button>';
   h+='<button class="pill" style="opacity:.7" onclick="nav(\'/worldmap\')">◈ MAP</button>';
-  h+='<button class="pill" style="opacity:.7" onclick="nav(\'/billing\')">◈ BILLING</button>';
   c.innerHTML=h;
   c.querySelectorAll('.pill[data-g]').forEach(b=>{
     b.onclick=()=>{S.currentGroup=b.dataset.g;rGF();rCards()}
@@ -2190,8 +2147,6 @@ function hRoute(){
     }
   }else if(path==='/stability'){
     showP('stability');loadStabilityData();
-  }else if(path==='/billing'){
-    showP('billing');rBilling();
   }else if(path==='/worldmap'){
     showP('worldmap');initWorldMap();
   }else{
@@ -2216,100 +2171,10 @@ document.querySelectorAll('.tb-tab').forEach(b=>{
     if(p==='dashboard')nav('/');
     else if(p==='stability')nav('/stability');
     else if(p==='worldmap')nav('/worldmap');
-    else if(p==='billing')nav('/billing');
     else if(p==='detail'&&S.detailUUID)nav('/detail/'+S.detailUUID);
   }
 });
 
-
-/* ── Billing Functions ── */
-function fBilling(n){
-  if(!n.price||n.price===0)return{str:'',monthly:0,currency:''};
-  if(n.price===-1)return{str:'免费',monthly:0,currency:''};
-  var cur=n.currency||'$';
-  var p=n.price;
-  var cDays=parseInt(n.billing_cycle)||30;
-  var cycleStr='';
-  if(cDays<=31)cycleStr='/月';
-  else if(cDays<=93)cycleStr='/季';
-  else if(cDays<=186)cycleStr='/半年';
-  else if(cDays<=366)cycleStr='/年';
-  else if(cDays<=1096)cycleStr='/三年';
-  else cycleStr='/'+Math.round(cDays/365)+'年';
-  var monthly=p/(cDays/30);
-  return{str:cur+p+cycleStr,monthly:monthly,currency:cur};
-}
-
-function rBilling(){
-  var sumEl=$('billSummary');var bodyEl=$('billBody');
-  if(!sumEl||!bodyEl)return;
-  var totals={};var nodeRows=[];var freeCount=0;
-  S.nodes.forEach(function(n){
-    if(n.hidden)return;
-    var b=fBilling(n);
-    var on=S.onlineSet.has(n.uuid);
-    if(b.monthly>0&&b.currency){
-      if(!totals[b.currency])totals[b.currency]=0;
-      totals[b.currency]+=b.monthly;
-    }
-    if(b.str==='免费')freeCount++;
-    nodeRows.push({node:n,billing:b,online:on});
-  });
-  /* Summary cards */
-  var sh='';
-  var totalEntries=Object.entries(totals);
-  if(totalEntries.length===0){
-    sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--t4)">--</div><div class="bill-sum-lbl">MONTHLY TOTAL</div></div>';
-  }else{
-    totalEntries.forEach(function(e){
-      sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--blue)">'+e[0]+e[1].toFixed(2)+'</div><div class="bill-sum-lbl">MONTHLY TOTAL ('+e[0]+')</div></div>';
-    });
-  }
-  sh+='<div class="bill-sum-card"><div class="bill-sum-val">'+nodeRows.length+'</div><div class="bill-sum-lbl">TOTAL NODES</div></div>';
-  sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--g)">'+nodeRows.filter(function(r){return r.online}).length+'</div><div class="bill-sum-lbl">ONLINE</div></div>';
-  if(freeCount>0)sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--t4)">'+freeCount+'</div><div class="bill-sum-lbl">FREE TIER</div></div>';
-  sumEl.innerHTML=sh;
-  /* Table */
-  nodeRows.sort(function(a,b){return b.billing.monthly-a.billing.monthly});
-  var h='';
-  nodeRows.forEach(function(r){
-    var n=r.node;var b=r.billing;
-    var priceStr=b.str||'<span style="color:var(--t4)">--</span>';
-    var monthlyStr=b.monthly>0?'<span class="bill-monthly">'+b.currency+b.monthly.toFixed(2)+'</span>':(b.str==='免费'?'<span class="bill-free">免费</span>':'<span style="color:var(--t4)">--</span>');
-    var cycleStr='';
-    if(n.billing_cycle){var cd=parseInt(n.billing_cycle);if(cd<=31)cycleStr='月付';else if(cd<=93)cycleStr='季付';else if(cd<=186)cycleStr='半年付';else if(cd<=366)cycleStr='年付';else cycleStr=Math.round(cd/365)+'年付';}
-    var expStr=n.expiration_date||'--';
-    h+='<tr><td class="bill-node-name" onclick="openDet(''+n.uuid+'')">'+esc(n.name||n.uuid)+'</td>';
-    h+='<td><span class="bill-badge '+(r.online?'on':'off')+'">'+(r.online?'ONLINE':'OFFLINE')+'</span></td>';
-    h+='<td style="color:var(--t3)">'+esc(n.group||'--')+'</td>';
-    h+='<td>'+priceStr+'</td>';
-    h+='<td class="bill-cycle">'+cycleStr+'</td>';
-    h+='<td>'+monthlyStr+'</td>';
-    h+='<td style="color:var(--t3);font-size:11px">'+esc(expStr)+'</td></tr>';
-  });
-  /* Totals row */
-  totalEntries.forEach(function(e){
-    h+='<tr class="bill-total-row"><td colspan="5" style="text-align:right;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)">TOTAL ('+e[0]+')</td><td class="bill-monthly" style="font-size:15px">'+e[0]+e[1].toFixed(2)+'/月</td><td></td></tr>';
-  });
-  bodyEl.innerHTML=h;
-}
-
-function updateFleetCost(){
-  var totals={};
-  S.nodes.forEach(function(n){
-    if(n.hidden)return;
-    var b=fBilling(n);
-    if(b.monthly>0&&b.currency){
-      if(!totals[b.currency])totals[b.currency]=0;
-      totals[b.currency]+=b.monthly;
-    }
-  });
-  var el=$('fCost');if(!el)return;
-  var entries=Object.entries(totals);
-  if(entries.length===0){el.textContent='--';return}
-  if(entries.length===1){el.textContent=entries[0][0]+entries[0][1].toFixed(0)+'/mo';return}
-  el.innerHTML=entries.map(function(e){return e[0]+e[1].toFixed(0)}).join('<span style="font-size:14px;opacity:.4;margin:0 4px">|</span>');
-}
 /* ── Particles ── */
 function initParticles(){
   const c=$('ptLayer');if(!c)return;
