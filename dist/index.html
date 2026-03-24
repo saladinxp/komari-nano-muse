@@ -704,8 +704,7 @@ body.alert-active .scan-line{background:linear-gradient(90deg,transparent,rgba(1
 .pp-ct{position:relative;z-index:10;padding:48px 72px 36px;height:100%;display:flex;flex-direction:column}
 .pp-site{font-family:var(--fr);font-size:24px;letter-spacing:6px;color:rgba(37,99,235,0.55);display:flex;align-items:center;gap:14px;margin-bottom:4px}
 .pp-site svg{opacity:0.5}
-.pp-title{font-size:110px;font-weight:900;line-height:1;letter-spacing:-4px;margin-bottom:4px;font-family:var(--fd);
-  background:linear-gradient(180deg,#1a3a6b,#0f2448);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.pp-title{font-size:110px;font-weight:900;line-height:1;letter-spacing:-4px;margin-bottom:4px;font-family:var(--fd);color:#0f2448}
 .pp-sub{font-family:var(--fr);font-size:18px;letter-spacing:6px;color:rgba(37,99,235,0.32);margin-bottom:12px}
 .pp-chips{display:flex;gap:14px;align-items:center;margin-bottom:16px}
 .pp-chip{font-family:var(--fm);font-size:20px;letter-spacing:1.5px;padding:10px 30px;border-radius:32px;
@@ -2668,7 +2667,7 @@ function exportNodePoster(uuid){
   document.body.appendChild(wrap);
   var charImgEl=wrap.querySelector('.pp-char');
   function doCapture(){
-    html2canvas(wrap.querySelector('.pp'),{scale:2,useCORS:true,allowTaint:true,backgroundColor:null,logging:false,width:1920,height:1080}).then(function(canvas){
+    html2canvas(wrap.querySelector('.pp'),{scale:1,useCORS:true,allowTaint:true,backgroundColor:null,logging:false,width:1920,height:1080}).then(function(canvas){
       var link=document.createElement('a');
       link.download='NanoMuse-'+name.replace(/[^a-zA-Z0-9\u4e00-\u9fff-]/g,'_')+'.png';
       link.href=canvas.toDataURL('image/png');link.click();
