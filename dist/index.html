@@ -15,9 +15,9 @@
 <meta name="twitter:description" content="Real-time server fleet monitoring dashboard">
 <meta name="twitter:image" content="https://lol.moe/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<!-- NanoMuse v0.9.4 — Komari Monitor Theme -->
+<!-- NanoMuse v0.9.5 — Komari Monitor Theme -->
 <style>
-/* ═══ NanoMuse v0.9.4 — CSS ═══ */
+/* ═══ NanoMuse v0.9.5 — CSS ═══ */
 :root{
   --bg:#cad3e0;
   --cyan:#00d8ff;--cyan-g:rgba(0,216,255,0.5);
@@ -1117,12 +1117,12 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
     </div>
   </div>
 
-  <div class="footer"><div class="footer-shimmer"></div><span class="ft-dot"></span><span id="footerSite">KOMARI MONITOR</span><span style="opacity:.3">—</span><a href="https://github.com/komari-monitor/komari" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none;font-weight:700;transition:opacity .3s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">Komari</a><span style="opacity:.2">·</span><a href="https://github.com/saladinxp/komari-nano-muse" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none;opacity:.45;transition:opacity .3s" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='.45'">NanoMuse · Miuler</a><span style="opacity:.2">·</span>Secure Channel<span style="opacity:.2">·</span>Encrypted</div>
+  <div class="footer" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><div class="footer-shimmer"></div><span class="ft-dot"></span><span id="footerSite">KOMARI MONITOR</span><span style="opacity:.3">—</span><a href="https://github.com/komari-monitor/komari" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none;font-weight:700;transition:opacity .3s" onmouseover="this.style.opacity='.8'" onmouseout="this.style.opacity='1'">Komari</a><span style="opacity:.2">·</span><a href="https://github.com/saladinxp/komari-nano-muse" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none;opacity:.45;transition:opacity .3s" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='.45'">NanoMuse · Miuler</a><span style="opacity:.2">·</span>Secure Channel<span style="opacity:.2">·</span>Encrypted</div>
 </div>
 
 </div><!-- /mainContent -->
 <script>
-/* ═══ NanoMuse v0.9.4 — JS ═══ */
+/* ═══ NanoMuse v0.9.5 — JS ═══ */
 ;(function(){
 'use strict';
 window._pageStart = performance.now();
@@ -1657,6 +1657,13 @@ function rDetInfo(node,uuid){
       <div class="det-row"><span class="det-row-k">UPTIME</span><span class="det-row-v">${on?fUs(d.uptime):'--'}</span></div>
       <div class="det-row"><span class="det-row-k">CPU MODEL</span><span class="det-row-v">${esc(node.cpu_name||'--')}</span></div>
       <div class="det-row"><span class="det-row-k">CORES</span><span class="det-row-v">${node.cpu_cores||'--'}</span></div>
+    </div>
+    <div class="det-panel"><div class="det-panel-title">BILLING</div>
+      <div class="det-row"><span class="det-row-k">PRICE</span><span class="det-row-v">${bInfo.str||'<span style="color:var(--t4)">--</span>'}</span></div>
+      <div class="det-row"><span class="det-row-k">CYCLE</span><span class="det-row-v">${bCycleStr||'--'}</span></div>
+      <div class="det-row"><span class="det-row-k">MONTHLY</span><span class="det-row-v" style="color:var(--blue);font-weight:700">${bInfo.monthly>0?bInfo.currency+bInfo.monthly.toFixed(2):'--'}</span></div>
+      <div class="det-row"><span class="det-row-k">EXPIRES</span><span class="det-row-v">${esc(node.expiration_date||'--')}</span></div>
+      <div class="det-row"><span class="det-row-k">REMAINING VALUE</span><span class="det-row-v" style="color:${bRemainColor}">${bRemainStr}</span></div>
     </div>
     <div class="det-panel"><div class="det-panel-title">RESOURCES</div>
       <div class="det-row"><span class="det-row-k">CPU</span><span class="det-row-v"${on&&cpu>=80?' style="color:var(--r)"':''}>${on?cpu+'%':'--'}</span></div>
@@ -2309,7 +2316,10 @@ function billTableRow(r){
   h+='<td>'+priceStr+'</td>';
   h+='<td class="bill-cycle">'+cycleStr+'</td>';
   h+='<td>'+monthlyStr+'</td>';
-  h+='<td style="color:var(--t3);font-size:11px">'+esc(expStr)+'</td></tr>';
+  var bRemain='--';var bRemClr='var(--t4)';
+  if(n.expiration_date&&b.monthly>0){var ed=new Date(n.expiration_date);var nw=new Date();var rd=Math.max(0,Math.ceil((ed-nw)/(1000*60*60*24)));var cdd=parseInt(n.billing_cycle)||30;var rv=(rd/cdd)*n.price;bRemain=b.currency+rv.toFixed(2)+' ('+rd+'d)';bRemClr=rd<=7?'var(--r)':rd<=30?'var(--am)':'var(--g)';}
+  h+='<td style="color:var(--t3);font-size:11px">'+esc(expStr)+'</td>';
+  h+='<td style="color:'+bRemClr+';font-size:12px;font-weight:600">'+bRemain+'</td></tr>';
   return h;
 }
 
@@ -2329,12 +2339,12 @@ function rBillGroup(groupData,totalEntries){
     h+='<div class="bill-group">';
     h+='<div class="bill-group-hdr"><span class="bill-group-name">'+esc(gName)+'</span><span class="bill-group-line"></span><span class="bill-group-stats">'+gd.rows.length+' NODES</span><span class="bill-group-cost">'+gCostStr+'</span></div>';
     h+='<div style="background:var(--glass);border:1px solid var(--gborder);border-radius:12px;overflow:hidden">';
-    h+='<table class="bill-table"><thead><tr><th>NODE</th><th>STATUS</th><th>PRICE</th><th>CYCLE</th><th>MONTHLY</th><th>EXPIRES</th></tr></thead><tbody>';
+    h+='<table class="bill-table"><thead><tr><th>NODE</th><th>STATUS</th><th>PRICE</th><th>CYCLE</th><th>MONTHLY</th><th>EXPIRES</th><th>REMAINING</th></tr></thead><tbody>';
     gd.rows.sort(function(a,b){return b.billing.monthly-a.billing.monthly});
     gd.rows.forEach(function(r){h+=billTableRow(r)});
     /* Group subtotal */
     Object.entries(gd.totals).forEach(function(e){
-      h+='<tr class="bill-total-row"><td colspan="4" style="text-align:right;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)">'+esc(gName)+' SUBTOTAL ('+e[0]+')</td><td class="bill-monthly" style="font-size:14px">'+e[0]+e[1].toFixed(2)+'/月</td><td></td></tr>';
+      h+='<tr class="bill-total-row"><td colspan="5" style="text-align:right;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)">'+esc(gName)+' SUBTOTAL ('+e[0]+')</td><td class="bill-monthly" style="font-size:14px">'+e[0]+e[1].toFixed(2)+'/月</td><td></td></tr>';
     });
     h+='</tbody></table></div></div>';
   });
@@ -2354,7 +2364,7 @@ function rBillFlat(nodeRows,totalEntries){
   var contentEl=$('billContent');
   nodeRows.sort(function(a,b){return b.billing.monthly-a.billing.monthly});
   var h='<div style="background:var(--glass);border:1px solid var(--gborder);border-radius:12px;overflow:hidden">';
-  h+='<table class="bill-table"><thead><tr><th>NODE</th><th>STATUS</th><th>GROUP</th><th>PRICE</th><th>CYCLE</th><th>MONTHLY</th><th>EXPIRES</th></tr></thead><tbody>';
+  h+='<table class="bill-table"><thead><tr><th>NODE</th><th>STATUS</th><th>GROUP</th><th>PRICE</th><th>CYCLE</th><th>MONTHLY</th><th>EXPIRES</th><th>REMAINING</th></tr></thead><tbody>';
   nodeRows.forEach(function(r){
     var n=r.node;var b=r.billing;
     var priceStr=b.str||'<span style="color:var(--t4)">--</span>';
@@ -2368,10 +2378,13 @@ function rBillFlat(nodeRows,totalEntries){
     h+='<td>'+priceStr+'</td>';
     h+='<td class="bill-cycle">'+cycleStr+'</td>';
     h+='<td>'+monthlyStr+'</td>';
-    h+='<td style="color:var(--t3);font-size:11px">'+esc(expStr)+'</td></tr>';
+    var bRem2='--';var bRc2='var(--t4)';
+    if(n.expiration_date&&b.monthly>0){var ed2=new Date(n.expiration_date);var nw2=new Date();var rd2=Math.max(0,Math.ceil((ed2-nw2)/(1000*60*60*24)));var cdd2=parseInt(n.billing_cycle)||30;var rv2=(rd2/cdd2)*n.price;bRem2=b.currency+rv2.toFixed(2)+' ('+rd2+'d)';bRc2=rd2<=7?'var(--r)':rd2<=30?'var(--am)':'var(--g)';}
+    h+='<td style="color:var(--t3);font-size:11px">'+esc(expStr)+'</td>';
+    h+='<td style="color:'+bRc2+';font-size:12px;font-weight:600">'+bRem2+'</td></tr>';
   });
   totalEntries.forEach(function(e){
-    h+='<tr class="bill-total-row"><td colspan="5" style="text-align:right;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)">TOTAL ('+e[0]+')</td><td class="bill-monthly" style="font-size:15px">'+e[0]+e[1].toFixed(2)+'/月</td><td></td></tr>';
+    h+='<tr class="bill-total-row"><td colspan="6" style="text-align:right;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)">TOTAL ('+e[0]+')</td><td class="bill-monthly" style="font-size:15px">'+e[0]+e[1].toFixed(2)+'/月</td><td></td></tr>';
   });
   h+='</tbody></table></div>';
   contentEl.innerHTML=h;
