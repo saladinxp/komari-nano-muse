@@ -236,7 +236,7 @@ body{
   position:relative}
 .fleet-strip::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;
   background:linear-gradient(90deg,transparent,rgba(0,216,255,0.2),rgba(37,99,235,0.15),transparent)}
-.fleet-cell{padding:18px 24px;border-right:1px solid rgba(100,116,139,0.1);display:flex;flex-direction:column;align-items:center;gap:5px;position:relative}
+.fleet-cell{padding:18px 24px;overflow:hidden;border-right:1px solid rgba(100,116,139,0.1);display:flex;flex-direction:column;align-items:center;gap:5px;position:relative}
 .fleet-cell:last-child{border-right:none}
 .fleet-cell::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:32px;height:3px;border-radius:1.5px}
 .fleet-cell:nth-child(1)::after{background:var(--cyan);box-shadow:0 0 12px var(--cyan-g),0 0 4px rgba(0,216,255,0.3)}
@@ -245,7 +245,7 @@ body{
 .fleet-cell:nth-child(4)::after{background:var(--am);box-shadow:0 0 12px rgba(var(--amr),.4)}
 .fleet-cell:nth-child(5)::after{background:var(--blue);box-shadow:0 0 12px rgba(var(--blue-r),.4)}
 .fleet-val{font-family:var(--fd);font-weight:800;font-size:46px;color:var(--t);line-height:1;
-  transition:text-shadow .3s}
+  transition:text-shadow .3s;word-break:break-all;overflow-wrap:break-word}
 .fleet-cost-cell .fleet-val{font-size:32px;
   text-shadow:0 0 25px rgba(59,130,246,0.12);transition:text-shadow .3s}
 .fleet-cell:hover .fleet-val{text-shadow:0 0 24px rgba(59,130,246,0.15)}
@@ -2406,8 +2406,9 @@ function updateFleetCost(){
   var el=$('fCost');if(!el)return;
   var entries=Object.entries(totals);
   if(entries.length===0){el.textContent='--';return}
-  if(entries.length===1){el.textContent=entries[0][0]+entries[0][1].toFixed(0)+'/mo';return}
-  el.innerHTML=entries.map(function(e){return e[0]+e[1].toFixed(0)}).join('<span style="font-size:14px;opacity:.4;margin:0 4px">|</span>');
+  function fmtCost(v){if(v>=1e9)return(v/1e9).toFixed(1)+'B';if(v>=1e6)return(v/1e6).toFixed(1)+'M';if(v>=1e4)return(v/1e3).toFixed(1)+'K';return v.toFixed(0)}
+  if(entries.length===1){el.textContent=entries[0][0]+fmtCost(entries[0][1])+'/mo';return}
+  el.innerHTML=entries.map(function(e){return e[0]+fmtCost(e[1])}).join('<span style="font-size:14px;opacity:.4;margin:0 4px">|</span>');
 }
 /* ── Particles ── */
 function initParticles(){
