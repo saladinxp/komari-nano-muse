@@ -1653,17 +1653,6 @@ function rDetInfo(node,uuid){
   </div>`;
   /* Billing info */
   var bInfo=fBilling(node);
-  var bCycleStr='';
-  if(node.billing_cycle){var bcd=parseInt(node.billing_cycle);if(bcd<=31)bCycleStr='月付';else if(bcd<=93)bCycleStr='季付';else if(bcd<=186)bCycleStr='半年付';else if(bcd<=366)bCycleStr='年付';else bCycleStr=Math.round(bcd/365)+'年付';}
-  var bRemainStr='--';var bRemainColor='var(--t4)';
-  if(node.expiration_date&&bInfo.str&&bInfo.monthly>0){
-    var expDate=new Date(node.expiration_date);var now=new Date();
-    var remainDays=Math.max(0,Math.ceil((expDate-now)/(1000*60*60*24)));
-    var cycleDays=parseInt(node.billing_cycle)||30;
-    var remainVal=(remainDays/cycleDays)*node.price;
-    bRemainStr=bInfo.currency+remainVal.toFixed(2)+' ('+remainDays+'d)';
-    bRemainColor=remainDays<=7?'var(--r)':remainDays<=30?'var(--am)':'var(--g)';
-  }
   /* Info panels */
   html+=`<div class="det-panels">
     <div class="det-panel"><div class="det-panel-title">SYSTEM INFO</div>
@@ -1673,13 +1662,7 @@ function rDetInfo(node,uuid){
       <div class="det-row"><span class="det-row-k">UPTIME</span><span class="det-row-v">${on?fUs(d.uptime):'--'}</span></div>
       <div class="det-row"><span class="det-row-k">CPU MODEL</span><span class="det-row-v">${esc(node.cpu_name||'--')}</span></div>
       <div class="det-row"><span class="det-row-k">CORES</span><span class="det-row-v">${node.cpu_cores||'--'}</span></div>
-    </div>
-    <div class="det-panel"><div class="det-panel-title">BILLING</div>
-      <div class="det-row"><span class="det-row-k">PRICE</span><span class="det-row-v">${bInfo.str||'<span style="color:var(--t4)">--</span>'}</span></div>
-      <div class="det-row"><span class="det-row-k">CYCLE</span><span class="det-row-v">${bCycleStr||'--'}</span></div>
-      <div class="det-row"><span class="det-row-k">MONTHLY</span><span class="det-row-v" style="color:var(--blue);font-weight:700">${bInfo.monthly>0?bInfo.currency+bInfo.monthly.toFixed(2):'--'}</span></div>
-      <div class="det-row"><span class="det-row-k">EXPIRES</span><span class="det-row-v">${esc(node.expiration_date||'--')}</span></div>
-      <div class="det-row"><span class="det-row-k">REMAINING VALUE</span><span class="det-row-v" style="color:${bRemainColor}">${bRemainStr}</span></div>
+      <div class="det-row"><span class="det-row-k">MONTHLY COST</span><span class="det-row-v" style="color:var(--blue);font-weight:700">${bInfo.monthly>0?bInfo.currency+bInfo.monthly.toFixed(2)+'/月':'--'}</span></div>
     </div>
     <div class="det-panel"><div class="det-panel-title">RESOURCES</div>
       <div class="det-row"><span class="det-row-k">CPU</span><span class="det-row-v"${on&&cpu>=80?' style="color:var(--r)"':''}>${on?cpu+'%':'--'}</span></div>
