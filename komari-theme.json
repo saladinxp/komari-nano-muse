@@ -1,68 +1,68 @@
 {
   "name": "Komari NanoMuse Panel",
   "short": "NanoMuse",
-  "description": "电子二次元监控面板主题 · Anime HUD Light Sci-fi Dashboard。明亮冷白底 + 蓝色科技HUD + 动漫角色融合，内置 Stability 稳定性面板。",
-  "version": "0.9.5",
+  "description": "\u7535\u5b50\u4e8c\u6b21\u5143\u76d1\u63a7\u9762\u677f\u4e3b\u9898 \u00b7 Anime HUD Light Sci-fi Dashboard\u3002\u660e\u4eae\u51b7\u767d\u5e95 + \u84dd\u8272\u79d1\u6280HUD + \u52a8\u6f2b\u89d2\u8272\u878d\u5408\uff0c\u5185\u7f6e Stability \u7a33\u5b9a\u6027\u9762\u677f\u3002",
+  "version": "0.9.6",
   "author": "Miuler",
   "url": "https://github.com/saladinxp/komari-nano-muse",
   "preview": "preview.png",
   "configuration": {
     "type": "managed",
-    "name": "[ NANOMUSE ] 主题配置",
+    "name": "[ NANOMUSE ] \u4e3b\u9898\u914d\u7f6e",
     "data": [
       {
-        "name": "◇ PANEL INFO // 面板标识",
+        "name": "\u25c7 PANEL INFO // \u9762\u677f\u6807\u8bc6",
         "type": "title"
       },
       {
         "key": "version_tag",
-        "name": "[ SYS.VER ] 版本标识",
+        "name": "[ SYS.VER ] \u7248\u672c\u6807\u8bc6",
         "type": "string",
         "default": "v0.9.5",
-        "help": "面板版本号 — 显示于导航栏、页脚及HUD面板"
+        "help": "\u9762\u677f\u7248\u672c\u53f7 \u2014 \u663e\u793a\u4e8e\u5bfc\u822a\u680f\u3001\u9875\u811a\u53caHUD\u9762\u677f"
       },
       {
         "key": "footer_text",
-        "name": "[ FOOTER ] 状态栏文字",
+        "name": "[ FOOTER ] \u72b6\u6001\u680f\u6587\u5b57",
         "type": "string",
         "default": "SYSTEM MONITORING ACTIVE",
-        "help": "底部状态栏文字"
+        "help": "\u5e95\u90e8\u72b6\u6001\u680f\u6587\u5b57"
       },
       {
-        "name": "◇ CHARACTER // 角色系统",
+        "name": "\u25c7 CHARACTER // \u89d2\u8272\u7cfb\u7edf",
         "type": "title"
       },
       {
         "key": "bg_video",
-        "name": "[ VIDEO ] 背景视频链接",
+        "name": "[ VIDEO ] \u80cc\u666f\u89c6\u9891\u94fe\u63a5",
         "type": "string",
         "default": "",
-        "help": "Hero区域背景视频 — 支持MP4/WebM，留空使用静态角色图。填写后角色图自动隐藏"
+        "help": "Hero\u533a\u57df\u80cc\u666f\u89c6\u9891 \u2014 \u652f\u6301MP4/WebM\uff0c\u7559\u7a7a\u4f7f\u7528\u9759\u6001\u89d2\u8272\u56fe\u3002\u586b\u5199\u540e\u89d2\u8272\u56fe\u81ea\u52a8\u9690\u85cf"
       },
       {
         "key": "bg_video_opacity",
-        "name": "[ VIDEO ] 视频透明度",
+        "name": "[ VIDEO ] \u89c6\u9891\u900f\u660e\u5ea6",
         "type": "string",
         "default": "0.7",
-        "help": "背景视频透明度 0.0~1.0，建议0.5~0.8"
+        "help": "\u80cc\u666f\u89c6\u9891\u900f\u660e\u5ea6 0.0~1.0\uff0c\u5efa\u8bae0.5~0.8"
       },
       {
         "key": "char_url",
-        "name": "[ CHAR ] 角色图片链接",
+        "name": "[ CHAR ] \u89d2\u8272\u56fe\u7247\u94fe\u63a5",
         "type": "string",
         "default": "",
-        "help": "Hero区域角色图 — 留空使用默认 char.png"
+        "help": "Hero\u533a\u57df\u89d2\u8272\u56fe \u2014 \u7559\u7a7a\u4f7f\u7528\u9ed8\u8ba4 char.png"
       },
       {
-        "name": "◇ ANNOUNCE // 公告系统",
+        "name": "\u25c7 ANNOUNCE // \u516c\u544a\u7cfb\u7edf",
         "type": "title"
       },
       {
         "key": "announce_text",
-        "name": "[ NOTICE ] 公告内容",
+        "name": "[ NOTICE ] \u516c\u544a\u5185\u5bb9",
         "type": "string",
         "default": "",
-        "help": "首页公告 — 留空隐藏公告栏"
+        "help": "\u9996\u9875\u516c\u544a \u2014 \u7559\u7a7a\u9690\u85cf\u516c\u544a\u680f"
       }
     ]
   }
