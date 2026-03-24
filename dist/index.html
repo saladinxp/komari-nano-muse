@@ -2279,8 +2279,8 @@ function rBilling(){
     if(b.str==='免费')freeCount++;
     /* Remaining value calc */
     var rv=0;
-    if(n.expiration_date&&b.monthly>0&&b.currency){
-      var ed=new Date(n.expiration_date);var nw=new Date();
+    if(n.expired_at&&b.monthly>0&&b.currency){
+      var ed=new Date(n.expired_at);var nw=new Date();
       var rd=Math.max(0,Math.ceil((ed-nw)/(1000*60*60*24)));
       var cdd=parseInt(n.billing_cycle)||30;
       rv=(rd/cdd)*n.price;
@@ -2334,14 +2334,14 @@ function billTableRow(r){
   var monthlyStr=b.monthly>0?'<span class="bill-monthly">'+b.currency+b.monthly.toFixed(2)+'</span>':(b.str==='免费'?'<span class="bill-free">免费</span>':'<span style="color:var(--t4)">--</span>');
   var cycleStr='';
   if(n.billing_cycle){var cd=parseInt(n.billing_cycle);if(cd<=31)cycleStr='月付';else if(cd<=93)cycleStr='季付';else if(cd<=186)cycleStr='半年付';else if(cd<=366)cycleStr='年付';else cycleStr=Math.round(cd/365)+'年付';}
-  var expStr=n.expiration_date||'--';
+  var expStr=n.expired_at||'--';
   var h='<tr><td class="bill-node-name" onclick="openDet(\''+n.uuid+'\')">'+esc(n.name||n.uuid)+'</td>';
   h+='<td><span class="bill-badge '+(r.online?'on':'off')+'">'+(r.online?'ONLINE':'OFFLINE')+'</span></td>';
   h+='<td>'+priceStr+'</td>';
   h+='<td class="bill-cycle">'+cycleStr+'</td>';
   h+='<td>'+monthlyStr+'</td>';
   var bRemain='--';var bRemClr='var(--t4)';
-  if(n.expiration_date&&b.monthly>0){var ed=new Date(n.expiration_date);var nw=new Date();var rd=Math.max(0,Math.ceil((ed-nw)/(1000*60*60*24)));var cdd=parseInt(n.billing_cycle)||30;var rv=(rd/cdd)*n.price;bRemain=b.currency+rv.toFixed(2)+' ('+rd+'d)';bRemClr=rd<=7?'var(--r)':rd<=30?'var(--am)':'var(--g)';}
+  if(n.expired_at&&b.monthly>0){var ed=new Date(n.expired_at);var nw=new Date();var rd=Math.max(0,Math.ceil((ed-nw)/(1000*60*60*24)));var cdd=parseInt(n.billing_cycle)||30;var rv=(rd/cdd)*n.price;bRemain=b.currency+rv.toFixed(2)+' ('+rd+'d)';bRemClr=rd<=7?'var(--r)':rd<=30?'var(--am)':'var(--g)';}
   h+='<td style="color:var(--t3);font-size:11px">'+esc(expStr)+'</td>';
   h+='<td style="color:'+bRemClr+';font-size:12px;font-weight:600">'+bRemain+'</td>';
   h+='<td><button class="bill-export-btn" data-uuid="'+n.uuid+'" title="Export Poster">⤓</button></td></tr>';
@@ -2409,7 +2409,7 @@ function rBillFlat(nodeRows,totalEntries){
     var monthlyStr=b.monthly>0?'<span class="bill-monthly">'+b.currency+b.monthly.toFixed(2)+'</span>':(b.str==='免费'?'<span class="bill-free">免费</span>':'<span style="color:var(--t4)">--</span>');
     var cycleStr='';
     if(n.billing_cycle){var cd=parseInt(n.billing_cycle);if(cd<=31)cycleStr='月付';else if(cd<=93)cycleStr='季付';else if(cd<=186)cycleStr='半年付';else if(cd<=366)cycleStr='年付';else cycleStr=Math.round(cd/365)+'年付';}
-    var expStr=n.expiration_date||'--';
+    var expStr=n.expired_at||'--';
     h+='<tr><td class="bill-node-name" onclick="openDet(\''+n.uuid+'\')">'+esc(n.name||n.uuid)+'</td>';
     h+='<td><span class="bill-badge '+(r.online?'on':'off')+'">'+(r.online?'ONLINE':'OFFLINE')+'</span></td>';
     h+='<td style="color:var(--t3)">'+esc(n.group||'--')+'</td>';
@@ -2417,7 +2417,7 @@ function rBillFlat(nodeRows,totalEntries){
     h+='<td class="bill-cycle">'+cycleStr+'</td>';
     h+='<td>'+monthlyStr+'</td>';
     var bRem2='--';var bRc2='var(--t4)';
-    if(n.expiration_date&&b.monthly>0){var ed2=new Date(n.expiration_date);var nw2=new Date();var rd2=Math.max(0,Math.ceil((ed2-nw2)/(1000*60*60*24)));var cdd2=parseInt(n.billing_cycle)||30;var rv2=(rd2/cdd2)*n.price;bRem2=b.currency+rv2.toFixed(2)+' ('+rd2+'d)';bRc2=rd2<=7?'var(--r)':rd2<=30?'var(--am)':'var(--g)';}
+    if(n.expired_at&&b.monthly>0){var ed2=new Date(n.expired_at);var nw2=new Date();var rd2=Math.max(0,Math.ceil((ed2-nw2)/(1000*60*60*24)));var cdd2=parseInt(n.billing_cycle)||30;var rv2=(rd2/cdd2)*n.price;bRem2=b.currency+rv2.toFixed(2)+' ('+rd2+'d)';bRc2=rd2<=7?'var(--r)':rd2<=30?'var(--am)':'var(--g)';}
     h+='<td style="color:var(--t3);font-size:11px">'+esc(expStr)+'</td>';
     h+='<td style="color:'+bRc2+';font-size:12px;font-weight:600">'+bRem2+'</td>';
     h+='<td><button class="bill-export-btn" data-uuid="'+n.uuid+'" title="Export Poster">⤓</button></td></tr>';
@@ -2455,7 +2455,6 @@ function exportNodePoster(uuid){
   var on=S.onlineSet.has(uuid);
   var d=S.liveData[uuid]||{};
 
-  /* Collect data */
   var name=node.name||uuid;
   var region=node.region||'--';
   var group=node.group||'--';
@@ -2468,130 +2467,177 @@ function exportNodePoster(uuid){
   var monthlyStr=b.monthly>0?b.currency+b.monthly.toFixed(2)+'/月':'--';
   var cycleStr='--';
   if(node.billing_cycle){var cd=parseInt(node.billing_cycle);if(cd<=31)cycleStr='月付';else if(cd<=93)cycleStr='季付';else if(cd<=186)cycleStr='半年付';else if(cd<=366)cycleStr='年付';else cycleStr=Math.round(cd/365)+'年付';}
-  var expDate=node.expiration_date||'--';
+  var expDate=node.expired_at||'--';
+  if(expDate!=='--'){try{var ed0=new Date(expDate);expDate=ed0.getFullYear()+'-'+String(ed0.getMonth()+1).padStart(2,'0')+'-'+String(ed0.getDate()).padStart(2,'0')}catch(e){}}
   var remainStr='--';
-  if(node.expiration_date&&b.monthly>0){
-    var ed=new Date(node.expiration_date);var nw=new Date();
+  if(node.expired_at&&b.monthly>0){
+    var ed=new Date(node.expired_at);var nw=new Date();
     var rd=Math.max(0,Math.ceil((ed-nw)/(1000*60*60*24)));
     var cdd=parseInt(node.billing_cycle)||30;
     var rv=(rd/cdd)*node.price;
     remainStr=b.currency+rv.toFixed(2)+' ('+rd+'天)';
   }
+  var today=new Date();var dateStr=today.getFullYear()+'.'+String(today.getMonth()+1).padStart(2,'0')+'.'+String(today.getDate()).padStart(2,'0');
 
-  /* Canvas setup */
-  var W=800,H=1000;
+  /* Load char.png as background */
+  var charImg=new Image();
+  charImg.crossOrigin='anonymous';
+  charImg.onload=function(){drawPoster(charImg,name,region,group,os,cpuModel,cores,ramTotal,diskTotal,priceStr,monthlyStr,cycleStr,expDate,remainStr,dateStr,on)};
+  charImg.onerror=function(){drawPoster(null,name,region,group,os,cpuModel,cores,ramTotal,diskTotal,priceStr,monthlyStr,cycleStr,expDate,remainStr,dateStr,on)};
+  charImg.src='./char.png';
+}
+
+function drawPoster(charImg,name,region,group,os,cpuModel,cores,ramTotal,diskTotal,priceStr,monthlyStr,cycleStr,expDate,remainStr,dateStr,on){
+  var W=800,H=1100;
   var cv=document.createElement('canvas');cv.width=W;cv.height=H;
   var ctx=cv.getContext('2d');
 
-  /* Background gradient */
+  /* === Background with char.png === */
   var bg=ctx.createLinearGradient(0,0,0,H);
-  bg.addColorStop(0,'#0f172a');bg.addColorStop(0.5,'#1e293b');bg.addColorStop(1,'#0f172a');
+  bg.addColorStop(0,'#0c1526');bg.addColorStop(0.4,'#111d33');bg.addColorStop(1,'#0a1220');
   ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
 
-  /* Grid pattern */
-  ctx.strokeStyle='rgba(59,130,246,0.06)';ctx.lineWidth=1;
-  for(var i=0;i<W;i+=40){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke()}
-  for(var j=0;j<H;j+=40){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke()}
+  if(charImg){
+    ctx.save();ctx.globalAlpha=0.12;
+    var scale=Math.max(W/charImg.width,H/charImg.height)*1.2;
+    var cw=charImg.width*scale,ch=charImg.height*scale;
+    ctx.filter='blur(8px) saturate(0.6)';
+    ctx.drawImage(charImg,(W-cw)/2,(H-ch)/2-50,cw,ch);
+    ctx.restore();
+  }
 
-  /* Top accent line */
+  /* === Decorative border === */
+  /* Outer glow frame */
+  ctx.strokeStyle='rgba(0,216,255,0.15)';ctx.lineWidth=2;
+  posterRoundRect(ctx,8,8,W-16,H-16,16);ctx.stroke();
+  ctx.strokeStyle='rgba(37,99,235,0.25)';ctx.lineWidth=1;
+  posterRoundRect(ctx,14,14,W-28,H-28,12);ctx.stroke();
+
+  /* Corner decorations */
+  var corners=[[20,20,1,1],[W-20,20,-1,1],[20,H-20,1,-1],[W-20,H-20,-1,-1]];
+  corners.forEach(function(c){
+    ctx.save();ctx.translate(c[0],c[1]);ctx.scale(c[2],c[3]);
+    ctx.strokeStyle='#00d8ff';ctx.lineWidth=2;
+    ctx.beginPath();ctx.moveTo(0,20);ctx.lineTo(0,4);ctx.quadraticCurveTo(0,0,4,0);ctx.lineTo(20,0);ctx.stroke();
+    ctx.fillStyle='#00d8ff';ctx.fillRect(0,0,3,3);
+    ctx.restore();
+  });
+
+  /* Top accent bar */
   var tg=ctx.createLinearGradient(0,0,W,0);
-  tg.addColorStop(0,'transparent');tg.addColorStop(0.3,'#00d8ff');tg.addColorStop(0.5,'#2563eb');tg.addColorStop(0.7,'#00d8ff');tg.addColorStop(1,'transparent');
-  ctx.fillStyle=tg;ctx.fillRect(0,0,W,3);
+  tg.addColorStop(0,'transparent');tg.addColorStop(0.2,'rgba(0,216,255,0.4)');tg.addColorStop(0.5,'rgba(37,99,235,0.6)');tg.addColorStop(0.8,'rgba(0,216,255,0.4)');tg.addColorStop(1,'transparent');
+  ctx.fillStyle=tg;ctx.fillRect(20,12,W-40,2);
 
-  /* Header area */
-  ctx.fillStyle='rgba(0,216,255,0.08)';ctx.fillRect(0,20,W,100);
-  ctx.fillStyle=tg;ctx.fillRect(0,120,W,1);
+  /* === Header === */
+  ctx.fillStyle='rgba(0,216,255,0.04)';ctx.fillRect(20,30,W-40,110);
 
-  /* Status badge */
-  var badgeX=W-60,badgeY=55;
-  ctx.fillStyle=on?'rgba(34,197,94,0.15)':'rgba(255,77,79,0.15)';
-  roundRect(ctx,badgeX-35,badgeY-12,70,24,12);ctx.fill();
-  ctx.fillStyle=on?'#22c55e':'#ff4d4f';
-  ctx.font='bold 11px "JetBrains Mono",monospace';ctx.textAlign='center';
-  ctx.fillText(on?'ONLINE':'OFFLINE',badgeX,badgeY+4);
+  /* NanoMuse branding */
+  ctx.fillStyle='rgba(0,216,255,0.5)';ctx.font='bold 9px "JetBrains Mono",monospace';ctx.textAlign='left';ctx.letterSpacing='3px';
+  ctx.fillText('◆ NANOMUSE · SERVER PROFILE',50,55);
+
+  /* Date badge */
+  ctx.fillStyle='rgba(37,99,235,0.15)';
+  posterRoundRect(ctx,W-200,40,160,26,6);ctx.fill();
+  ctx.strokeStyle='rgba(37,99,235,0.3)';ctx.lineWidth=1;posterRoundRect(ctx,W-200,40,160,26,6);ctx.stroke();
+  ctx.fillStyle='#94a3b8';ctx.font='500 11px "JetBrains Mono",monospace';ctx.textAlign='center';
+  ctx.fillText(dateStr,W-120,57);
 
   /* Node name */
   ctx.textAlign='left';
-  ctx.fillStyle='#00d8ff';ctx.font='bold 11px "JetBrains Mono",monospace';
-  ctx.fillText('◆ SERVER NODE',40,50);
-  ctx.fillStyle='#f1f5f9';ctx.font='bold 28px "Outfit",sans-serif';
-  ctx.fillText(name,40,88);
-  ctx.fillStyle='#64748b';ctx.font='500 13px "JetBrains Mono",monospace';
-  ctx.fillText(region+' · '+group,40,110);
+  ctx.fillStyle='#f1f5f9';ctx.font='bold 32px "Outfit",sans-serif';
+  ctx.fillText(name,50,100);
 
-  /* Divider */
-  var y=145;
-
-  /* Section: SPECIFICATIONS */
-  y=drawSection(ctx,W,'SPECIFICATIONS',y);
-  var specs=[
-    ['CPU',cpuModel],
-    ['CORES',cores+''],
-    ['RAM',fB(ramTotal)],
-    ['DISK',fB(diskTotal)],
-    ['OS',os]
-  ];
-  specs.forEach(function(s){y=drawRow(ctx,W,s[0],s[1],y)});
-
-  y+=20;
-
-  /* Section: BILLING */
-  y=drawSection(ctx,W,'BILLING',y);
-  var bills=[
-    ['PRICE',priceStr],
-    ['CYCLE',cycleStr],
-    ['MONTHLY COST',monthlyStr],
-    ['EXPIRES',expDate],
-    ['REMAINING VALUE',remainStr]
-  ];
-  bills.forEach(function(s){
-    var isHighlight=s[0]==='REMAINING VALUE'||s[0]==='MONTHLY COST';
-    y=drawRow(ctx,W,s[0],s[1],y,isHighlight);
+  /* Region + Group chips */
+  var chipX=50;
+  [region,group].forEach(function(v){
+    if(!v||v==='--')return;
+    var tw=ctx.measureText(v).width||60;
+    ctx.fillStyle='rgba(100,116,139,0.15)';posterRoundRect(ctx,chipX,110,tw+20,22,11);ctx.fill();
+    ctx.strokeStyle='rgba(100,116,139,0.2)';ctx.lineWidth=1;posterRoundRect(ctx,chipX,110,tw+20,22,11);ctx.stroke();
+    ctx.fillStyle='#94a3b8';ctx.font='500 11px "Outfit",sans-serif';ctx.textAlign='left';
+    ctx.fillText(v,chipX+10,125);
+    chipX+=tw+30;
   });
 
-  y+=30;
+  /* Status */
+  ctx.fillStyle=on?'rgba(34,197,94,0.12)':'rgba(255,77,79,0.12)';
+  posterRoundRect(ctx,W-110,110,70,22,11);ctx.fill();
+  ctx.fillStyle=on?'#22c55e':'#ff4d4f';ctx.font='bold 10px "JetBrains Mono",monospace';ctx.textAlign='center';
+  ctx.fillText(on?'ONLINE':'OFFLINE',W-75,125);
+
+  /* Divider */
+  ctx.fillStyle=tg;ctx.fillRect(30,148,W-60,1);
+
+  var y=170;
+
+  /* === SPECIFICATIONS Section === */
+  y=posterSection(ctx,W,'SPECIFICATIONS',y);
+  [['CPU MODEL',cpuModel],['CORES',cores+''],['RAM',fB(ramTotal)],['DISK',fB(diskTotal)],['OS',os]].forEach(function(s){
+    y=posterRow(ctx,W,s[0],s[1],y,false);
+  });
+
+  y+=16;
+  /* Divider */
+  var mg=ctx.createLinearGradient(40,0,W-40,0);
+  mg.addColorStop(0,'transparent');mg.addColorStop(0.5,'rgba(37,99,235,0.2)');mg.addColorStop(1,'transparent');
+  ctx.fillStyle=mg;ctx.fillRect(40,y,W-80,1);
+  y+=20;
+
+  /* === BILLING Section === */
+  y=posterSection(ctx,W,'BILLING',y);
+  [['PRICE',priceStr,false],['BILLING CYCLE',cycleStr,false],['MONTHLY COST',monthlyStr,true],['EXPIRES',expDate,false],['REMAINING VALUE',remainStr,true]].forEach(function(s){
+    y=posterRow(ctx,W,s[0],s[1],y,s[2]);
+  });
+
+  /* === Monthly cost highlight box === */
+  if(monthlyStr!=='--'){
+    y+=20;
+    ctx.fillStyle='rgba(37,99,235,0.06)';posterRoundRect(ctx,40,y,W-80,60,10);ctx.fill();
+    ctx.strokeStyle='rgba(37,99,235,0.15)';ctx.lineWidth=1;posterRoundRect(ctx,40,y,W-80,60,10);ctx.stroke();
+    ctx.fillStyle='#64748b';ctx.font='bold 10px "JetBrains Mono",monospace';ctx.textAlign='left';
+    ctx.fillText('MONTHLY COST',60,y+25);
+    ctx.fillStyle='#00d8ff';ctx.font='bold 26px "Outfit",sans-serif';ctx.textAlign='right';
+    ctx.fillText(monthlyStr,W-60,y+42);
+  }
+
+  /* === Footer === */
+  ctx.fillStyle=tg;ctx.fillRect(30,H-60,W-60,1);
+  ctx.fillStyle='#475569';ctx.font='500 10px "JetBrains Mono",monospace';ctx.textAlign='center';
+  ctx.fillText('Generated by NanoMuse · '+dateStr+'  ·  lol.moe',W/2,H-35);
+  ctx.fillStyle='rgba(0,216,255,0.3)';ctx.font='bold 9px "JetBrains Mono",monospace';
+  ctx.fillText('SECURE · VERIFIED · ENCRYPTED',W/2,H-20);
 
   /* Bottom accent */
-  ctx.fillStyle=tg;ctx.fillRect(0,H-50,W,1);
-  ctx.fillStyle='#334155';ctx.font='500 10px "JetBrains Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('Generated by NanoMuse · '+new Date().toISOString().slice(0,10),W/2,H-25);
-  ctx.fillStyle='#1e293b';ctx.font='bold 10px "JetBrains Mono",monospace';
-  ctx.fillText('lol.moe',W/2,H-10);
-
-  /* Bottom line */
-  ctx.fillStyle=tg;ctx.fillRect(0,H-3,W,3);
+  ctx.fillStyle=tg;ctx.fillRect(20,H-14,W-40,2);
 
   /* Download */
   var link=document.createElement('a');
-  link.download='NanoMuse-'+name.replace(/[^a-zA-Z0-9一-鿿-]/g,'_')+'.png';
+  link.download='NanoMuse-'+name.replace(/[^a-zA-Z0-9\u4e00-\u9fff-]/g,'_')+'.png';
   link.href=cv.toDataURL('image/png');
   link.click();
 }
 
-function drawSection(ctx,W,title,y){
-  ctx.fillStyle='rgba(0,216,255,0.06)';ctx.fillRect(30,y,W-60,32);
+function posterSection(ctx,W,title,y){
+  ctx.fillStyle='rgba(0,216,255,0.04)';posterRoundRect(ctx,35,y-4,W-70,30,6);ctx.fill();
   ctx.fillStyle='#00d8ff';ctx.font='bold 10px "JetBrains Mono",monospace';ctx.textAlign='left';
-  ctx.fillText('◇ '+title,46,y+20);
-  var lg=ctx.createLinearGradient(200,0,W-30,0);
-  lg.addColorStop(0,'rgba(0,216,255,0.15)');lg.addColorStop(1,'transparent');
-  ctx.fillStyle=lg;ctx.fillRect(200,y+15,W-230,1);
-  return y+42;
+  ctx.fillText('◇ '+title,52,y+14);
+  var lg=ctx.createLinearGradient(220,0,W-40,0);
+  lg.addColorStop(0,'rgba(0,216,255,0.12)');lg.addColorStop(1,'transparent');
+  ctx.fillStyle=lg;ctx.fillRect(220,y+8,W-260,1);
+  return y+40;
 }
 
-function drawRow(ctx,W,label,value,y,highlight){
-  /* Subtle separator */
-  ctx.fillStyle='rgba(100,116,139,0.08)';ctx.fillRect(40,y+22,W-80,1);
-  /* Label */
+function posterRow(ctx,W,label,value,y,highlight){
+  ctx.fillStyle='rgba(100,116,139,0.05)';ctx.fillRect(45,y+20,W-90,1);
   ctx.fillStyle='#64748b';ctx.font='500 11px "JetBrains Mono",monospace';ctx.textAlign='left';
-  ctx.fillText(label,50,y+16);
-  /* Value */
+  ctx.fillText(label,55,y+14);
   ctx.fillStyle=highlight?'#00d8ff':'#e2e8f0';
-  ctx.font=(highlight?'bold':'600')+' 14px "Outfit",sans-serif';ctx.textAlign='right';
-  ctx.fillText(value,W-50,y+16);
-  return y+30;
+  ctx.font=(highlight?'bold 15px':'600 14px')+' "Outfit",sans-serif';ctx.textAlign='right';
+  ctx.fillText(value,W-55,y+14);
+  return y+28;
 }
 
-function roundRect(ctx,x,y,w,h,r){
+function posterRoundRect(ctx,x,y,w,h,r){
   ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
   ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
   ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
