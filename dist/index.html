@@ -2273,13 +2273,25 @@ function rBilling(){
       totals[b.currency]+=b.monthly;
     }
     if(b.str==='免费')freeCount++;
-    var row={node:n,billing:b,online:on,group:g};
+    /* Remaining value calc */
+    var rv=0;
+    if(n.expiration_date&&b.monthly>0&&b.currency){
+      var ed=new Date(n.expiration_date);var nw=new Date();
+      var rd=Math.max(0,Math.ceil((ed-nw)/(1000*60*60*24)));
+      var cdd=parseInt(n.billing_cycle)||30;
+      rv=(rd/cdd)*n.price;
+    }
+    var row={node:n,billing:b,online:on,group:g,remainVal:rv};
     nodeRows.push(row);
-    if(!groupData[g])groupData[g]={rows:[],totals:{}};
+    if(!groupData[g])groupData[g]={rows:[],totals:{},remainTotals:{}};
     groupData[g].rows.push(row);
     if(b.monthly>0&&b.currency){
       if(!groupData[g].totals[b.currency])groupData[g].totals[b.currency]=0;
       groupData[g].totals[b.currency]+=b.monthly;
+    }
+    if(rv>0&&b.currency){
+      if(!groupData[g].remainTotals[b.currency])groupData[g].remainTotals[b.currency]=0;
+      groupData[g].remainTotals[b.currency]+=rv;
     }
   });
   /* Summary cards */
@@ -2297,6 +2309,15 @@ function rBilling(){
   var groupCount=Object.keys(groupData).length;
   sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--am)">'+groupCount+'</div><div class="bill-sum-lbl">GROUPS</div></div>';
   if(freeCount>0)sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--t4)">'+freeCount+'</div><div class="bill-sum-lbl">FREE TIER</div></div>';
+  /* Remaining value totals */
+  var remainTotals={};
+  nodeRows.forEach(function(r){if(r.remainVal>0&&r.billing.currency){var c=r.billing.currency;if(!remainTotals[c])remainTotals[c]=0;remainTotals[c]+=r.remainVal;}});
+  var remainEntries=Object.entries(remainTotals);
+  if(remainEntries.length>0){
+    remainEntries.forEach(function(e){
+      sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--g)">'+e[0]+e[1].toFixed(2)+'</div><div class="bill-sum-lbl">REMAINING VALUE ('+e[0]+')</div></div>';
+    });
+  }
   sumEl.innerHTML=sh;
 
   if(S._billView==='group'){rBillGroup(groupData,totalEntries)}
@@ -2335,15 +2356,19 @@ function rBillGroup(groupData,totalEntries){
     var gd=groupData[gName];
     var gCostParts=Object.entries(gd.totals).map(function(e){return e[0]+e[1].toFixed(2)+'/月'});
     var gCostStr=gCostParts.length?gCostParts.join(' + '):'--';
+    var gRemParts=Object.entries(gd.remainTotals||{}).map(function(e){return e[0]+e[1].toFixed(2)});
+    var gRemStr=gRemParts.length?gRemParts.join(' + '):'';
     h+='<div class="bill-group">';
-    h+='<div class="bill-group-hdr"><span class="bill-group-name">'+esc(gName)+'</span><span class="bill-group-line"></span><span class="bill-group-stats">'+gd.rows.length+' NODES</span><span class="bill-group-cost">'+gCostStr+'</span></div>';
+    h+='<div class="bill-group-hdr"><span class="bill-group-name">'+esc(gName)+'</span><span class="bill-group-line"></span><span class="bill-group-stats">'+gd.rows.length+' NODES</span>'+(gRemStr?'<span class="bill-group-stats" style="color:var(--g)">剩余 '+gRemStr+'</span>':'')+'<span class="bill-group-cost">'+gCostStr+'</span></div>';
     h+='<div style="background:var(--glass);border:1px solid var(--gborder);border-radius:12px;overflow:hidden">';
     h+='<table class="bill-table"><thead><tr><th>NODE</th><th>STATUS</th><th>PRICE</th><th>CYCLE</th><th>MONTHLY</th><th>EXPIRES</th><th>REMAINING</th></tr></thead><tbody>';
     gd.rows.sort(function(a,b){return b.billing.monthly-a.billing.monthly});
     gd.rows.forEach(function(r){h+=billTableRow(r)});
     /* Group subtotal */
+    var gRemSub={};gd.rows.forEach(function(r){if(r.remainVal>0&&r.billing.currency){var c=r.billing.currency;if(!gRemSub[c])gRemSub[c]=0;gRemSub[c]+=r.remainVal;}});
     Object.entries(gd.totals).forEach(function(e){
-      h+='<tr class="bill-total-row"><td colspan="5" style="text-align:right;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)">'+esc(gName)+' SUBTOTAL ('+e[0]+')</td><td class="bill-monthly" style="font-size:14px">'+e[0]+e[1].toFixed(2)+'/月</td><td></td></tr>';
+      var remStr=gRemSub[e[0]]?'<span style="color:var(--g)">'+e[0]+gRemSub[e[0]].toFixed(2)+'</span>':'--';
+      h+='<tr class="bill-total-row"><td colspan="4" style="text-align:right;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)">'+esc(gName)+' SUBTOTAL ('+e[0]+')</td><td class="bill-monthly" style="font-size:14px">'+e[0]+e[1].toFixed(2)+'/月</td><td></td><td style="font-size:12px;font-weight:600">'+remStr+'</td></tr>';
     });
     h+='</tbody></table></div></div>';
   });
@@ -2354,6 +2379,15 @@ function rBillGroup(groupData,totalEntries){
     totalEntries.forEach(function(e){
       h+='<span style="font-family:var(--fd);font-size:22px;font-weight:800;color:var(--blue)">'+e[0]+e[1].toFixed(2)+'<span style="font-size:12px;opacity:.5;margin-left:2px">/月</span></span>';
     });
+    /* Remaining grand total */
+    var allRem={};groupNames.forEach(function(gn){groupData[gn].rows.forEach(function(r){if(r.remainVal>0&&r.billing.currency){var c=r.billing.currency;if(!allRem[c])allRem[c]=0;allRem[c]+=r.remainVal;}})});
+    var allRemEntries=Object.entries(allRem);
+    if(allRemEntries.length>0){
+      h+='<span style="opacity:.3;margin:0 8px">|</span><span style="font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--t3);font-weight:600">REMAINING</span>';
+      allRemEntries.forEach(function(e){
+        h+='<span style="font-family:var(--fd);font-size:22px;font-weight:800;color:var(--g)">'+e[0]+e[1].toFixed(2)+'</span>';
+      });
+    }
     h+='</div>';
   }
   contentEl.innerHTML=h;
