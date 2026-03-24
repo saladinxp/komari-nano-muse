@@ -2454,190 +2454,242 @@ function exportNodePoster(uuid){
   var b=fBilling(node);
   var on=S.onlineSet.has(uuid);
   var d=S.liveData[uuid]||{};
-
   var name=node.name||uuid;
-  var region=node.region||'--';
-  var group=node.group||'--';
+  var region=node.region||'';
+  var group=node.group||'';
   var os=d.os||node.os||'--';
   var cpuModel=node.cpu_name||'--';
-  var cores=node.cpu_cores||'--';
-  var ramTotal=d.memory_total||node.mem_total||0;
-  var diskTotal=d.disk_total||node.disk_total||0;
+  var cores=(node.cpu_cores||'--')+'';
+  var ramStr=fB(d.memory_total||node.mem_total||0);
+  var diskStr=fB(d.disk_total||node.disk_total||0);
   var priceStr=b.str||'--';
   var monthlyStr=b.monthly>0?b.currency+b.monthly.toFixed(2)+'/月':'--';
   var cycleStr='--';
   if(node.billing_cycle){var cd=parseInt(node.billing_cycle);if(cd<=31)cycleStr='月付';else if(cd<=93)cycleStr='季付';else if(cd<=186)cycleStr='半年付';else if(cd<=366)cycleStr='年付';else cycleStr=Math.round(cd/365)+'年付';}
-  var expDate=node.expired_at||'--';
-  if(expDate!=='--'){try{var ed0=new Date(expDate);expDate=ed0.getFullYear()+'-'+String(ed0.getMonth()+1).padStart(2,'0')+'-'+String(ed0.getDate()).padStart(2,'0')}catch(e){}}
-  var remainStr='--';
+  var expDate=node.expired_at||'';
+  var expDisplay='--';
+  if(expDate){try{var ed0=new Date(expDate);expDisplay=ed0.getFullYear()+'-'+String(ed0.getMonth()+1).padStart(2,'0')+'-'+String(ed0.getDate()).padStart(2,'0')}catch(e){}}
+  var remainStr='--';var remainDays='';
   if(node.expired_at&&b.monthly>0){
     var ed=new Date(node.expired_at);var nw=new Date();
     var rd=Math.max(0,Math.ceil((ed-nw)/(1000*60*60*24)));
     var cdd=parseInt(node.billing_cycle)||30;
     var rv=(rd/cdd)*node.price;
-    remainStr=b.currency+rv.toFixed(2)+' ('+rd+'天)';
+    remainStr=b.currency+rv.toFixed(2);remainDays=rd+'天';
   }
   var today=new Date();var dateStr=today.getFullYear()+'.'+String(today.getMonth()+1).padStart(2,'0')+'.'+String(today.getDate()).padStart(2,'0');
 
-  /* Load char.png as background */
-  var charImg=new Image();
-  charImg.crossOrigin='anonymous';
-  charImg.onload=function(){drawPoster(charImg,name,region,group,os,cpuModel,cores,ramTotal,diskTotal,priceStr,monthlyStr,cycleStr,expDate,remainStr,dateStr,on)};
-  charImg.onerror=function(){drawPoster(null,name,region,group,os,cpuModel,cores,ramTotal,diskTotal,priceStr,monthlyStr,cycleStr,expDate,remainStr,dateStr,on)};
+  var charImg=new Image();charImg.crossOrigin='anonymous';
+  charImg.onload=function(){_drawPoster(charImg,{name:name,region:region,group:group,os:os,cpu:cpuModel,cores:cores,ram:ramStr,disk:diskStr,price:priceStr,monthly:monthlyStr,cycle:cycleStr,expires:expDisplay,remain:remainStr,remainDays:remainDays,date:dateStr,on:on})};
+  charImg.onerror=function(){_drawPoster(null,{name:name,region:region,group:group,os:os,cpu:cpuModel,cores:cores,ram:ramStr,disk:diskStr,price:priceStr,monthly:monthlyStr,cycle:cycleStr,expires:expDisplay,remain:remainStr,remainDays:remainDays,date:dateStr,on:on})};
   charImg.src='./char.png';
 }
 
-function drawPoster(charImg,name,region,group,os,cpuModel,cores,ramTotal,diskTotal,priceStr,monthlyStr,cycleStr,expDate,remainStr,dateStr,on){
-  var W=800,H=1100;
+function _drawPoster(charImg,p){
+  var W=1400,H=800;
   var cv=document.createElement('canvas');cv.width=W;cv.height=H;
   var ctx=cv.getContext('2d');
+  var LW=520;/* left panel width for character */
 
-  /* === Background with char.png === */
-  var bg=ctx.createLinearGradient(0,0,0,H);
-  bg.addColorStop(0,'#0c1526');bg.addColorStop(0.4,'#111d33');bg.addColorStop(1,'#0a1220');
+  /* === Full background === */
+  var bg=ctx.createLinearGradient(0,0,W,0);
+  bg.addColorStop(0,'#080e1a');bg.addColorStop(0.35,'#0c1526');bg.addColorStop(1,'#0a1220');
   ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
 
+  /* Grid */
+  ctx.strokeStyle='rgba(59,130,246,0.04)';ctx.lineWidth=1;
+  for(var i=0;i<W;i+=50){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,H);ctx.stroke()}
+  for(var j=0;j<H;j+=50){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(W,j);ctx.stroke()}
+
+  /* === Left: Character panel === */
   if(charImg){
-    ctx.save();ctx.globalAlpha=0.12;
-    var scale=Math.max(W/charImg.width,H/charImg.height)*1.2;
+    ctx.save();
+    ctx.beginPath();ctx.rect(0,0,LW,H);ctx.clip();
+    var scale=Math.max(LW/charImg.width,H/charImg.height)*1.15;
     var cw=charImg.width*scale,ch=charImg.height*scale;
-    ctx.filter='blur(8px) saturate(0.6)';
-    ctx.drawImage(charImg,(W-cw)/2,(H-ch)/2-50,cw,ch);
+    ctx.drawImage(charImg,(LW-cw)/2,(H-ch)/2-20,cw,ch);
+    /* Glass overlay */
+    var ov=ctx.createLinearGradient(0,0,LW,0);
+    ov.addColorStop(0,'rgba(8,14,26,0.3)');ov.addColorStop(0.7,'rgba(8,14,26,0.5)');ov.addColorStop(1,'rgba(8,14,26,0.85)');
+    ctx.fillStyle=ov;ctx.fillRect(0,0,LW,H);
+    /* Bottom fade */
+    var bf=ctx.createLinearGradient(0,H-150,0,H);
+    bf.addColorStop(0,'transparent');bf.addColorStop(1,'rgba(8,14,26,0.9)');
+    ctx.fillStyle=bf;ctx.fillRect(0,H-150,LW,150);
     ctx.restore();
   }
 
-  /* === Decorative border === */
-  /* Outer glow frame */
-  ctx.strokeStyle='rgba(0,216,255,0.15)';ctx.lineWidth=2;
-  posterRoundRect(ctx,8,8,W-16,H-16,16);ctx.stroke();
-  ctx.strokeStyle='rgba(37,99,235,0.25)';ctx.lineWidth=1;
-  posterRoundRect(ctx,14,14,W-28,H-28,12);ctx.stroke();
+  /* Vertical separator */
+  var sg=ctx.createLinearGradient(0,0,0,H);
+  sg.addColorStop(0,'transparent');sg.addColorStop(0.2,'rgba(0,216,255,0.3)');sg.addColorStop(0.5,'rgba(37,99,235,0.5)');sg.addColorStop(0.8,'rgba(0,216,255,0.3)');sg.addColorStop(1,'transparent');
+  ctx.fillStyle=sg;ctx.fillRect(LW,0,2,H);
 
-  /* Corner decorations */
-  var corners=[[20,20,1,1],[W-20,20,-1,1],[20,H-20,1,-1],[W-20,H-20,-1,-1]];
-  corners.forEach(function(c){
+  /* === Left panel text overlay === */
+  /* Status badge */
+  ctx.fillStyle=p.on?'rgba(34,197,94,0.2)':'rgba(255,77,79,0.2)';
+  _pRR(ctx,30,30,90,32,8);ctx.fill();
+  ctx.strokeStyle=p.on?'rgba(34,197,94,0.4)':'rgba(255,77,79,0.4)';ctx.lineWidth=1;_pRR(ctx,30,30,90,32,8);ctx.stroke();
+  ctx.fillStyle=p.on?'#22c55e':'#ff4d4f';ctx.font='bold 13px "JetBrains Mono",monospace';ctx.textAlign='center';
+  ctx.fillText(p.on?'ONLINE':'OFFLINE',75,51);
+
+  /* Node name - BIG */
+  ctx.textAlign='left';ctx.fillStyle='#f8fafc';
+  ctx.font='bold 44px "Outfit","Noto Sans SC",sans-serif';
+  /* Word wrap if name is long */
+  var nameLines=_wrapText(ctx,p.name,LW-80);
+  var ny=H-180;
+  nameLines.forEach(function(line){ctx.fillText(line,40,ny);ny+=52});
+
+  /* Tags */
+  var tagY=ny+8;
+  ctx.font='500 14px "JetBrains Mono",monospace';
+  var tags=[];if(p.region)tags.push(p.region);if(p.group)tags.push(p.group);
+  var tx=40;
+  tags.forEach(function(t){
+    var tw=ctx.measureText(t).width;
+    ctx.fillStyle='rgba(0,216,255,0.1)';_pRR(ctx,tx-6,tagY-14,tw+16,24,6);ctx.fill();
+    ctx.strokeStyle='rgba(0,216,255,0.25)';ctx.lineWidth=1;_pRR(ctx,tx-6,tagY-14,tw+16,24,6);ctx.stroke();
+    ctx.fillStyle='#67e8f9';ctx.textAlign='left';ctx.fillText(t,tx+2,tagY+2);
+    tx+=tw+28;
+  });
+
+  /* === Right panel === */
+  var RX=LW+40;var RW=W-LW-80;var ry=40;
+
+  /* Brand */
+  ctx.fillStyle='rgba(0,216,255,0.5)';ctx.font='bold 10px "JetBrains Mono",monospace';ctx.textAlign='left';
+  ctx.fillText('◆ NANOMUSE · SERVER PROFILE',RX,ry);
+  ctx.fillStyle='#475569';ctx.textAlign='right';
+  ctx.fillText(p.date,W-40,ry);
+
+  ry+=30;
+
+  /* === Big stat cards row === */
+  var cardW=Math.floor((RW-30)/4);
+  var cards=[
+    {label:'CORES',value:p.cores,color:'#00d8ff'},
+    {label:'RAM',value:p.ram,color:'#2563eb'},
+    {label:'DISK',value:p.disk,color:'#22c55e'},
+    {label:'CYCLE',value:p.cycle,color:'#eab308'}
+  ];
+  cards.forEach(function(c,i){
+    var cx=RX+i*(cardW+10);
+    ctx.fillStyle='rgba(255,255,255,0.03)';_pRR(ctx,cx,ry,cardW,90,10);ctx.fill();
+    ctx.strokeStyle='rgba(100,116,139,0.1)';ctx.lineWidth=1;_pRR(ctx,cx,ry,cardW,90,10);ctx.stroke();
+    /* Value */
+    ctx.fillStyle=c.color;ctx.font='bold 28px "Outfit",sans-serif';ctx.textAlign='center';
+    ctx.fillText(c.value,cx+cardW/2,ry+45);
+    /* Label */
+    ctx.fillStyle='#64748b';ctx.font='bold 9px "JetBrains Mono",monospace';
+    ctx.fillText(c.label,cx+cardW/2,ry+72);
+  });
+  ry+=110;
+
+  /* CPU full width */
+  ctx.fillStyle='rgba(255,255,255,0.03)';_pRR(ctx,RX,ry,RW,50,8);ctx.fill();
+  ctx.strokeStyle='rgba(100,116,139,0.1)';ctx.lineWidth=1;_pRR(ctx,RX,ry,RW,50,8);ctx.stroke();
+  ctx.fillStyle='#64748b';ctx.font='bold 9px "JetBrains Mono",monospace';ctx.textAlign='left';
+  ctx.fillText('CPU',RX+16,ry+30);
+  ctx.fillStyle='#e2e8f0';ctx.font='600 15px "Outfit",sans-serif';ctx.textAlign='right';
+  ctx.fillText(p.cpu,RX+RW-16,ry+32);
+  ry+=60;
+
+  /* OS */
+  ctx.fillStyle='rgba(255,255,255,0.03)';_pRR(ctx,RX,ry,RW,50,8);ctx.fill();
+  ctx.strokeStyle='rgba(100,116,139,0.1)';ctx.lineWidth=1;_pRR(ctx,RX,ry,RW,50,8);ctx.stroke();
+  ctx.fillStyle='#64748b';ctx.font='bold 9px "JetBrains Mono",monospace';ctx.textAlign='left';
+  ctx.fillText('OPERATING SYSTEM',RX+16,ry+30);
+  ctx.fillStyle='#e2e8f0';ctx.font='600 14px "Outfit",sans-serif';ctx.textAlign='right';
+  ctx.fillText(p.os,RX+RW-16,ry+32);
+  ry+=70;
+
+  /* === BILLING — BIG highlight section === */
+  /* Section divider */
+  var dg=ctx.createLinearGradient(RX,0,RX+RW,0);
+  dg.addColorStop(0,'rgba(0,216,255,0.3)');dg.addColorStop(0.5,'rgba(37,99,235,0.2)');dg.addColorStop(1,'transparent');
+  ctx.fillStyle=dg;ctx.fillRect(RX,ry,RW,2);
+  ry+=16;
+
+  ctx.fillStyle='#00d8ff';ctx.font='bold 10px "JetBrains Mono",monospace';ctx.textAlign='left';
+  ctx.fillText('◇ BILLING',RX,ry+4);
+  ry+=20;
+
+  /* Price row */
+  ctx.fillStyle='#64748b';ctx.font='500 12px "JetBrains Mono",monospace';ctx.textAlign='left';
+  ctx.fillText('PRICE',RX,ry+14);
+  ctx.fillStyle='#e2e8f0';ctx.font='bold 20px "Outfit",sans-serif';ctx.textAlign='right';
+  ctx.fillText(p.price,RX+RW,ry+16);
+  ry+=36;
+
+  /* Monthly cost — HERO NUMBER */
+  ctx.fillStyle='rgba(0,216,255,0.06)';_pRR(ctx,RX-10,ry,RW+20,70,12);ctx.fill();
+  ctx.strokeStyle='rgba(0,216,255,0.15)';ctx.lineWidth=1;_pRR(ctx,RX-10,ry,RW+20,70,12);ctx.stroke();
+  ctx.fillStyle='#64748b';ctx.font='bold 10px "JetBrains Mono",monospace';ctx.textAlign='left';
+  ctx.fillText('MONTHLY COST',RX+10,ry+28);
+  ctx.fillStyle='#00d8ff';ctx.font='bold 36px "Outfit",sans-serif';ctx.textAlign='right';
+  ctx.fillText(p.monthly,RX+RW-10,ry+52);
+  ry+=86;
+
+  /* Expires + Remaining side by side */
+  var halfW=Math.floor((RW-10)/2);
+  /* Expires */
+  ctx.fillStyle='rgba(255,255,255,0.03)';_pRR(ctx,RX,ry,halfW,65,8);ctx.fill();
+  ctx.fillStyle='#64748b';ctx.font='bold 9px "JetBrains Mono",monospace';ctx.textAlign='left';
+  ctx.fillText('EXPIRES',RX+14,ry+22);
+  ctx.fillStyle='#e2e8f0';ctx.font='bold 18px "Outfit",sans-serif';ctx.textAlign='center';
+  ctx.fillText(p.expires,RX+halfW/2,ry+48);
+
+  /* Remaining Value */
+  ctx.fillStyle='rgba(34,197,94,0.06)';_pRR(ctx,RX+halfW+10,ry,halfW,65,8);ctx.fill();
+  ctx.strokeStyle='rgba(34,197,94,0.15)';ctx.lineWidth=1;_pRR(ctx,RX+halfW+10,ry,halfW,65,8);ctx.stroke();
+  ctx.fillStyle='#64748b';ctx.font='bold 9px "JetBrains Mono",monospace';ctx.textAlign='left';
+  ctx.fillText('REMAINING VALUE',RX+halfW+24,ry+22);
+  ctx.fillStyle=p.remain!=='--'?'#22c55e':'#64748b';
+  ctx.font='bold 18px "Outfit",sans-serif';ctx.textAlign='center';
+  var remText=p.remain;if(p.remainDays)remText+=' · '+p.remainDays;
+  ctx.fillText(remText,RX+halfW+10+halfW/2,ry+48);
+
+  /* === Decorative borders === */
+  /* Outer frame */
+  ctx.strokeStyle='rgba(0,216,255,0.12)';ctx.lineWidth=2;_pRR(ctx,6,6,W-12,H-12,12);ctx.stroke();
+  ctx.strokeStyle='rgba(37,99,235,0.2)';ctx.lineWidth=1;_pRR(ctx,12,12,W-24,H-24,8);ctx.stroke();
+  /* Corner L-brackets */
+  [[16,16,1,1],[W-16,16,-1,1],[16,H-16,1,-1],[W-16,H-16,-1,-1]].forEach(function(c){
     ctx.save();ctx.translate(c[0],c[1]);ctx.scale(c[2],c[3]);
     ctx.strokeStyle='#00d8ff';ctx.lineWidth=2;
-    ctx.beginPath();ctx.moveTo(0,20);ctx.lineTo(0,4);ctx.quadraticCurveTo(0,0,4,0);ctx.lineTo(20,0);ctx.stroke();
-    ctx.fillStyle='#00d8ff';ctx.fillRect(0,0,3,3);
+    ctx.beginPath();ctx.moveTo(0,24);ctx.lineTo(0,3);ctx.quadraticCurveTo(0,0,3,0);ctx.lineTo(24,0);ctx.stroke();
+    ctx.fillStyle='#00d8ff';ctx.beginPath();ctx.arc(0,0,2,0,Math.PI*2);ctx.fill();
     ctx.restore();
   });
-
-  /* Top accent bar */
+  /* Top/bottom accent lines */
   var tg=ctx.createLinearGradient(0,0,W,0);
-  tg.addColorStop(0,'transparent');tg.addColorStop(0.2,'rgba(0,216,255,0.4)');tg.addColorStop(0.5,'rgba(37,99,235,0.6)');tg.addColorStop(0.8,'rgba(0,216,255,0.4)');tg.addColorStop(1,'transparent');
-  ctx.fillStyle=tg;ctx.fillRect(20,12,W-40,2);
+  tg.addColorStop(0,'transparent');tg.addColorStop(0.3,'rgba(0,216,255,0.4)');tg.addColorStop(0.5,'rgba(37,99,235,0.5)');tg.addColorStop(0.7,'rgba(0,216,255,0.4)');tg.addColorStop(1,'transparent');
+  ctx.fillStyle=tg;ctx.fillRect(16,10,W-32,2);
+  ctx.fillStyle=tg;ctx.fillRect(16,H-12,W-32,2);
 
-  /* === Header === */
-  ctx.fillStyle='rgba(0,216,255,0.04)';ctx.fillRect(20,30,W-40,110);
-
-  /* NanoMuse branding */
-  ctx.fillStyle='rgba(0,216,255,0.5)';ctx.font='bold 9px "JetBrains Mono",monospace';ctx.textAlign='left';ctx.letterSpacing='3px';
-  ctx.fillText('◆ NANOMUSE · SERVER PROFILE',50,55);
-
-  /* Date badge */
-  ctx.fillStyle='rgba(37,99,235,0.15)';
-  posterRoundRect(ctx,W-200,40,160,26,6);ctx.fill();
-  ctx.strokeStyle='rgba(37,99,235,0.3)';ctx.lineWidth=1;posterRoundRect(ctx,W-200,40,160,26,6);ctx.stroke();
-  ctx.fillStyle='#94a3b8';ctx.font='500 11px "JetBrains Mono",monospace';ctx.textAlign='center';
-  ctx.fillText(dateStr,W-120,57);
-
-  /* Node name */
-  ctx.textAlign='left';
-  ctx.fillStyle='#f1f5f9';ctx.font='bold 32px "Outfit",sans-serif';
-  ctx.fillText(name,50,100);
-
-  /* Region + Group chips */
-  var chipX=50;
-  [region,group].forEach(function(v){
-    if(!v||v==='--')return;
-    var tw=ctx.measureText(v).width||60;
-    ctx.fillStyle='rgba(100,116,139,0.15)';posterRoundRect(ctx,chipX,110,tw+20,22,11);ctx.fill();
-    ctx.strokeStyle='rgba(100,116,139,0.2)';ctx.lineWidth=1;posterRoundRect(ctx,chipX,110,tw+20,22,11);ctx.stroke();
-    ctx.fillStyle='#94a3b8';ctx.font='500 11px "Outfit",sans-serif';ctx.textAlign='left';
-    ctx.fillText(v,chipX+10,125);
-    chipX+=tw+30;
-  });
-
-  /* Status */
-  ctx.fillStyle=on?'rgba(34,197,94,0.12)':'rgba(255,77,79,0.12)';
-  posterRoundRect(ctx,W-110,110,70,22,11);ctx.fill();
-  ctx.fillStyle=on?'#22c55e':'#ff4d4f';ctx.font='bold 10px "JetBrains Mono",monospace';ctx.textAlign='center';
-  ctx.fillText(on?'ONLINE':'OFFLINE',W-75,125);
-
-  /* Divider */
-  ctx.fillStyle=tg;ctx.fillRect(30,148,W-60,1);
-
-  var y=170;
-
-  /* === SPECIFICATIONS Section === */
-  y=posterSection(ctx,W,'SPECIFICATIONS',y);
-  [['CPU MODEL',cpuModel],['CORES',cores+''],['RAM',fB(ramTotal)],['DISK',fB(diskTotal)],['OS',os]].forEach(function(s){
-    y=posterRow(ctx,W,s[0],s[1],y,false);
-  });
-
-  y+=16;
-  /* Divider */
-  var mg=ctx.createLinearGradient(40,0,W-40,0);
-  mg.addColorStop(0,'transparent');mg.addColorStop(0.5,'rgba(37,99,235,0.2)');mg.addColorStop(1,'transparent');
-  ctx.fillStyle=mg;ctx.fillRect(40,y,W-80,1);
-  y+=20;
-
-  /* === BILLING Section === */
-  y=posterSection(ctx,W,'BILLING',y);
-  [['PRICE',priceStr,false],['BILLING CYCLE',cycleStr,false],['MONTHLY COST',monthlyStr,true],['EXPIRES',expDate,false],['REMAINING VALUE',remainStr,true]].forEach(function(s){
-    y=posterRow(ctx,W,s[0],s[1],y,s[2]);
-  });
-
-  /* === Monthly cost highlight box === */
-  if(monthlyStr!=='--'){
-    y+=20;
-    ctx.fillStyle='rgba(37,99,235,0.06)';posterRoundRect(ctx,40,y,W-80,60,10);ctx.fill();
-    ctx.strokeStyle='rgba(37,99,235,0.15)';ctx.lineWidth=1;posterRoundRect(ctx,40,y,W-80,60,10);ctx.stroke();
-    ctx.fillStyle='#64748b';ctx.font='bold 10px "JetBrains Mono",monospace';ctx.textAlign='left';
-    ctx.fillText('MONTHLY COST',60,y+25);
-    ctx.fillStyle='#00d8ff';ctx.font='bold 26px "Outfit",sans-serif';ctx.textAlign='right';
-    ctx.fillText(monthlyStr,W-60,y+42);
-  }
-
-  /* === Footer === */
-  ctx.fillStyle=tg;ctx.fillRect(30,H-60,W-60,1);
-  ctx.fillStyle='#475569';ctx.font='500 10px "JetBrains Mono",monospace';ctx.textAlign='center';
-  ctx.fillText('Generated by NanoMuse · '+dateStr+'  ·  lol.moe',W/2,H-35);
-  ctx.fillStyle='rgba(0,216,255,0.3)';ctx.font='bold 9px "JetBrains Mono",monospace';
-  ctx.fillText('SECURE · VERIFIED · ENCRYPTED',W/2,H-20);
-
-  /* Bottom accent */
-  ctx.fillStyle=tg;ctx.fillRect(20,H-14,W-40,2);
+  /* Footer text */
+  ctx.fillStyle='#334155';ctx.font='500 10px "JetBrains Mono",monospace';ctx.textAlign='center';
+  ctx.fillText('Generated by NanoMuse · '+p.date+'  ·  lol.moe',W/2,H-22);
 
   /* Download */
   var link=document.createElement('a');
-  link.download='NanoMuse-'+name.replace(/[^a-zA-Z0-9\u4e00-\u9fff-]/g,'_')+'.png';
+  link.download='NanoMuse-'+p.name.replace(/[^a-zA-Z0-9\u4e00-\u9fff-]/g,'_')+'.png';
   link.href=cv.toDataURL('image/png');
   link.click();
 }
 
-function posterSection(ctx,W,title,y){
-  ctx.fillStyle='rgba(0,216,255,0.04)';posterRoundRect(ctx,35,y-4,W-70,30,6);ctx.fill();
-  ctx.fillStyle='#00d8ff';ctx.font='bold 10px "JetBrains Mono",monospace';ctx.textAlign='left';
-  ctx.fillText('◇ '+title,52,y+14);
-  var lg=ctx.createLinearGradient(220,0,W-40,0);
-  lg.addColorStop(0,'rgba(0,216,255,0.12)');lg.addColorStop(1,'transparent');
-  ctx.fillStyle=lg;ctx.fillRect(220,y+8,W-260,1);
-  return y+40;
+function _wrapText(ctx,text,maxW){
+  var lines=[];var current='';
+  for(var i=0;i<text.length;i++){
+    var test=current+text[i];
+    if(ctx.measureText(test).width>maxW&&current){lines.push(current);current=text[i]}
+    else{current=test}
+  }
+  if(current)lines.push(current);
+  return lines.length?lines:[text];
 }
 
-function posterRow(ctx,W,label,value,y,highlight){
-  ctx.fillStyle='rgba(100,116,139,0.05)';ctx.fillRect(45,y+20,W-90,1);
-  ctx.fillStyle='#64748b';ctx.font='500 11px "JetBrains Mono",monospace';ctx.textAlign='left';
-  ctx.fillText(label,55,y+14);
-  ctx.fillStyle=highlight?'#00d8ff':'#e2e8f0';
-  ctx.font=(highlight?'bold 15px':'600 14px')+' "Outfit",sans-serif';ctx.textAlign='right';
-  ctx.fillText(value,W-55,y+14);
-  return y+28;
-}
-
-function posterRoundRect(ctx,x,y,w,h,r){
+function _pRR(ctx,x,y,w,h,r){
   ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);
   ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
   ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
