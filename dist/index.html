@@ -2606,6 +2606,8 @@ function exportNodePoster(uuid){
   var name=node.name||uuid,region=node.region||'',group=node.group||'';
   var os=d.os||node.os||'--',cpuModel=node.cpu_name||'--',cores=node.cpu_cores||'--';
   var ramTotal=fB(d.memory_total||node.mem_total||0),diskTotal=fB(d.disk_total||node.disk_total||0);
+  var trafficLimit=node.traffic_limit&&node.traffic_limit>0?fB(node.traffic_limit):'不限';
+  var netSpeed=node.network_speed&&node.network_speed>0?(node.network_speed>=1000?(node.network_speed/1000)+'Gbps':node.network_speed+'Mbps'):'--';
   var priceStr=b.str||'--';
   var monthlyStr=b.monthly>0?b.currency+Math.round(b.monthly):'--';
   var cycleStr='--';
@@ -2660,6 +2662,7 @@ function exportNodePoster(uuid){
         '<div class="pp-card"><div class="pp-ci">⚙</div><div><div class="pp-cl">CPU</div><div class="pp-cv">'+esc(cpuModel)+'</div></div></div>'+
         '<div class="pp-card"><div class="pp-ci">⬡</div><div><div class="pp-cl">CORES · RAM</div><div class="pp-cv">'+cores+'C · '+ramTotal+'</div></div></div>'+
         '<div class="pp-card"><div class="pp-ci">◈</div><div><div class="pp-cl">STORAGE</div><div class="pp-cv">'+diskTotal+' SSD</div></div></div>'+
+        '<div class="pp-card"><div class="pp-ci">⇅</div><div><div class="pp-cl">TRAFFIC · BANDWIDTH</div><div class="pp-cv">'+trafficLimit+' · '+netSpeed+'</div></div></div>'+
       '</div>'+
       '<div class="pp-bot">'+
         '<div class="pp-box"><div class="pp-bl">MONTHLY COST</div><div class="pp-bv blue">'+esc(monthlyStr)+'<span class="pp-bu">/月</span></div><div class="pp-bs">'+esc(cycleStr)+' · '+esc(priceStr)+'</div></div>'+
