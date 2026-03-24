@@ -1079,7 +1079,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       <div class="det-back" onclick="nav('/')">← BACK TO DASHBOARD</div>
       <div class="sec-div"><span class="sd-line"></span><span class="sd-label"><span class="sd-dot"></span>BILLING · 费用总览</span><span class="sd-line r"></span></div>
       <div class="bill-summary" id="billSummary"></div>
-      <div class="bill-view-toggle"><button class="bill-view-btn a" data-view="group" onclick="setBillView('group')">BY GROUP</button><button class="bill-view-btn" data-view="flat" onclick="setBillView('flat')">ALL NODES</button></div>
+      <div class="bill-view-toggle" id="billViewToggle"><button class="bill-view-btn a" data-view="group">BY GROUP</button><button class="bill-view-btn" data-view="flat">ALL NODES</button></div>
       <div id="billContent"></div>
     </div>
   </div>
@@ -2251,7 +2251,7 @@ function fBilling(n){
 
 S._billView=S._billView||'group';
 function setBillView(v){S._billView=v;document.querySelectorAll('.bill-view-btn').forEach(function(b){b.classList.toggle('a',b.getAttribute('data-view')===v)});rBilling()}
-window.setBillView=setBillView;
+document.querySelectorAll('.bill-view-btn').forEach(function(b){b.addEventListener('click',function(){setBillView(this.getAttribute('data-view'))})});
 
 function rBilling(){
   var sumEl=$('billSummary');var contentEl=$('billContent');
