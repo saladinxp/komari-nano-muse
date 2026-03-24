@@ -883,7 +883,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       <span class="tb-tab" data-page="worldmap"><span class="tb-num">04</span>MAP</span>
       <span class="tb-tab" data-page="billing"><span class="tb-num">05</span>BILLING</span>
     </div>
-    <div class="tb-right"><button class="tb-badge" id="verBadge">v0.9.2</button><button class="tb-btn" id="searchBtn">⌕</button></div>
+    <div class="tb-right"><button class="tb-badge" id="verBadge">v0.9.5</button><button class="tb-btn" id="searchBtn">⌕</button></div>
   </div>
 
   <!-- ═══ DASHBOARD PAGE ═══ -->
@@ -1138,7 +1138,7 @@ const S={
   ws:null,_wsI:null,wsRetries:0,
   _lastF:[],
   detailUUID:null,detailNode:null,detailHours:6,detailTab:'load',detailPingHours:6,detailWsData:[],
-  VER:'v0.9.2',
+  VER:'v0.9.5',
   fleetLoadHist:[]
 };
 const STAB={hours:24,sort:'name',data:null,tasks:[],taskId:null,loading:false,_tasksFromApi:false};
@@ -1651,6 +1651,19 @@ function rDetInfo(node,uuid){
     ${halfArc(ram,gaugeColor(ram),gaugeHex(ram),'RAM')}
     ${halfArc(swap,gaugeColor(swap),gaugeHex(swap),'SWAP')}
   </div>`;
+  /* Billing info */
+  var bInfo=fBilling(node);
+  var bCycleStr='';
+  if(node.billing_cycle){var bcd=parseInt(node.billing_cycle);if(bcd<=31)bCycleStr='月付';else if(bcd<=93)bCycleStr='季付';else if(bcd<=186)bCycleStr='半年付';else if(bcd<=366)bCycleStr='年付';else bCycleStr=Math.round(bcd/365)+'年付';}
+  var bRemainStr='--';var bRemainColor='var(--t4)';
+  if(node.expiration_date&&bInfo.str&&bInfo.monthly>0){
+    var expDate=new Date(node.expiration_date);var now=new Date();
+    var remainDays=Math.max(0,Math.ceil((expDate-now)/(1000*60*60*24)));
+    var cycleDays=parseInt(node.billing_cycle)||30;
+    var remainVal=(remainDays/cycleDays)*node.price;
+    bRemainStr=bInfo.currency+remainVal.toFixed(2)+' ('+remainDays+'d)';
+    bRemainColor=remainDays<=7?'var(--r)':remainDays<=30?'var(--am)':'var(--g)';
+  }
   /* Info panels */
   html+=`<div class="det-panels">
     <div class="det-panel"><div class="det-panel-title">SYSTEM INFO</div>
