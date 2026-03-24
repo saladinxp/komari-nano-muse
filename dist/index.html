@@ -245,6 +245,8 @@ body{
 .fleet-cell:nth-child(4)::after{background:var(--am);box-shadow:0 0 12px rgba(var(--amr),.4)}
 .fleet-cell:nth-child(5)::after{background:var(--blue);box-shadow:0 0 12px rgba(var(--blue-r),.4)}
 .fleet-val{font-family:var(--fd);font-weight:800;font-size:46px;color:var(--t);line-height:1;
+  transition:text-shadow .3s}
+.fleet-cost-cell .fleet-val{font-size:32px;
   text-shadow:0 0 25px rgba(59,130,246,0.12);transition:text-shadow .3s}
 .fleet-cell:hover .fleet-val{text-shadow:0 0 24px rgba(59,130,246,0.15)}
 .fleet-lbl{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--t3);font-weight:600}
@@ -733,7 +735,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .boot-under{opacity:1}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:2px}
 @media(max-width:1100px){.hero{grid-template-columns:1fr;min-height:280px}.h-left,.h-right{display:none}}
-@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:12px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr);gap:10px}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}.det-strip{flex-wrap:wrap;border-radius:10px;min-height:auto}.ds-cell{min-width:auto;padding:8px 12px;font-size:90%}.det-core-echo{display:none}.det-charts-grid{grid-template-columns:1fr}.wmap-overview{grid-template-columns:repeat(2,1fr)}.wmap-node-list{grid-template-columns:1fr}
+@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:12px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr);gap:10px}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}.fleet-cost-cell{grid-column:span 2}.fleet-cost-cell .fleet-val{font-size:28px!important}.det-strip{flex-wrap:wrap;border-radius:10px;min-height:auto}.ds-cell{min-width:auto;padding:8px 12px;font-size:90%}.det-core-echo{display:none}.det-charts-grid{grid-template-columns:1fr}.wmap-overview{grid-template-columns:repeat(2,1fr)}.wmap-node-list{grid-template-columns:1fr}
 /* Mobile detail page */
 .chart-wrap{padding:12px;border-radius:12px;border-left-width:2px}
 .chart-wrap canvas{height:150px}
@@ -765,7 +767,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .pills{flex-wrap:wrap}
 .pill{font-size:10px;padding:4px 10px}
 /* ── Mobile: Fleet strip ── */
-.fleet-strip .fs-val{font-size:28px}
+.fleet-strip .fleet-val{font-size:28px}
 }
 @media(max-width:480px){.stab-ov{grid-template-columns:1fr}
 .hero-top{min-height:50vh}
@@ -774,8 +776,9 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .sync-ring-wrap{width:200px;height:200px}
 .sync-pct{font-size:40px}
 .fleet-strip{grid-template-columns:repeat(2,1fr);gap:8px;padding:12px 16px}
-.fleet-strip .fs-val{font-size:24px}
-.fleet-strip .fs-lbl{font-size:7px}
+.fleet-strip .fleet-val{font-size:24px}
+.fleet-cost-cell .fleet-val{font-size:20px!important}
+.fleet-strip .fleet-lbl{font-size:7px}
 .tb-logo{min-width:auto;font-size:16px}
 .tb-badge{font-size:9px;padding:2px 8px}
 .sec-head .sh-l{flex-shrink:0}
@@ -1040,7 +1043,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
         <div class="fleet-cell" style="transform:scale(1.06)"><div class="fleet-val" style="color:var(--g)" id="fUprate">--%</div><div class="fleet-lbl">ONLINE RATE</div></div>
         <div class="fleet-cell"><div class="fleet-val" style="color:var(--r)" id="fAlerts">--</div><div class="fleet-lbl">ALERTS</div></div>
         <div class="fleet-cell"><div class="fleet-val" style="color:var(--am)" id="fAvgLoad">--%</div><div class="fleet-lbl">AVG LOAD</div></div>
-        <div class="fleet-cell fleet-cost-cell" onclick="nav('/billing')"><div class="fleet-val" style="color:var(--blue);font-size:32px" id="fCost">--</div><div class="fleet-lbl">MONTHLY COST</div></div>
+        <div class="fleet-cell fleet-cost-cell" onclick="nav('/billing')"><div class="fleet-val" style="color:var(--blue)" id="fCost">--</div><div class="fleet-lbl">MONTHLY COST</div></div>
       </div>
     </div>
 
