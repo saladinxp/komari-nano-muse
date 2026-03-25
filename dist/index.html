@@ -15,9 +15,9 @@
 <meta name="twitter:description" content="Real-time server fleet monitoring dashboard">
 <meta name="twitter:image" content="https://lol.moe/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<!-- NanoMuse v0.9.6 — Komari Monitor Theme -->
+<!-- NanoMuse v0.9.7 — Komari Monitor Theme -->
 <style>
-/* ═══ NanoMuse v0.9.6 — CSS ═══ */
+/* ═══ NanoMuse v0.9.7 — CSS ═══ */
 :root{
   --bg:#cad3e0;
   --cyan:#00d8ff;--cyan-g:rgba(0,216,255,0.5);
@@ -1281,7 +1281,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
 </div><!-- /mainContent -->
 <script>
-/* ═══ NanoMuse v0.9.6 — JS ═══ */
+/* ═══ NanoMuse v0.9.7 — JS ═══ */
 ;(function(){
 'use strict';
 window._pageStart = performance.now();
@@ -1712,6 +1712,7 @@ window.openDet=function(uuid){
 };
 function rDetInfo(node,uuid){
   const on=S.onlineSet.has(uuid);
+  const _plDet=parseLabels(node);
   const d=S.liveData[uuid]||{};
   const c=$('detContent');if(!c)return;
   const cpu=Math.round(d.cpu||0),ram=d.memory_total?Math.round(pc(d.memory_used||0,d.memory_total)):0;
@@ -1818,6 +1819,8 @@ function rDetInfo(node,uuid){
       <div class="det-row"><span class="det-row-k">UPTIME</span><span class="det-row-v">${on?fUs(d.uptime):'--'}</span></div>
       <div class="det-row"><span class="det-row-k">CPU MODEL</span><span class="det-row-v">${esc(node.cpu_name||'--')}</span></div>
       <div class="det-row"><span class="det-row-k">CORES</span><span class="det-row-v">${node.cpu_cores||'--'}</span></div>
+      <div class="det-row"><span class="det-row-k">BANDWIDTH</span><span class="det-row-v" style="color:var(--cyan);font-weight:600">${_plDet.bandwidth||'--'}</span></div>
+      <div class="det-row"><span class="det-row-k">TRAFFIC</span><span class="det-row-v" style="color:var(--cyan);font-weight:600">${_plDet.traffic||'不限'}</span></div>
       <div class="det-row"><span class="det-row-k">MONTHLY COST</span><span class="det-row-v" style="color:var(--blue);font-weight:700">${bInfo.monthly>0?bInfo.currency+bInfo.monthly.toFixed(2)+'/月':'--'}</span></div>
     </div>
     <div class="det-panel"><div class="det-panel-title">RESOURCES</div>
@@ -2394,6 +2397,32 @@ document.querySelectorAll('.tb-tab').forEach(b=>{
 
 
 /* ── Billing Functions ── */
+
+/* ── Parse node labels for bandwidth/traffic info ── */
+/* Labels format: '2Gbps<green>;3T<blue>' or '1Gbps;3T' */
+function parseLabels(node){
+  var result={bandwidth:null,traffic:null,allLabels:[]};
+  var raw=node.labels||node.tags||'';
+  if(!raw||typeof raw!=='string')return result;
+  var parts=raw.split(';');
+  parts.forEach(function(p){
+    p=p.trim();if(!p)return;
+    /* Strip color tag like <green>, <blue> etc */
+    var text=p.replace(/<[^>]+>/g,'').trim();
+    var color=(p.match(/<([^>]+)>/)||[])[1]||'';
+    result.allLabels.push({text:text,color:color});
+    /* Detect bandwidth: contains Gbps, Mbps, gbps, mbps */
+    if(/\d+\.?\d*\s*[gGmM]bps/i.test(text)){
+      result.bandwidth=text;
+    }
+    /* Detect traffic: contains T, G, TB, GB (but not bps) */
+    else if(/^\d+\.?\d*\s*[TtGg][Bb]?$/i.test(text)){
+      result.traffic=text;
+    }
+  });
+  return result;
+}
+
 function fBilling(n){
   if(!n.price||n.price===0)return{str:'',monthly:0,currency:''};
   if(n.price===-1)return{str:'免费',monthly:0,currency:''};
@@ -2606,8 +2635,9 @@ function exportNodePoster(uuid){
   var name=node.name||uuid,region=node.region||'',group=node.group||'';
   var os=d.os||node.os||'--',cpuModel=node.cpu_name||'--',cores=node.cpu_cores||'--';
   var ramTotal=fB(d.memory_total||node.mem_total||0),diskTotal=fB(d.disk_total||node.disk_total||0);
-  var trafficLimit=node.traffic_limit&&node.traffic_limit>0?fB(node.traffic_limit):'不限';
-  var netSpeed=node.network_speed&&node.network_speed>0?(node.network_speed>=1000?(node.network_speed/1000)+'Gbps':node.network_speed+'Mbps'):'--';
+  var _pl=parseLabels(node);
+  var trafficLimit=node.traffic_limit&&node.traffic_limit>0?fB(node.traffic_limit):(_pl.traffic||'不限');
+  var netSpeed=node.network_speed&&node.network_speed>0?(node.network_speed>=1000?(node.network_speed/1000)+'Gbps':node.network_speed+'Mbps'):(_pl.bandwidth||'--');
   var priceStr=b.str||'--';
   var monthlyStr=b.monthly>0?b.currency+Math.round(b.monthly):'--';
   var cycleStr='--';
