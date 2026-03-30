@@ -611,6 +611,24 @@ body.alert-active .sync-ring-wrap::after{background:radial-gradient(circle,rgba(
 body.alert-active .scan-line{background:linear-gradient(90deg,transparent,rgba(180,100,120,0.10),rgba(140,80,100,0.06),transparent)}
 
 
+
+/* ═══ Currency Selector & Enhanced Billing ═══ */
+.bill-currency-bar{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:12px 18px;background:var(--glass);border:1px solid var(--gborder);border-radius:10px}
+.bill-currency-label{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--t3);font-weight:600}
+.bill-cur-btn{font-family:var(--fm);font-size:11px;letter-spacing:1px;padding:4px 12px;border-radius:6px;border:1px solid rgba(100,116,139,0.15);background:transparent;color:var(--t2);cursor:pointer;font-weight:600;transition:all .2s}
+.bill-cur-btn:hover{border-color:var(--blue);color:var(--blue)}
+.bill-cur-btn.a{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;border-color:transparent}
+.bill-sum-card.highlight{border-left:3px solid var(--blue)}
+.bill-sum-card.warn{border-left:3px solid var(--am)}
+.bill-due-list{margin-top:8px;font-size:12px;color:var(--t2)}
+.bill-due-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(100,116,139,0.06)}
+.bill-due-item:last-child{border-bottom:none}
+.bill-due-name{font-weight:600;cursor:pointer}
+.bill-due-name:hover{color:var(--blue)}
+.bill-due-days{font-family:var(--fm);font-size:10px;letter-spacing:1px}
+.bill-due-days.urgent{color:var(--r);font-weight:700}
+.bill-due-days.soon{color:var(--am);font-weight:600}
+.bill-due-days.ok{color:var(--t3)}
 /* ═══ BILLING PAGE ═══ */
 #pg-billing .content-area{background:rgba(225,232,242,0.55);border-radius:0 0 18px 18px;min-height:80vh;position:relative;overflow:hidden}
 #pg-billing .content-area>*{position:relative;z-index:1}
@@ -1237,6 +1255,15 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
     <div class="content-area" style="padding:28px 36px">
       <div class="det-back" onclick="nav('/')">← BACK TO DASHBOARD</div>
       <div class="sec-div"><span class="sd-line"></span><span class="sd-label"><span class="sd-dot"></span>BILLING · 费用总览</span><span class="sd-line r"></span></div>
+      <div class="bill-currency-bar" id="billCurrencyBar">
+        <span class="bill-currency-label">DISPLAY CURRENCY</span>
+        <button class="bill-cur-btn a" data-cur="original" onclick="setCurrency('original')">原始</button>
+        <button class="bill-cur-btn" data-cur="CNY" onclick="setCurrency('CNY')">¥ CNY</button>
+        <button class="bill-cur-btn" data-cur="USD" onclick="setCurrency('USD')">$ USD</button>
+        <button class="bill-cur-btn" data-cur="EUR" onclick="setCurrency('EUR')">€ EUR</button>
+        <button class="bill-cur-btn" data-cur="JPY" onclick="setCurrency('JPY')">¥ JPY</button>
+        <button class="bill-cur-btn" data-cur="GBP" onclick="setCurrency('GBP')">£ GBP</button>
+      </div>
       <div class="bill-summary" id="billSummary"></div>
       <div class="bill-view-toggle" id="billViewToggle"><button class="bill-view-btn a" data-view="group">BY GROUP</button><button class="bill-view-btn" data-view="flat">ALL NODES</button></div>
       <div id="billContent"></div>
@@ -2444,6 +2471,59 @@ S._billView=S._billView||'group';
 function setBillView(v){S._billView=v;document.querySelectorAll('.bill-view-btn').forEach(function(b){b.classList.toggle('a',b.getAttribute('data-view')===v)});rBilling()}
 document.querySelectorAll('.bill-view-btn').forEach(function(b){b.addEventListener('click',function(){setBillView(this.getAttribute('data-view'))})});
 
+
+/* ═══ Currency Exchange System ═══ */
+S._displayCurrency='original';
+S._rates=null;
+S._rateBase='USD';
+S._ratesFetched=false;
+S._currencySymbols={USD:'$',CNY:'¥',EUR:'€',JPY:'¥',GBP:'£'};
+
+async function fetchRates(){
+  if(S._ratesFetched)return;
+  try{
+    const r=await fetch('https://open.er-api.com/v6/latest/USD');
+    const j=await r.json();
+    if(j.result==='success'){S._rates=j.rates;S._rateBase='USD';S._ratesFetched=true;console.log('Exchange rates loaded')}
+  }catch(e){
+    console.warn('Exchange rate fetch failed, using fallback');
+    S._rates={USD:1,CNY:7.25,EUR:0.92,JPY:150.5,GBP:0.79};S._rateBase='USD';S._ratesFetched=true;
+  }
+}
+
+function convertCurrency(amount,fromSymbol,toCur){
+  if(!S._rates||toCur==='original')return null;
+  /* Map currency symbol to code */
+  var fromCode=null;
+  var symbolMap={'$':'USD','¥':'CNY','€':'EUR','£':'GBP','₩':'KRW','₽':'RUB','₹':'INR','฿':'THB','A$':'AUD','C$':'CAD','HK$':'HKD','NT$':'TWD','S$':'SGD','R$':'BRL'};
+  /* Try direct symbol match */
+  fromCode=symbolMap[fromSymbol];
+  /* If ¥ and target is CNY, assume source is JPY and vice versa */
+  if(fromSymbol==='¥'){
+    /* Heuristic: if amount > 100 likely JPY, else CNY */
+    fromCode=amount>100?'JPY':'CNY';
+  }
+  if(!fromCode)fromCode='USD';
+  if(fromCode===toCur)return{amount:amount,symbol:S._currencySymbols[toCur]||toCur};
+  var fromRate=S._rates[fromCode]||1;
+  var toRate=S._rates[toCur]||1;
+  var converted=amount/fromRate*toRate;
+  return{amount:converted,symbol:S._currencySymbols[toCur]||toCur};
+}
+
+function setCurrency(cur){
+  S._displayCurrency=cur;
+  document.querySelectorAll('.bill-cur-btn').forEach(function(b){b.classList.toggle('a',b.getAttribute('data-cur')===cur)});
+  if(cur!=='original'&&!S._ratesFetched){fetchRates().then(function(){rBilling()})}else{rBilling()}
+}
+
+function fmtConverted(amount,fromSymbol){
+  if(S._displayCurrency==='original')return fromSymbol+amount.toFixed(2);
+  var c=convertCurrency(amount,fromSymbol,S._displayCurrency);
+  if(!c)return fromSymbol+amount.toFixed(2);
+  return c.symbol+c.amount.toFixed(2);
+}
+
 function rBilling(){
   var sumEl=$('billSummary');var contentEl=$('billContent');
   if(!sumEl||!contentEl)return;
@@ -2479,30 +2559,74 @@ function rBilling(){
       groupData[g].remainTotals[b.currency]+=rv;
     }
   });
-  /* Summary cards */
+  /* Summary cards — enhanced with yearly + due this month */
   var sh='';
   var totalEntries=Object.entries(totals);
+  var dc=S._displayCurrency;
+
+  /* Monthly total */
   if(totalEntries.length===0){
-    sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--t4)">--</div><div class="bill-sum-lbl">MONTHLY TOTAL</div></div>';
+    sh+='<div class="bill-sum-card highlight"><div class="bill-sum-val" style="color:var(--t4)">--</div><div class="bill-sum-lbl">MONTHLY COST</div></div>';
+    sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--t4)">--</div><div class="bill-sum-lbl">YEARLY COST</div></div>';
+  }else if(dc!=='original'&&S._rates){
+    /* Converted: sum all into one currency */
+    var mTotal=0;
+    totalEntries.forEach(function(e){var c=convertCurrency(e[1],e[0],dc);if(c)mTotal+=c.amount;else mTotal+=e[1]});
+    var sym=S._currencySymbols[dc]||dc;
+    sh+='<div class="bill-sum-card highlight"><div class="bill-sum-val" style="color:var(--blue)">'+sym+mTotal.toFixed(2)+'</div><div class="bill-sum-lbl">MONTHLY COST ('+dc+')</div></div>';
+    sh+='<div class="bill-sum-card highlight"><div class="bill-sum-val" style="color:var(--cyan)">'+sym+(mTotal*12).toFixed(2)+'</div><div class="bill-sum-lbl">YEARLY COST ('+dc+')</div></div>';
   }else{
     totalEntries.forEach(function(e){
-      sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--blue)">'+e[0]+e[1].toFixed(2)+'</div><div class="bill-sum-lbl">MONTHLY TOTAL ('+e[0]+')</div></div>';
+      sh+='<div class="bill-sum-card highlight"><div class="bill-sum-val" style="color:var(--blue)">'+e[0]+e[1].toFixed(2)+'</div><div class="bill-sum-lbl">MONTHLY COST ('+e[0]+')</div></div>';
+      sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--cyan)">'+e[0]+(e[1]*12).toFixed(2)+'</div><div class="bill-sum-lbl">YEARLY COST ('+e[0]+')</div></div>';
     });
   }
+
   sh+='<div class="bill-sum-card"><div class="bill-sum-val">'+nodeRows.length+'</div><div class="bill-sum-lbl">TOTAL NODES</div></div>';
   sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--g)">'+nodeRows.filter(function(r){return r.online}).length+'</div><div class="bill-sum-lbl">ONLINE</div></div>';
   var groupCount=Object.keys(groupData).length;
   sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--am)">'+groupCount+'</div><div class="bill-sum-lbl">GROUPS</div></div>';
   if(freeCount>0)sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--t4)">'+freeCount+'</div><div class="bill-sum-lbl">FREE TIER</div></div>';
+
   /* Remaining value totals */
   var remainTotals={};
   nodeRows.forEach(function(r){if(r.remainVal>0&&r.billing.currency){var c=r.billing.currency;if(!remainTotals[c])remainTotals[c]=0;remainTotals[c]+=r.remainVal;}});
   var remainEntries=Object.entries(remainTotals);
   if(remainEntries.length>0){
-    remainEntries.forEach(function(e){
-      sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--g)">'+e[0]+e[1].toFixed(2)+'</div><div class="bill-sum-lbl">REMAINING VALUE ('+e[0]+')</div></div>';
-    });
+    if(dc!=='original'&&S._rates){
+      var rTotal=0;
+      remainEntries.forEach(function(e){var c=convertCurrency(e[1],e[0],dc);if(c)rTotal+=c.amount;else rTotal+=e[1]});
+      var sym2=S._currencySymbols[dc]||dc;
+      sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--g)">'+sym2+rTotal.toFixed(2)+'</div><div class="bill-sum-lbl">REMAINING ('+dc+')</div></div>';
+    }else{
+      remainEntries.forEach(function(e){
+        sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--g)">'+e[0]+e[1].toFixed(2)+'</div><div class="bill-sum-lbl">REMAINING ('+e[0]+')</div></div>';
+      });
+    }
   }
+
+  /* Due this month — nodes expiring within 30 days */
+  var now=new Date();
+  var dueNodes=[];
+  nodeRows.forEach(function(r){
+    if(!r.node.expired_at)return;
+    var exp=new Date(r.node.expired_at);
+    var days=Math.ceil((exp-now)/(86400000));
+    if(days>=0&&days<=30)dueNodes.push({name:r.node.name||r.node.uuid,uuid:r.node.uuid,days:days,billing:r.billing});
+  });
+  dueNodes.sort(function(a,b){return a.days-b.days});
+  if(dueNodes.length>0){
+    var dueHtml='<div class="bill-due-list">';
+    dueNodes.forEach(function(d){
+      var cls=d.days<=3?'urgent':d.days<=7?'soon':'ok';
+      var label=d.days===0?'今天':d.days+'天后';
+      var cost=d.billing.monthly>0?fmtConverted(d.billing.monthly,d.billing.currency):'';
+      dueHtml+='<div class="bill-due-item"><span class="bill-due-name" onclick="openDet(\''+d.uuid+'\')">'+esc(d.name)+'</span><span>'+(cost?cost+' · ':'')+'<span class="bill-due-days '+cls+'">'+label+'</span></span></div>';
+    });
+    dueHtml+='</div>';
+    sh+='<div class="bill-sum-card warn" style="grid-column:1/-1"><div class="bill-sum-lbl" style="margin-bottom:8px">⚠ DUE THIS MONTH · 当月待缴 ('+dueNodes.length+')</div>'+dueHtml+'</div>';
+  }
+
   sumEl.innerHTML=sh;
 
   if(S._billView==='group'){rBillGroup(groupData,totalEntries)}
