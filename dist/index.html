@@ -2481,14 +2481,16 @@ S._currencySymbols={USD:'$',CNY:'¥',EUR:'€',JPY:'¥',GBP:'£'};
 
 async function fetchRates(){
   if(S._ratesFetched)return;
+  var fallback={USD:1,CNY:7.25,EUR:0.92,JPY:150.5,GBP:0.79,AUD:1.55,CAD:1.36,HKD:7.82,TWD:32.5,SGD:1.34,KRW:1380};
   try{
-    const r=await fetch('https://open.er-api.com/v6/latest/USD');
-    const j=await r.json();
-    if(j.result==='success'){S._rates=j.rates;S._rateBase='USD';S._ratesFetched=true;console.log('Exchange rates loaded')}
-  }catch(e){
-    console.warn('Exchange rate fetch failed, using fallback');
-    S._rates={USD:1,CNY:7.25,EUR:0.92,JPY:150.5,GBP:0.79};S._rateBase='USD';S._ratesFetched=true;
-  }
+    var ctrl=new AbortController();
+    var tid=setTimeout(function(){ctrl.abort()},5000);
+    var r=await fetch('https://open.er-api.com/v6/latest/USD',{signal:ctrl.signal});
+    clearTimeout(tid);
+    var j=await r.json();
+    if(j.result==='success'&&j.rates){S._rates=j.rates;S._rateBase='USD';S._ratesFetched=true;console.log('Exchange rates loaded');return}
+  }catch(e){console.warn('Rate API failed:',e.message)}
+  S._rates=fallback;S._rateBase='USD';S._ratesFetched=true;console.log('Using fallback rates');
 }
 
 function convertCurrency(amount,fromSymbol,toCur){
@@ -2514,8 +2516,13 @@ function convertCurrency(amount,fromSymbol,toCur){
 function setCurrency(cur){
   S._displayCurrency=cur;
   document.querySelectorAll('.bill-cur-btn').forEach(function(b){b.classList.toggle('a',b.getAttribute('data-cur')===cur)});
-  if(cur!=='original'&&!S._ratesFetched){fetchRates().then(function(){rBilling()})}else{rBilling()}
+  if(cur!=='original'&&!S._ratesFetched){
+    var sumEl=$('billSummary');
+    if(sumEl)sumEl.innerHTML='<div class="bill-sum-card" style="grid-column:1/-1;text-align:center"><div class="bill-sum-val" style="color:var(--t4);font-size:16px">获取汇率中...</div></div>';
+    fetchRates().then(function(){rBilling()}).catch(function(){rBilling()});
+  }else{rBilling()}
 }
+window.setCurrency=setCurrency;
 
 function fmtConverted(amount,fromSymbol){
   if(S._displayCurrency==='original')return fromSymbol+amount.toFixed(2);
@@ -2542,9 +2549,11 @@ function rBilling(){
     var rv=0;
     if(n.expired_at&&b.monthly>0&&b.currency){
       var ed=new Date(n.expired_at);var nw=new Date();
-      var rd=Math.max(0,Math.ceil((ed-nw)/(1000*60*60*24)));
+      var rd=Math.max(0,Math.ceil((ed-nw)/(86400000)));
+      if(rd>3650)rd=0; /* Cap: ignore >10yr expiry */
       var cdd=parseInt(n.billing_cycle)||30;
-      rv=(rd/cdd)*n.price;
+      rv=cdd>0?(rd/cdd)*n.price:0;
+      if(rv>b.monthly*120)rv=0; /* Sanity: cap at 10yr monthly */
     }
     var row={node:n,billing:b,online:on,group:g,remainVal:rv};
     nodeRows.push(row);
@@ -2616,15 +2625,33 @@ function rBilling(){
   });
   dueNodes.sort(function(a,b){return a.days-b.days});
   if(dueNodes.length>0){
+    /* Calculate due total */
+    var dueTotals={};
+    dueNodes.forEach(function(d){
+      if(d.billing.monthly>0&&d.billing.currency){
+        var c=d.billing.currency;
+        if(!dueTotals[c])dueTotals[c]=0;
+        dueTotals[c]+=d.billing.monthly;
+      }
+    });
+    var dueSumStr='';
+    if(dc!=='original'&&S._rates){
+      var dTotal=0;
+      Object.entries(dueTotals).forEach(function(e){var cv=convertCurrency(e[1],e[0],dc);if(cv)dTotal+=cv.amount;else dTotal+=e[1]});
+      dueSumStr=(S._currencySymbols[dc]||dc)+dTotal.toFixed(2);
+    }else{
+      dueSumStr=Object.entries(dueTotals).map(function(e){return e[0]+e[1].toFixed(2)}).join(' + ');
+    }
+
     var dueHtml='<div class="bill-due-list">';
     dueNodes.forEach(function(d){
       var cls=d.days<=3?'urgent':d.days<=7?'soon':'ok';
       var label=d.days===0?'今天':d.days+'天后';
       var cost=d.billing.monthly>0?fmtConverted(d.billing.monthly,d.billing.currency):'';
-      dueHtml+='<div class="bill-due-item"><span class="bill-due-name" onclick="openDet(\''+d.uuid+'\')">'+esc(d.name)+'</span><span>'+(cost?cost+' · ':'')+'<span class="bill-due-days '+cls+'">'+label+'</span></span></div>';
+      dueHtml+='<div class="bill-due-item"><span class="bill-due-name" onclick="openDet(\''+d.uuid+'\')">'+esc(d.name)+'</span><span style="cursor:pointer" onclick="openDet(\''+d.uuid+'\')">'+(cost?'<b>'+cost+'</b> · ':'')+'<span class="bill-due-days '+cls+'">'+label+'</span></span></div>';
     });
     dueHtml+='</div>';
-    sh+='<div class="bill-sum-card warn" style="grid-column:1/-1"><div class="bill-sum-lbl" style="margin-bottom:8px">⚠ DUE THIS MONTH · 当月待缴 ('+dueNodes.length+')</div>'+dueHtml+'</div>';
+    sh+='<div class="bill-sum-card warn" style="grid-column:1/-1"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div class="bill-sum-lbl">⚠ DUE THIS MONTH · 当月待缴 ('+dueNodes.length+')</div><div style="font-family:var(--fd);font-size:20px;font-weight:800;color:var(--am)">'+dueSumStr+'</div></div>'+dueHtml+'</div>';
   }
 
   sumEl.innerHTML=sh;
