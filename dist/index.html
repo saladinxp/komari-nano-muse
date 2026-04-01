@@ -2260,16 +2260,41 @@ async function fetchStabTasks(){
 }
 async function fetchStability(hours){
   /* Warn on large time ranges */
-  if(hours>=720){if(!confirm('30天数据量较大，可能导致页面卡顿。确认加载？'))return}
+  if(hours>=720){if(!confirm('30天数据量较大，加载可能较慢。确认加载？'))return}
   try{
-    /* Limit data points to prevent OOM: 24h=2000, 7d=4000, 30d=6000 */
-    const mc=hours<=6?500:hours<=24?1000:hours<=168?2000:3000;
-    const r=await fetch('/api/rpc2',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({jsonrpc:'2.0',method:'common:getRecords',params:{type:'ping',hours,maxCount:mc},id:1})});
-    const d=await r.json();STAB.data=d.result||d;
-    if(!STAB._tasksFromApi)extractTasksFromData(STAB.data);
+    STAB.loading=true;
+    const c=$('stabContent');
+    if(c)c.innerHTML='<div style="text-align:center;padding:40px;color:#6a8098">加载中... 逐节点查询以节省内存</div>';
+
+    /* Per-node sequential fetch — prevents server OOM */
+    const allRecords=[];
+    const nodes=S.nodes||[];
+    for(let i=0;i<nodes.length;i++){
+      const uuid=nodes[i].uuid;
+      try{
+        const r=await fetch('/api/records/ping?uuid='+uuid+'&hours='+hours);
+        const j=await r.json();
+        const dd=j.data||j;
+        const recs=dd.records||[];
+        /* Tag each record with node uuid if missing */
+        for(let k=0;k<recs.length;k++){
+          if(!recs[k].client&&!recs[k].uuid&&!recs[k].node_uuid)recs[k].client=uuid;
+        }
+        allRecords.push.apply(allRecords,recs);
+        /* Extract tasks from first node that has them */
+        if(!STAB._tasksFromApi&&dd.tasks&&dd.tasks.length){
+          STAB.tasks=dd.tasks;STAB._tasksFromApi=true;
+        }
+        /* Progress update */
+        if(c)c.innerHTML='<div style="text-align:center;padding:40px;color:#6a8098">加载中... '+(i+1)+'/'+nodes.length+'</div>';
+      }catch(e){/* skip failed node */}
+    }
+    STAB.data={records:allRecords};
+    STAB.loading=false;
+    if(STAB._tasksFromApi)renderStabTasks();
     renderStability();
   }catch(e){
+    STAB.loading=false;
     const c=$('stabContent');if(c)c.innerHTML='<div style="text-align:center;padding:40px;color:var(--r)">Failed to load stability data</div>';
   }
 }
