@@ -2819,8 +2819,19 @@ function updateFleetCost(){
   var entries=Object.entries(totals);
   if(entries.length===0){el.textContent='--';return}
   function fmtCost(v){if(v>=1e9)return(v/1e9).toFixed(1)+'B';if(v>=1e6)return(v/1e6).toFixed(1)+'M';if(v>=1e4)return(v/1e3).toFixed(1)+'K';return v.toFixed(0)}
+  /* Convert all currencies to USD for unified display */
   if(entries.length===1){el.textContent=entries[0][0]+fmtCost(entries[0][1])+'/mo';return}
-  el.innerHTML=entries.map(function(e){return e[0]+fmtCost(e[1])}).join('<span style="font-size:14px;opacity:.4;margin:0 4px">|</span>');
+  if(S._rates){
+    var usdTotal=0;
+    entries.forEach(function(e){
+      var c=convertCurrency(e[1],e[0],'USD');
+      usdTotal+=c?c.amount:e[1];
+    });
+    el.textContent='$'+fmtCost(usdTotal)+'/mo';
+  }else{
+    fetchRates().then(function(){updateFleetCost()});
+    el.textContent='...';
+  }
 }
 
 /* ── Node Poster Export ── */
