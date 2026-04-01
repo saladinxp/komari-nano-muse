@@ -1257,9 +1257,9 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       <div class="sec-div"><span class="sd-line"></span><span class="sd-label"><span class="sd-dot"></span>BILLING · 费用总览</span><span class="sd-line r"></span></div>
       <div class="bill-currency-bar" id="billCurrencyBar">
         <span class="bill-currency-label">DISPLAY CURRENCY</span>
-        <button class="bill-cur-btn a" data-cur="original" onclick="setCurrency('original')">原始</button>
+        <button class="bill-cur-btn" data-cur="original" onclick="setCurrency('original')">原始</button>
         <button class="bill-cur-btn" data-cur="CNY" onclick="setCurrency('CNY')">¥ CNY</button>
-        <button class="bill-cur-btn" data-cur="USD" onclick="setCurrency('USD')">$ USD</button>
+        <button class="bill-cur-btn a" data-cur="USD" onclick="setCurrency('USD')">$ USD</button>
         <button class="bill-cur-btn" data-cur="EUR" onclick="setCurrency('EUR')">€ EUR</button>
         <button class="bill-cur-btn" data-cur="JPY" onclick="setCurrency('JPY')">¥ JPY</button>
         <button class="bill-cur-btn" data-cur="GBP" onclick="setCurrency('GBP')">£ GBP</button>
@@ -2403,7 +2403,7 @@ function hRoute(){
   }else if(path==='/stability'){
     showP('stability');loadStabilityData();
   }else if(path==='/billing'){
-    showP('billing');rBilling();
+    showP('billing');if(!S._ratesFetched){fetchRates().then(function(){rBilling()}).catch(function(){rBilling()})}else{rBilling()}
   }else if(path==='/worldmap'){
     showP('worldmap');initWorldMap();
   }else{
@@ -2484,7 +2484,7 @@ document.querySelectorAll('.bill-view-btn').forEach(function(b){b.addEventListen
 
 
 /* ═══ Currency Exchange System ═══ */
-S._displayCurrency='original';
+S._displayCurrency='USD';
 S._rates=null;
 S._rateBase='USD';
 S._ratesFetched=false;
