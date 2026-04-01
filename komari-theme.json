@@ -2,7 +2,7 @@
   "name": "Komari NanoMuse Panel",
   "short": "NanoMuse",
   "description": "电子二次元监控面板主题 · Anime HUD Light Sci-fi Dashboard。明亮冷白底 + 蓝色科技HUD + 动漫角色融合，内置 Stability 稳定性面板。",
-  "version": "0.9.6",
+  "version": "0.9.7",
   "author": "Miuler",
   "url": "https://github.com/saladinxp/komari-nano-muse",
   "preview": "preview.png",
@@ -18,7 +18,7 @@
         "key": "version_tag",
         "name": "[ SYS.VER ] 版本标识",
         "type": "string",
-        "default": "v0.9.5",
+        "default": "v0.9.7",
         "help": "面板版本号 — 显示于导航栏、页脚及HUD面板"
       },
       {

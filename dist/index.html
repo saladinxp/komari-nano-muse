@@ -1369,7 +1369,9 @@ const FAKE_CPU=['AMD EPYC 9B84 256-Core','Intel Xeon w9-5690X 128-Core','Ampere 
 const FAKE_MEM=[137438953472,274877906944,549755813888,1099511627776];
 const FAKE_DSK=[2199023255552,4398046511104,8796093022208,17592186044416];
 
+S._fakeCache={};
 function genFake(uuid){
+  if(S._fakeCache[uuid])return S._fakeCache[uuid];
   const s=varHash(uuid);
   const isAtk=((s>>7)&1)===0;
   const r=(min,max)=>min+((s^(min*7+max*13))%(max-min));
@@ -1467,7 +1469,7 @@ function conWS(){
         }
         uCards();rSum();
         if(S.detailUUID)uDetLive();
-        if(document.querySelector('#pg-worldmap.active')&&typeof initWorldMap==='function'){if(S._wmZoom)S._wmZoomPrev={scale:S._wmZoom.scale,tx:S._wmZoom.tx,ty:S._wmZoom.ty};initWorldMap()}
+        if(document.querySelector('#pg-worldmap.active')&&typeof initWorldMap==='function'){if(!S._wmInited){initWorldMap();S._wmInited=true}else if(typeof wmapUpdateNodes==='function'){wmapUpdateNodes()}}
       }catch(er){console.error('[NM]',er)}
     };
     S.ws.onclose=()=>{if(S._wsPoll)clearInterval(S._wsPoll);$('wsStatus').textContent='RECONNECT ...';reWS()};
@@ -2405,7 +2407,7 @@ function hRoute(){
   }else if(path==='/billing'){
     showP('billing');if(!S._ratesFetched){fetchRates().then(function(){rBilling()}).catch(function(){rBilling()})}else{rBilling()}
   }else if(path==='/worldmap'){
-    showP('worldmap');initWorldMap();
+    S._wmInited=false;showP('worldmap');initWorldMap();
   }else{
     showP('dashboard');
   }
@@ -2499,9 +2501,9 @@ async function fetchRates(){
     var r=await fetch('https://open.er-api.com/v6/latest/USD',{signal:ctrl.signal});
     clearTimeout(tid);
     var j=await r.json();
-    if(j.result==='success'&&j.rates){S._rates=j.rates;S._rateBase='USD';S._ratesFetched=true;console.log('Exchange rates loaded');return}
+    if(j.result==='success'&&j.rates){S._rates=j.rates;S._rateBase='USD';S._ratesFetched=true;/* rates loaded */;return}
   }catch(e){console.warn('Rate API failed:',e.message)}
-  S._rates=fallback;S._rateBase='USD';S._ratesFetched=true;console.log('Using fallback rates');
+  S._rates=fallback;S._rateBase='USD';S._ratesFetched=true;/* rates loaded */;
 }
 
 function convertCurrency(amount,fromSymbol,toCur){
@@ -3323,7 +3325,27 @@ if(found){var key3=found[0]+','+found[1];if(!WMAP_SPREAD_COUNT[key3])WMAP_SPREAD
 return null;
 }
 function initWorldMap(){
-WMAP_COORDS_CACHE={};WMAP_SPREAD_COUNT={};
+WMAP_COORDS_CACHE={}
+/* Lightweight worldmap node status update — no DOM rebuild */
+function wmapUpdateNodes(){
+  var dots=document.querySelectorAll('.wmap-dot');
+  dots.forEach(function(dot){
+    var uuid=dot.getAttribute('data-uuid');
+    if(!uuid)return;
+    var on=S.onlineSet.has(uuid);
+    dot.setAttribute('class','wmap-dot'+(on?' on':' off'));
+  });
+  /* Update node list online badges */
+  var items=document.querySelectorAll('.wmap-node-item');
+  items.forEach(function(item){
+    var uuid=item.getAttribute('data-uuid');
+    if(!uuid)return;
+    var on=S.onlineSet.has(uuid);
+    var badge=item.querySelector('.wmap-node-status');
+    if(badge){badge.setAttribute('class','wmap-node-status'+(on?' on':' off'));badge.textContent=on?'ONLINE':'OFFLINE'}
+  });
+}
+;WMAP_SPREAD_COUNT={};
 var wrap=document.getElementById('wmap-svg-wrap');if(!wrap)return;
 var W=960,H=480;
 var svg='<svg viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg" style="background:transparent">';
