@@ -1447,7 +1447,7 @@ function conWS(){
   try{
     const p=location.protocol==='https:'?'wss:':'ws:';
     S.ws=new WebSocket(p+'//'+location.host+'/api/clients');
-    S.ws.onopen=()=>{S.wsRetries=0;S.ws.send('get');$('wsStatus').textContent='UPDATING ...';$('sysLink').textContent='ACTIVE';$('rightStatus').textContent='STATUS — ACTIVE';if(S._wsPoll)clearInterval(S._wsPoll);S._wsPoll=setInterval(()=>{if(S.ws&&S.ws.readyState===1)S.ws.send('get')},1000)};
+    S.ws.onopen=()=>{S.wsRetries=0;S.ws.send('get');$('wsStatus').textContent='UPDATING ...';$('sysLink').textContent='ACTIVE';$('rightStatus').textContent='STATUS — ACTIVE';if(S._wsPoll)clearInterval(S._wsPoll);S._wsPoll=setInterval(()=>{if(S.ws&&S.ws.readyState===1)S.ws.send('get')},3000)};
     S.ws.onmessage=e=>{
       try{const m=JSON.parse(e.data);
         /* Match PRTS exactly: server sends {status:'success',data:{online:[],data:{}}} */
@@ -2968,7 +2968,7 @@ function initHeartbeat(){
     }
   }
 
-  S._hbInterval=setInterval(()=>{sample();draw()},2000);
+  S._hbInterval=setInterval(()=>{sample();draw()},3000);
   sample();draw();
 }
 
