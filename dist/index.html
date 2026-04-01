@@ -1464,10 +1464,14 @@ function conWS(){
         }
         if(!payload){console.warn('[NM] WS unknown format',Object.keys(m));return}
         S.onlineSet=new Set(payload.online||[]);
+        /* Clear fake cache for nodes that came online */
+        if(S._fakeCache){S.onlineSet.forEach(function(u){delete S._fakeCache[u]})}
         if(payload.data&&typeof payload.data==='object'){
           for(const[k,v]of Object.entries(payload.data))S.liveData[k]=flatLive(v);
         }
         uCards();rSum();
+        /* Cleanup stale liveData for removed nodes */
+        if(S.nodes.length>0){const validUuids=new Set(S.nodes.map(n=>n.uuid));for(const k in S.liveData){if(!validUuids.has(k))delete S.liveData[k]}}
         if(S.detailUUID)uDetLive();
         if(document.querySelector('#pg-worldmap.active')&&typeof initWorldMap==='function'){if(!S._wmInited){initWorldMap();S._wmInited=true}else if(typeof wmapUpdateNodes==='function'){wmapUpdateNodes()}}
       }catch(er){console.error('[NM]',er)}
@@ -2025,7 +2029,7 @@ function uDetLive(){
     const vEl=g.querySelector('.det-gauge-val');
     const color=v>=80?'var(--r)':v>=50?'var(--am)':'var(--blue)';
     if(fill){fill.style.strokeDashoffset=on?off.toFixed(1):arcLen.toFixed(1);fill.style.stroke=color}
-    if(vEl){vEl.innerHTML=on?v+'<span class="det-gauge-unit">%</span>':'--';vEl.style.color=on&&v>=80?'var(--r)':on&&v>=60?'var(--am)':'#1e293b'}
+    if(vEl){if(!vEl.querySelector('.det-gauge-unit')){vEl.innerHTML=v+'<span class="det-gauge-unit">%</span>'}else{vEl.firstChild.textContent=on?v:'--'};vEl.style.color=on&&v>=80?'var(--r)':on&&v>=60?'var(--am)':'#1e293b'}
     g.classList.remove('highlight','warning','peak-gauge');
     if(on&&v>=80)g.classList.add('highlight');
     else if(on&&v>=60)g.classList.add('warning');
@@ -2900,6 +2904,7 @@ function initParticles(){
 }
 /* ── Heartbeat ── */
 function initHeartbeat(){
+  if(S._hbInterval){clearInterval(S._hbInterval);S._hbInterval=null}
   const cv=$('hbCanvas');if(!cv)return;
   const ctx=cv.getContext('2d');
   const W=cv.width,H=cv.height;
@@ -2963,7 +2968,7 @@ function initHeartbeat(){
     }
   }
 
-  setInterval(()=>{sample();draw()},2000);
+  S._hbInterval=setInterval(()=>{sample();draw()},2000);
   sample();draw();
 }
 
