@@ -1324,7 +1324,7 @@ const S={
   VER:'v0.9.6',
   fleetLoadHist:[]
 };
-const STAB={hours:24,sort:'name',data:null,tasks:[],taskId:null,loading:false,_tasksFromApi:false};
+const STAB={hours:6,sort:'name',data:null,tasks:[],taskId:null,loading:false,_tasksFromApi:false};
 window.S=S;window.STAB=STAB;
 
 /* ── Utils ── */
@@ -2259,9 +2259,11 @@ async function fetchStabTasks(){
   }catch(e){}
 }
 async function fetchStability(hours){
+  /* Warn on large time ranges */
+  if(hours>=720){if(!confirm('30天数据量较大，可能导致页面卡顿。确认加载？'))return}
   try{
     /* Limit data points to prevent OOM: 24h=2000, 7d=4000, 30d=6000 */
-    const mc=hours<=24?2000:hours<=168?4000:6000;
+    const mc=hours<=6?500:hours<=24?1000:hours<=168?2000:3000;
     const r=await fetch('/api/rpc2',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({jsonrpc:'2.0',method:'common:getRecords',params:{type:'ping',hours,maxCount:mc},id:1})});
     const d=await r.json();STAB.data=d.result||d;
@@ -2378,7 +2380,7 @@ function renderStability(){
   /* Time & sort buttons */
   const tr=$('stabTime');
   if(tr){
-    tr.innerHTML=[24,168,720].map(h=>`<button class="${h===STAB.hours?'a':''}" data-h="${h}">${h===24?'24H':h===168?'7D':'30D'}</button>`).join('')+
+    tr.innerHTML=[6,24,168,720].map(h=>`<button class="${h===STAB.hours?'a':''}" data-h="${h}">${h===6?'6H':h===24?'24H':h===168?'7D':'30D'}</button>`).join('')+
       '&nbsp;&nbsp;'+['name','uptime','loss'].map(s=>`<button class="${s===STAB.sort?'a':''}" data-s="${s}">${s.toUpperCase()}</button>`).join('');
     tr.querySelectorAll('button[data-h]').forEach(b=>{
       b.onclick=()=>{STAB.hours=+b.dataset.h;fetchStability(STAB.hours)}
@@ -2390,7 +2392,7 @@ function renderStability(){
 }
 
 /* ── Routing ── */
-function showP(page){
+function showP(page){if(page!=='stability'&&STAB.data){STAB.data=null};
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const pg=$('pg-'+page);if(pg)pg.classList.add('active');
   document.querySelectorAll('.tb-tab').forEach(t=>{
