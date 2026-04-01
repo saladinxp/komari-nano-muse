@@ -1670,10 +1670,14 @@ function uCards(){
     if(ring){ring.setAttribute('class','nc-ring-fg '+hc);ring.setAttribute('stroke-dashoffset',off.toFixed(1))}
     const rv=card.querySelector('.nc-ring-val');
     if(rv){rv.textContent=health;rv.style.color='var(--'+hc+')'}
-    /* Update net */
+    /* Update net — incremental, no innerHTML */
     const netEl=card.querySelector('.nc-net');
     if(netEl&&on){
-      netEl.innerHTML=`<span><span class="au">↑</span>${fS(d.network_tx||0)}</span><span><span class="ad">↓</span>${fS(d.network_rx||0)}</span>`;
+      const spans=netEl.querySelectorAll(':scope > span');
+      if(spans.length>=2){
+        spans[0].lastChild.textContent=fS(d.network_tx||0);
+        spans[1].lastChild.textContent=fS(d.network_rx||0);
+      }
     }
     /* Update three-column footer */
     let fdEl=card.querySelector('.nc-fd');
@@ -1683,8 +1687,14 @@ function uCards(){
       const uptime=d.uptime?fUs(d.uptime):'--';
       const tUp=fB(d.network_total_up||0,1);
       const tDn=fB(d.network_total_down||0,1);
-      if(!fdEl){fdEl=document.createElement('div');fdEl.className='nc-fd';card.appendChild(fdEl)}
-      fdEl.innerHTML=`<div class="nc-fd-cell"><span class="nc-fd-lbl">UPTIME</span><span class="nc-fd-val" style="color:var(--g)">${uptime}</span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">TX TOTAL</span><span class="nc-fd-val"><span class="au">↑</span>${tUp}</span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">RX TOTAL</span><span class="nc-fd-val"><span class="ad">↓</span>${tDn}</span></div>`;
+      if(!fdEl){
+        fdEl=document.createElement('div');fdEl.className='nc-fd';
+        fdEl.innerHTML='<div class="nc-fd-cell"><span class="nc-fd-lbl">UPTIME</span><span class="nc-fd-val" style="color:var(--g)" data-fd="up"></span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">TX TOTAL</span><span class="nc-fd-val" data-fd="tx"><span class="au">↑</span><span></span></span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">RX TOTAL</span><span class="nc-fd-val" data-fd="rx"><span class="ad">↓</span><span></span></span></div>';
+        card.appendChild(fdEl);
+      }
+      const fdUp=fdEl.querySelector('[data-fd="up"]');if(fdUp)fdUp.textContent=uptime;
+      const fdTx=fdEl.querySelector('[data-fd="tx"] span:last-child');if(fdTx)fdTx.textContent=tUp;
+      const fdRx=fdEl.querySelector('[data-fd="rx"] span:last-child');if(fdRx)fdRx.textContent=tDn;
     }else{
       if(fdEl){fdEl.remove()}
     }
@@ -1712,7 +1722,8 @@ function uCards(){
     if(metaEl){
       const osStr=on?(d.os||n.os||''):(genFake(n.uuid).os);
       const region=n.region||'';const group=n.group||'';
-      metaEl.innerHTML=['region','group','os'].map(k=>{const v=k==='region'?region:k==='group'?group:osStr;return v?`<span class="nc-chip">${esc(v)}</span>`:''}).join('');
+      const newMeta=['region','group','os'].map(k=>{const v=k==='region'?region:k==='group'?group:osStr;return v?`<span class="nc-chip">${esc(v)}</span>`:''}).join('');
+      if(metaEl.innerHTML!==newMeta)metaEl.innerHTML=newMeta;
     }
   });
 }
