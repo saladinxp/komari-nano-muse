@@ -494,6 +494,10 @@ body{
 @keyframes det-streak{0%{transform:translateX(0) translateY(0)}100%{transform:translateX(30%) translateY(10%)}}
 /* Ensure content sits above atmosphere */
 #pg-detail .content-area>*{position:relative;z-index:1}
+.node-section-header{background:rgba(240,246,255,0.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(180,205,225,0.35);border-radius:12px;padding:14px 20px 10px;margin-bottom:16px}
+[data-theme="dark"] .node-section-header{background:rgba(16,30,50,0.55);border-color:rgba(0,212,240,0.10)}
+.node-section-header .sec-div{margin-bottom:8px}
+.node-section-header .threat-bar{margin-bottom:0}
 .sec-div{display:flex;align-items:center;gap:10px;margin-bottom:16px}
 .sd-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(148,163,184,0.18),transparent)}.sd-line.r{background:linear-gradient(90deg,transparent,rgba(148,163,184,0.18))}
 .sd-label{font-family:var(--fm);font-size:11px;letter-spacing:4px;color:var(--t3);white-space:nowrap;display:flex;align-items:center;gap:6px}
@@ -1592,8 +1596,10 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
     <div class="content-area">
       <div id="announceBar"></div>
-    <div class="sec-div an d5"><span class="sd-line"></span><span class="sd-label"><span class="sd-dot"></span>NODE ARRAY · 节点列表</span><span class="sd-line r"></span></div>
-      <div class="threat-bar an d5">SYSTEM THREAT LEVEL <span class="threat-level low" id="threatLevel">LOW</span></div>
+    <div class="node-section-header an d5">
+    <div class="sec-div"><span class="sd-line"></span><span class="sd-label"><span class="sd-dot"></span>NODE ARRAY · 节点列表</span><span class="sd-line r"></span></div>
+      <div class="threat-bar">SYSTEM THREAT LEVEL <span class="threat-level low" id="threatLevel">LOW</span></div>
+    </div>
       <div class="sec-head an d5"><div class="sh-l"><span class="sh-tag">SEC-01</span><span class="sh-title">NODE ARRAY</span></div><div class="pills" id="groupPills"></div></div>
       <div class="cards" id="nodeCards"></div>
     </div>
