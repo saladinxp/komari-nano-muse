@@ -25,9 +25,9 @@
   --blue:#0096c7;--blue-r:0,150,199;--blue-g:rgba(0,150,199,0.3);
   --t:#1a2c3e;--t2:#3d5568;--t3:#546e85;--t4:#7d9ab5;--t5:#c8d8e8;
   --g:#00e676;--gr:0,230,118;--r:#ff3d57;--rr:255,61,87;--am:#ffab00;--amr:255,171,0;
-  --glass:rgba(235,244,255,0.72);--glass2:rgba(242,250,255,0.90);--gborder:rgba(0,160,200,0.40);
+  --glass:rgba(235,244,255,0.72);--glass2:rgba(242,250,255,0.90);--gborder:rgba(180,205,225,0.50);
   --card-bg:rgba(235,244,255,0.72);--card-bg-hover:rgba(242,250,255,0.90);
-  --border:rgba(0,160,200,0.40);--border-hover:rgba(0,184,212,0.70);
+  --border:rgba(180,205,225,0.50);--border-hover:rgba(0,184,212,0.45);
   --glow:0 0 24px rgba(0,184,212,0.18);
   --corner-color:rgba(0,170,210,0.65);
   --grid-color:rgba(20,90,140,0.13);
@@ -1027,6 +1027,14 @@ body.alert-active .scan-line{background:linear-gradient(90deg,transparent,rgba(1
 .nc.off:not(.atk):not(.ovl){border-color:rgba(180,100,100,0.15);
   box-shadow:inset 3px 0 0 rgba(200,80,80,0.5),0 2px 6px rgba(180,80,80,0.04),inset 0 1px 0 rgba(255,255,255,0.3)}
 
+/* ── Dark mode: offline card risk states ── */
+[data-theme="dark"] .nc.off.atk{background:rgba(210,70,70,0.08);border-color:rgba(210,80,80,0.25);
+  box-shadow:inset 3px 0 0 rgba(210,70,70,0.6),0 2px 8px rgba(0,0,0,0.15),inset 0 0 12px rgba(210,80,80,0.06)}
+[data-theme="dark"] .nc.off.ovl{background:rgba(255,171,0,0.06);border-color:rgba(255,171,0,0.20);
+  box-shadow:inset 3px 0 0 rgba(255,171,0,0.5),0 2px 8px rgba(0,0,0,0.15),inset 0 0 12px rgba(255,171,0,0.04)}
+[data-theme="dark"] .nc.off:not(.atk):not(.ovl){background:rgba(255,61,87,0.05);border-color:rgba(255,61,87,0.18);
+  box-shadow:inset 3px 0 0 rgba(255,61,87,0.45),0 2px 6px rgba(0,0,0,0.15)}
+
 /* ── Detail page: alert-active Status Bar bottom red edge ── */
 body.alert-active .det-strip::after{background:linear-gradient(90deg,rgba(180,80,80,0.15),rgba(210,70,70,0.3) 30%,rgba(210,70,70,0.3) 70%,rgba(180,80,80,0.15));opacity:.6}
 
@@ -1288,7 +1296,8 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
 
 /* ── Announce bar ── */
-#announceBar{display:none;background:linear-gradient(135deg,rgba(37,99,235,0.06),rgba(0,216,255,0.04));border:1px solid rgba(37,99,235,0.12);border-radius:10px;padding:12px 20px;margin:12px 20px;font-size:13px;color:var(--t1);line-height:1.6;text-align:center;font-weight:500}
+#announceBar{display:none;background:rgba(240,246,255,0.88);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(180,205,225,0.45);border-radius:10px;padding:12px 20px;margin:12px 20px;font-size:13px;color:var(--t);line-height:1.6;text-align:center;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+[data-theme="dark"] #announceBar{background:rgba(16,30,50,0.82);border-color:rgba(0,212,240,0.15);color:var(--t)}
 
 /* === Dark side-panel / footer haze fix === */
 [data-theme="dark"] .hero-top::after{
