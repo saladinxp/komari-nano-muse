@@ -1098,7 +1098,146 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
 
 /* ── Announce bar ── */
-#announceBar{display:none;background:linear-gradient(135deg,rgba(37,99,235,0.06),rgba(0,216,255,0.04));border:1px solid rgba(37,99,235,0.12);border-radius:10px;padding:12px 20px;margin:12px 20px;font-size:13px;color:var(--t1);line-height:1.6;text-align:center;font-weight:500}
+#announceBar{display:none;background:linear-gradient(135deg,rgba(37,99,235,0.06),rgba(0,216,255,0.04));border:1px solid rgba(37,99,235,0.12);border-radius:10px;padding:12px 20px;margin:12px 20px;font-size:13px;color:var(--t);line-height:1.6;text-align:center;font-weight:500}
+
+
+/* ===== FUSION OVERRIDE: index2 palette merged into index.html ===== */
+:root{
+  --bg:#d8e3f0;
+  --cyan:#00b8d4;
+  --cyan-g:rgba(0,184,212,0.28);
+  --blue:#2f6fe4;
+  --blue-r:47,111,228;
+  --blue-g:rgba(47,111,228,0.22);
+  --t:#1a2c3e;
+  --t2:#31495e;
+  --t3:#546e85;
+  --t4:#7d97ad;
+  --t5:#b8c8d8;
+  --g:#00c96b;
+  --gr:0,201,107;
+  --r:#ff5364;
+  --rr:255,83,100;
+  --am:#f2a900;
+  --amr:242,169,0;
+  --glass:rgba(235,244,255,0.70);
+  --glass2:rgba(244,249,255,0.92);
+  --gborder:rgba(150,185,215,0.42);
+}
+body{
+  background:#d8e3f0;
+  background-image:
+    radial-gradient(circle at 24% 18%, rgba(0,184,212,0.08) 0%, transparent 34%),
+    radial-gradient(circle at 76% 58%, rgba(47,111,228,0.06) 0%, transparent 30%),
+    radial-gradient(circle at 50% 50%, rgba(214,226,240,0.90) 0%, transparent 62%);
+}
+.bp-grid{opacity:.85}
+.anime-bg{filter:brightness(0.96) contrast(0.88) saturate(0.82)}
+.char-veil{background:radial-gradient(ellipse 65% 75% at 50% 40%,rgba(200,220,248,0.02) 0%,rgba(210,225,245,0.05) 55%,rgba(220,232,248,0.14) 100%)}
+.mech{
+  background:rgba(230,239,250,0.64);
+  border:1px solid rgba(134,172,204,0.36);
+  box-shadow:0 12px 40px rgba(47,111,228,0.08),0 2px 12px rgba(90,116,139,0.08),inset 0 1px 0 rgba(255,255,255,0.56);
+}
+.mech>.noise-layer{opacity:.022}
+.topbar,
+.footer,
+.fleet-strip,
+.term-link,
+.bill-currency-bar,
+.det-card,
+.det-panel,
+.chart-wrap,
+.stab-row,
+.stab-ov-card,
+.wmap-container,
+.wmap-node-item,
+.bill-cal,
+.bill-sum-card{
+  background:rgba(238,246,255,0.62) !important;
+  border-color:rgba(150,185,215,0.30) !important;
+  box-shadow:0 6px 20px rgba(47,111,228,0.06), inset 0 1px 0 rgba(255,255,255,0.62) !important;
+}
+.topbar{
+  background:rgba(231,241,252,0.88) !important;
+  border-bottom:1px solid rgba(140,176,206,0.22) !important;
+}
+.footer{
+  background:rgba(220,233,248,0.88) !important;
+  border-top:1px solid rgba(140,176,206,0.22) !important;
+}
+.h-left,.h-right{
+  background:linear-gradient(135deg,rgba(214,229,245,0.58) 0%,rgba(223,236,249,0.46) 100%) !important;
+}
+.h-center{
+  background:rgba(236,244,253,0.12) !important;
+}
+.hp-s,
+.nc,
+.det-gauge,
+.poster-section,
+.poster-price-box,
+.poster-remain-box,
+.poster-box{
+  background:rgba(239,247,255,0.44) !important;
+  border-color:rgba(150,185,215,0.20) !important;
+}
+.nc{
+  border:1px solid rgba(146,184,216,0.22) !important;
+  box-shadow:inset 0 0 0 1px rgba(180,210,235,0.10),0 1px 6px rgba(47,111,228,0.04) !important;
+}
+.nc:hover{
+  background:rgba(245,251,255,0.72) !important;
+  border-color:rgba(0,184,212,0.34) !important;
+  box-shadow:0 10px 26px rgba(47,111,228,0.10),0 0 14px rgba(0,184,212,0.06),inset 0 1px 0 rgba(255,255,255,0.75) !important;
+}
+.nc.off{
+  background:rgba(246,246,250,0.46) !important;
+}
+.nc.off.atk{
+  background:rgba(252,243,246,0.56) !important;
+}
+.nc.off.ovl{
+  background:rgba(253,248,239,0.58) !important;
+}
+.det-strip{
+  background:linear-gradient(180deg,rgba(36,52,70,0.96) 0%,rgba(24,38,54,0.95) 100%) !important;
+  box-shadow:0 10px 30px rgba(14,24,36,0.22),inset 0 1px 0 rgba(170,205,232,0.12),inset 0 -2px 0 rgba(0,0,0,0.35) !important;
+}
+.chart-label,.det-panel-title,.det-label,.sh-tag,.tb-tab.a,.tb-badge:hover,.bill-monthly,.wmap-node-name:hover{color:var(--blue) !important}
+.sync-sub{
+  background:rgba(0,184,212,0.05) !important;
+  border-color:rgba(0,184,212,0.14) !important;
+}
+.sync-pct,.fleet-val,.det-gauge-val,.bill-sum-val{color:var(--t)}
+.tb-badge,.tb-btn,.det-back,.wmap-zoom-btn,.tl-modal-close{
+  background:linear-gradient(180deg,rgba(241,247,255,0.96),rgba(225,236,248,0.92)) !important;
+  border-color:rgba(150,185,215,0.32) !important;
+  color:var(--t3) !important;
+}
+.tb-badge:hover,.tb-btn:hover,.det-back:hover,.wmap-zoom-btn:hover,.tl-modal-close:hover{
+  border-color:rgba(0,184,212,0.35) !important;
+  color:var(--blue) !important;
+}
+.fleet-cell::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,0.18),transparent 45%);
+  pointer-events:none;
+}
+.scan-line,
+.node-scan-line::after,
+.footer-shimmer::after,
+.det-strip-scan::after{
+  filter:saturate(.75);
+}
+/* ── Fusion: missed overrides ── */
+.hero-top::after{background:linear-gradient(to bottom,transparent 0%,rgba(216,227,240,0.4) 50%,rgba(216,227,240,0.85) 100%) !important}
+.fleet-cell{border-right-color:rgba(150,185,215,0.15) !important}
+.topbar::after{background:linear-gradient(90deg,transparent,rgba(0,184,212,0.12) 10%,rgba(0,184,212,0.12) 90%,transparent) !important}
+.footer::before{background:linear-gradient(90deg,transparent,rgba(0,184,212,0.10) 30%,rgba(150,185,215,0.08) 50%,rgba(0,184,212,0.10) 70%,transparent) !important}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
