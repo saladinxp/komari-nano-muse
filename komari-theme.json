@@ -63,6 +63,31 @@
         "type": "string",
         "default": "",
         "help": "首页公告 — 留空隐藏公告栏"
+      },
+      {
+        "name": "◇ ALERT THRESHOLD // 告警阈值",
+        "type": "title"
+      },
+      {
+        "key": "alert_cpu",
+        "name": "[ CPU ] 告警阈值 (%)",
+        "type": "string",
+        "default": "80",
+        "help": "CPU 使用率超过此值时卡片高亮警告（0-100）"
+      },
+      {
+        "key": "alert_ram",
+        "name": "[ RAM ] 告警阈值 (%)",
+        "type": "string",
+        "default": "80",
+        "help": "内存使用率超过此值时卡片高亮警告（0-100）"
+      },
+      {
+        "key": "alert_disk",
+        "name": "[ DISK ] 告警阈值 (%)",
+        "type": "string",
+        "default": "90",
+        "help": "磁盘使用率超过此值时卡片高亮警告（0-100）"
       }
     ]
   }
