@@ -974,14 +974,6 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .nc-fd-val{font-size:9px}
 }
 
-/* ── Traffic usage bar ── */
-.nc-traffic{padding:4px 12px 6px;font-size:10px;border-top:1px solid rgba(148,170,200,0.08)}
-.nc-traffic-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
-.nc-traffic-lbl{font-family:var(--fm);letter-spacing:1.5px;color:var(--t3);font-size:9px;font-weight:600}
-.nc-traffic-val{font-family:var(--fm);color:var(--t2);font-size:10px}
-.nc-traffic-bar{height:3px;background:rgba(148,170,200,0.1);border-radius:2px;overflow:hidden}
-.nc-traffic-fill{height:100%;border-radius:2px;transition:width .6s ease}
-
 /* ── Copy node info button ── */
 .det-copy-btn{background:none;border:1px solid rgba(37,99,235,0.2);color:var(--blue);font-size:12px;padding:6px 16px;border-radius:6px;cursor:pointer;transition:.2s;font-family:var(--fm);letter-spacing:1px}
 .det-copy-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 8px rgba(37,99,235,0.3)}
@@ -1769,19 +1761,7 @@ function rCards(fl){
     const totalUp=on?fB(d.network_total_up||0,1):'--';
     const totalDn=on?fB(d.network_total_down||0,1):'--';
     const uptime=on&&d.uptime?fUs(d.uptime):'--';
-    /* Traffic usage — support both traffic_limit field and tags label */
-    const tUsed=on?(d.network_total_up||0)+(d.network_total_down||0):0;
-    let tLimit=n.traffic_limit||0;
-    if(!tLimit){
-      const _pl=parseLabels(n);
-      if(_pl.traffic){
-        const tm=_pl.traffic.match(/([\.\d]+)\s*([TtGg])/i);
-        if(tm){const unit=tm[2].toUpperCase()==='T'?1099511627776:1073741824;tLimit=parseFloat(tm[1])*unit}
-      }
-    }
-    const tPct=tLimit>0&&on?Math.min(100,Math.round(tUsed/tLimit*100)):0;
-    const tColor=tPct>=90?'var(--r)':tPct>=70?'var(--am)':'var(--blue)';
-    const tStr=tLimit>0?fB(tUsed,1)+' / '+fB(tLimit,1):'';
+
     const hwCpu=on?(n.cpu_cores||'?')+' Cores':'';
     const hwRam=on?fB(d.memory_total||n.mem_total||0,0):'';
     const hwDisk=on?fB(d.disk_total||n.disk_total||0,0):'';
@@ -1799,7 +1779,6 @@ function rCards(fl){
         <div class="nc-net"><span${on?'':' style="opacity:.4"'}><span class="au">↑</span>${netUp}</span><span${on?'':' style="opacity:.4"'}><span class="ad">↓</span>${netDn}</span></div></div>
       </div>
       ${on?`<div class="nc-fd"><div class="nc-fd-cell"><span class="nc-fd-lbl">UPTIME</span><span class="nc-fd-val" style="color:var(--g)">${uptime}</span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">TX TOTAL</span><span class="nc-fd-val"><span class="au">↑</span>${totalUp}</span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">RX TOTAL</span><span class="nc-fd-val"><span class="ad">↓</span>${totalDn}</span></div></div>`:`<div class="nc-f-off"><span style="color:var(--r)">⚠ ${fake&&fake.atk?'UNDER ATTACK':'OVERLOAD'}</span></div>`}
-      ${tLimit>0&&on?`<div class="nc-traffic"><div class="nc-traffic-hd"><span class="nc-traffic-lbl">TRAFFIC</span><span class="nc-traffic-val">${tStr}</span></div><div class="nc-traffic-bar"><div class="nc-traffic-fill" style="width:${tPct}%;background:${tColor}"></div></div></div>`:''}
     </div>`;
   });
   c.innerHTML=html;
