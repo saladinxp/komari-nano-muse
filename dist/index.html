@@ -994,11 +994,11 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .bill-cal-nav{display:flex;gap:8px}
 .bill-cal-nav button{background:none;border:1px solid rgba(148,170,200,0.15);color:var(--t2);font-size:12px;width:28px;height:28px;border-radius:6px;cursor:pointer;transition:.2s;font-family:var(--fm)}
 .bill-cal-nav button:hover{border-color:var(--blue);color:var(--blue)}
-.bill-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.bill-cal-dow{text-align:center;font-family:var(--fm);font-size:9px;letter-spacing:1px;color:var(--t3);padding:4px 0;font-weight:600}
-.bill-cal-day{position:relative;text-align:center;padding:8px 2px;border-radius:6px;font-size:12px;color:var(--t2);cursor:default;min-height:36px}
-.bill-cal-day.empty{background:none}
-.bill-cal-day.today{background:rgba(37,99,235,0.06);font-weight:700;color:var(--blue)}
+.bill-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:0;border:1px solid rgba(148,170,200,0.12);border-radius:8px;overflow:hidden}
+.bill-cal-dow{text-align:center;font-family:var(--fm);font-size:9px;letter-spacing:1px;color:var(--t3);padding:6px 0;font-weight:600;background:rgba(148,170,200,0.05);border-bottom:1px solid rgba(148,170,200,0.12)}
+.bill-cal-day{position:relative;text-align:center;padding:8px 2px;border-radius:0;font-size:12px;color:var(--t2);cursor:default;min-height:42px;border:1px solid rgba(148,170,200,0.1);background:rgba(255,255,255,0.3)}
+.bill-cal-day.empty{background:rgba(148,170,200,0.02);border-color:rgba(148,170,200,0.06)}
+.bill-cal-day.today{background:rgba(37,99,235,0.08);font-weight:700;color:var(--blue);box-shadow:inset 0 0 0 2px rgba(37,99,235,0.3)}
 .bill-cal-day.has-exp{background:rgba(234,132,32,0.08);cursor:pointer;font-weight:600}
 .bill-cal-day.has-exp:hover{background:rgba(234,132,32,0.15)}
 .bill-cal-day.urgent{background:rgba(239,68,68,0.08)}
@@ -1664,10 +1664,17 @@ function rCards(fl){
     const totalUp=on?fB(d.network_total_up||0,1):'--';
     const totalDn=on?fB(d.network_total_down||0,1):'--';
     const uptime=on&&d.uptime?fUs(d.uptime):'--';
-    /* Traffic usage */
+    /* Traffic usage — support both traffic_limit field and tags label */
     const tUsed=on?(d.network_total_up||0)+(d.network_total_down||0):0;
-    const tLimit=n.traffic_limit||0;
-    const tPct=tLimit>0?Math.min(100,Math.round(tUsed/tLimit*100)):0;
+    let tLimit=n.traffic_limit||0;
+    if(!tLimit){
+      const _pl=parseLabels(n);
+      if(_pl.traffic){
+        const tm=_pl.traffic.match(/([\.\d]+)\s*([TtGg])/i);
+        if(tm){const unit=tm[2].toUpperCase()==='T'?1099511627776:1073741824;tLimit=parseFloat(tm[1])*unit}
+      }
+    }
+    const tPct=tLimit>0&&on?Math.min(100,Math.round(tUsed/tLimit*100)):0;
     const tColor=tPct>=90?'var(--r)':tPct>=70?'var(--am)':'var(--blue)';
     const tStr=tLimit>0?fB(tUsed,1)+' / '+fB(tLimit,1):'';
     const hwCpu=on?(n.cpu_cores||'?')+' Cores':'';
