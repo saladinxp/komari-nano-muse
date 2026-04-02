@@ -973,6 +973,40 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .content-area{padding:8px}
 .nc-fd-val{font-size:9px}
 }
+
+/* ── Traffic usage bar ── */
+.nc-traffic{padding:4px 12px 6px;font-size:10px;border-top:1px solid rgba(148,170,200,0.08)}
+.nc-traffic-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.nc-traffic-lbl{font-family:var(--fm);letter-spacing:1.5px;color:var(--t3);font-size:9px;font-weight:600}
+.nc-traffic-val{font-family:var(--fm);color:var(--t2);font-size:10px}
+.nc-traffic-bar{height:3px;background:rgba(148,170,200,0.1);border-radius:2px;overflow:hidden}
+.nc-traffic-fill{height:100%;border-radius:2px;transition:width .6s ease}
+
+/* ── Copy node info button ── */
+.det-copy-btn{background:none;border:1px solid rgba(37,99,235,0.2);color:var(--blue);font-size:12px;padding:6px 16px;border-radius:6px;cursor:pointer;transition:.2s;font-family:var(--fm);letter-spacing:1px}
+.det-copy-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 8px rgba(37,99,235,0.3)}
+.det-copy-btn.copied{background:var(--g);border-color:var(--g);color:#fff}
+
+/* ── Expiry Calendar ── */
+.bill-cal{margin:20px 0;background:rgba(255,255,255,0.5);border:1px solid rgba(148,170,200,0.12);border-radius:14px;padding:18px 20px}
+.bill-cal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.bill-cal-title{font-family:var(--fm);font-size:12px;letter-spacing:2px;color:var(--t2);font-weight:700}
+.bill-cal-nav{display:flex;gap:8px}
+.bill-cal-nav button{background:none;border:1px solid rgba(148,170,200,0.15);color:var(--t2);font-size:12px;width:28px;height:28px;border-radius:6px;cursor:pointer;transition:.2s;font-family:var(--fm)}
+.bill-cal-nav button:hover{border-color:var(--blue);color:var(--blue)}
+.bill-cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.bill-cal-dow{text-align:center;font-family:var(--fm);font-size:9px;letter-spacing:1px;color:var(--t3);padding:4px 0;font-weight:600}
+.bill-cal-day{position:relative;text-align:center;padding:8px 2px;border-radius:6px;font-size:12px;color:var(--t2);cursor:default;min-height:36px}
+.bill-cal-day.empty{background:none}
+.bill-cal-day.today{background:rgba(37,99,235,0.06);font-weight:700;color:var(--blue)}
+.bill-cal-day.has-exp{background:rgba(234,132,32,0.08);cursor:pointer;font-weight:600}
+.bill-cal-day.has-exp:hover{background:rgba(234,132,32,0.15)}
+.bill-cal-day.urgent{background:rgba(239,68,68,0.08)}
+.bill-cal-day.urgent:hover{background:rgba(239,68,68,0.15)}
+.bill-cal-dots{display:flex;justify-content:center;gap:2px;margin-top:2px}
+.bill-cal-dot{width:4px;height:4px;border-radius:50%}
+.bill-cal-tip{display:none;position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#1a2a40;color:#fff;font-size:10px;padding:6px 10px;border-radius:6px;white-space:nowrap;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+.bill-cal-day:hover .bill-cal-tip{display:block}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -1266,6 +1300,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
       </div>
       <div class="bill-summary" id="billSummary"></div>
       <div class="bill-view-toggle" id="billViewToggle"><button class="bill-view-btn a" data-view="group">BY GROUP</button><button class="bill-view-btn" data-view="flat">ALL NODES</button></div>
+    <div id="billCalendar"></div>
       <div id="billContent"></div>
     </div>
   </div>
@@ -1629,6 +1664,12 @@ function rCards(fl){
     const totalUp=on?fB(d.network_total_up||0,1):'--';
     const totalDn=on?fB(d.network_total_down||0,1):'--';
     const uptime=on&&d.uptime?fUs(d.uptime):'--';
+    /* Traffic usage */
+    const tUsed=on?(d.network_total_up||0)+(d.network_total_down||0):0;
+    const tLimit=n.traffic_limit||0;
+    const tPct=tLimit>0?Math.min(100,Math.round(tUsed/tLimit*100)):0;
+    const tColor=tPct>=90?'var(--r)':tPct>=70?'var(--am)':'var(--blue)';
+    const tStr=tLimit>0?fB(tUsed,1)+' / '+fB(tLimit,1):'';
     const hwCpu=on?(n.cpu_cores||'?')+' Cores':'';
     const hwRam=on?fB(d.memory_total||n.mem_total||0,0):'';
     const hwDisk=on?fB(d.disk_total||n.disk_total||0,0):'';
@@ -2702,6 +2743,8 @@ function rBilling(){
 
   if(S._billView==='group'){rBillGroup(groupData,totalEntries)}
   else{rBillFlat(nodeRows,totalEntries)}
+
+  renderCalendar();
 }
 
 function billTableRow(r){
@@ -3010,6 +3053,100 @@ function initHeartbeat(){
   sample();draw();
 }
 
+
+/* ── Copy node info to clipboard ── */
+window.copyNodeInfo=function(){
+  var uuid=S.detailUUID;if(!uuid)return;
+  var n=S.detailNode||{};var d=S.liveData[uuid]||{};
+  var on=S.onlineSet.has(uuid);
+  var b=fBilling(n);
+  var lines=[];
+  lines.push('节点: '+(n.name||uuid));
+  lines.push('状态: '+(on?'ONLINE':'OFFLINE'));
+  if(n.region)lines.push('区域: '+n.region);
+  if(n.group)lines.push('分组: '+n.group);
+  if(d.os||n.os)lines.push('系统: '+(d.os||n.os));
+  if(n.cpu_cores)lines.push('CPU: '+n.cpu_cores+' Cores');
+  if(d.memory_total||n.mem_total)lines.push('内存: '+fB(d.memory_total||n.mem_total||0));
+  if(d.disk_total||n.disk_total)lines.push('硬盘: '+fB(d.disk_total||n.disk_total||0));
+  if(n.ipv4)lines.push('IPv4: '+n.ipv4);
+  if(n.ipv6)lines.push('IPv6: '+n.ipv6);
+  if(b.str)lines.push('费用: '+b.str);
+  if(n.expired_at)lines.push('到期: '+n.expired_at.slice(0,10));
+  if(n.traffic_limit&&n.traffic_limit>0)lines.push('流量: '+fB(n.traffic_limit));
+  var text=lines.join('\n');
+  navigator.clipboard.writeText(text).then(function(){
+    var btn=document.querySelector('.det-copy-btn');
+    if(btn){btn.textContent='COPIED ✓';btn.classList.add('copied');setTimeout(function(){btn.textContent='COPY INFO';btn.classList.remove('copied')},1500)}
+  }).catch(function(){});
+};
+
+/* ── Expiry Calendar ── */
+S._calMonth=new Date().getMonth();
+S._calYear=new Date().getFullYear();
+
+function renderCalendar(){
+  var el=$('billCalendar');if(!el)return;
+  var y=S._calYear,m=S._calMonth;
+  var first=new Date(y,m,1);
+  var last=new Date(y,m+1,0);
+  var startDow=first.getDay();/* 0=Sun */
+  var daysInMonth=last.getDate();
+  var today=new Date();
+  var isThisMonth=today.getFullYear()===y&&today.getMonth()===m;
+  var todayDate=today.getDate();
+
+  /* Build expiry map: day → [{name,days_left}] */
+  var expMap={};
+  S.nodes.forEach(function(n){
+    if(!n.expired_at||n.hidden)return;
+    var ed=new Date(n.expired_at);
+    if(ed.getFullYear()===y&&ed.getMonth()===m){
+      var day=ed.getDate();
+      if(!expMap[day])expMap[day]=[];
+      var dl=Math.max(0,Math.ceil((ed-today)/(86400000)));
+      expMap[day].push({name:n.name||n.uuid,days:dl});
+    }
+  });
+
+  var months=['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+  var h='<div class="bill-cal-hd"><span class="bill-cal-title">◇ '+y+'年'+months[m]+' · 到期日历</span>';
+  h+='<div class="bill-cal-nav"><button onclick="calNav(-1)">◀</button><button onclick="calNav(0)">今</button><button onclick="calNav(1)">▶</button></div></div>';
+  h+='<div class="bill-cal-grid">';
+  ['日','一','二','三','四','五','六'].forEach(function(d){h+='<div class="bill-cal-dow">'+d+'</div>'});
+
+  /* Empty cells before first day */
+  for(var i=0;i<startDow;i++)h+='<div class="bill-cal-day empty"></div>';
+
+  for(var d=1;d<=daysInMonth;d++){
+    var cls='bill-cal-day';
+    var exps=expMap[d];
+    if(isThisMonth&&d===todayDate)cls+=' today';
+    if(exps){
+      var urgent=exps.some(function(e){return e.days<=7});
+      cls+=urgent?' urgent':' has-exp';
+    }
+    h+='<div class="'+cls+'">'+d;
+    if(exps){
+      h+='<div class="bill-cal-dots">';
+      exps.forEach(function(e){
+        var c=e.days<=3?'#ef4444':e.days<=7?'#ea8420':e.days<=14?'#eab308':'#2563eb';
+        h+='<div class="bill-cal-dot" style="background:'+c+'"></div>';
+      });
+      h+='</div>';
+      h+='<div class="bill-cal-tip">'+exps.map(function(e){return e.name+(e.days<=0?' (已过期)':' · '+e.days+'天后')}).join('<br>')+'</div>';
+    }
+    h+='</div>';
+  }
+  h+='</div>';
+  el.innerHTML=h;
+}
+
+window.calNav=function(dir){
+  if(dir===0){S._calMonth=new Date().getMonth();S._calYear=new Date().getFullYear()}
+  else{S._calMonth+=dir;if(S._calMonth>11){S._calMonth=0;S._calYear++}if(S._calMonth<0){S._calMonth=11;S._calYear--}}
+  renderCalendar();
+};
 /* ── Init ── */
 /* ── Character parallax: fade + drift on scroll ── */
 function initCharParallax(){
