@@ -1104,6 +1104,9 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
   body{padding-bottom:56px}
 }
 
+
+/* ── Announce bar ── */
+#announceBar{display:none;background:linear-gradient(135deg,rgba(37,99,235,0.06),rgba(0,216,255,0.04));border:1px solid rgba(37,99,235,0.12);border-radius:10px;padding:12px 20px;margin:12px 20px;font-size:13px;color:var(--t1);line-height:1.6;text-align:center;font-weight:500}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
@@ -1353,7 +1356,8 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
     </div>
 
     <div class="content-area">
-      <div class="sec-div an d5"><span class="sd-line"></span><span class="sd-label"><span class="sd-dot"></span>NODE ARRAY · 节点列表</span><span class="sd-line r"></span></div>
+      <div id="announceBar"></div>
+    <div class="sec-div an d5"><span class="sd-line"></span><span class="sd-label"><span class="sd-dot"></span>NODE ARRAY · 节点列表</span><span class="sd-line r"></span></div>
       <div class="threat-bar an d5">SYSTEM THREAT LEVEL <span class="threat-level low" id="threatLevel">LOW</span></div>
       <div class="sec-head an d5"><div class="sh-l"><span class="sh-tag">SEC-01</span><span class="sh-title">NODE ARRAY</span></div><div class="pills" id="groupPills"></div></div>
       <div class="cards" id="nodeCards"></div>
