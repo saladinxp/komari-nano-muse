@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>NanoMuse — Cockpit Detail</title>
+<title>NanoMuse — Command Nexus</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -198,7 +198,7 @@ function connectWS(){
 /* ── Node selector ── */
 function showNodeSelect(){
   const app=$('app');
-  let h='<div class="hd" style="margin-bottom:12px"><div class="hc"><div class="hn">NanoMuse Cockpit — 选择节点</div></div><button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button></div>';
+  let h='<div class="hd" style="margin-bottom:12px"><div class="hc"><div class="hn">COMMAND NEXUS · 控制枢纽</div><div class="hu">选择节点进入驾驶舱</div></div><a class="back-btn" href="/" style="margin-left:auto">← DASHBOARD</a><button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button></div>';
   h+='<div class="node-select" id="nodeList">';
   S.nodes.forEach(n=>{
     const on=S.onlineSet.has(n.uuid);
@@ -227,7 +227,8 @@ function renderCockpit(){
   const app=$('app');
   app.innerHTML=`
   <div class="hd">
-    <a class="back-btn" href="javascript:void(0)" onclick="showNodeSelect()">← BACK</a>
+    <a class="back-btn" href="javascript:void(0)" onclick="showNodeSelect()">← NEXUS</a>
+    <a class="back-btn" href="/" style="margin-left:4px">← DASHBOARD</a>
     <div class="hc" style="min-width:180px"><div class="hn"><span class="dot" id="hDot"></span><span id="hName">${esc(n.name)}</span></div><div class="hu">${esc(n.region||'')} · ${esc(n.group||'')} · ${n.arch||''}</div></div>
     <div class="hc"><div class="hk">STATUS</div><div class="hv ${on?'on':''}" id="hStatus">${on?'Online':'Offline'}</div></div>
     <div class="hc"><div class="hk">HEALTH</div><div class="hv hp" id="hHealth">${health}%</div></div>

@@ -1417,7 +1417,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
     <div class="tb-logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="1.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg><span id="siteName">KOMARI</span></div>
     <div class="tb-tabs">
       <span class="tb-tab a" data-page="dashboard"><span class="tb-num">01</span>DASHBOARD</span>
-      <span class="tb-tab" data-page="detail"><span class="tb-num">02</span>DETAIL</span>
+      <span class="tb-tab" data-page="detail"><span class="tb-num">02</span>NEXUS</span>
       <span class="tb-tab" data-page="stability"><span class="tb-num">03</span>STABILITY</span>
       <span class="tb-tab" data-page="worldmap"><span class="tb-num">04</span>MAP</span>
       <span class="tb-tab" data-page="billing"><span class="tb-num">05</span>BILLING</span>
@@ -1605,7 +1605,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
     </div>
   </div>
 
-  <!-- ═══ DETAIL PAGE ═══ -->
+  <!-- ═══ NEXUS / DETAIL PAGE ═══ -->
   <div class="page" id="pg-detail">
     <div class="content-area">
       <div class="det-back" onclick="nav('/')">← BACK TO DASHBOARD</div>
@@ -2850,11 +2850,8 @@ function hRoute(){
   const path=location.pathname;
   if(path.startsWith('/detail/')){
     const uuid=path.split('/detail/')[1];
-    if(uuid){
-      S.detailUUID=uuid;S.detailNode=S.nodes.find(n=>n.uuid===uuid);
-      showP('detail');
-      if(S.detailNode)rDetInfo(S.detailNode,uuid);
-    }
+    if(uuid)window.location.href='/nexus.html#'+uuid;
+    return;
   }else if(path==='/stability'){
     showP('stability');loadStabilityData();
   }else if(path==='/billing'){
@@ -2870,9 +2867,7 @@ function nav(path){
 }
 window.nav=nav;
 window.openDet=function(uuid){
-  S.detailUUID=uuid;S.detailNode=S.nodes.find(n=>n.uuid===uuid);
-  S.detailTab='load';S.detailHours=6;S.detailWsData=[];
-  nav('/detail/'+uuid);
+  window.location.href='/nexus.html#'+uuid;
 };
 window.addEventListener('popstate',hRoute);
 
@@ -2884,7 +2879,7 @@ document.querySelectorAll('.tb-tab').forEach(b=>{
     else if(p==='stability')nav('/stability');
     else if(p==='worldmap')nav('/worldmap');
     else if(p==='billing')nav('/billing');
-    else if(p==='detail'&&S.detailUUID)nav('/detail/'+S.detailUUID);
+    else if(p==='detail')window.location.href='/nexus.html';
   }
 });
 
