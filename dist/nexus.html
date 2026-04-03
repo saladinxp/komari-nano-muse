@@ -329,10 +329,10 @@ function renderCockpit(){
     </div>
     <div class="col-center">
       <div class="charts4">
-        <div class="p chart-panel"><div class="ch-head"><div class="ch-label">◆ CPU LOAD</div><div style="display:flex;align-items:center;gap:6px"><div class="tb" id="cpuTimeBar"></div><div class="ch-now" id="cpuNow">${cpu}<span>%</span></div></div></div><div class="ch-area"><div class="ch-yaxis"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div><div class="ch-plot"><div class="ch-wrap"><canvas id="cCpu"></canvas></div><div class="ch-xaxis" id="cpuXaxis"></div></div></div><div class="ch-sub-row"><div class="kpi"><div class="kpi-k">Load 1m</div><div class="kpi-v" id="kLoad1">${(d.load1||0).toFixed(2)}</div></div><div class="kpi"><div class="kpi-k">Load 5m</div><div class="kpi-v" id="kLoad5">${(d.load5||0).toFixed(2)}</div></div><div class="kpi"><div class="kpi-k">Load 15m</div><div class="kpi-v" id="kLoad15">${(d.load15||0).toFixed(2)}</div></div></div></div>
-        <div class="p chart-panel"><div class="ch-head"><div class="ch-label">◆ MEMORY</div><div class="ch-now" id="memNow">${fB(d.memory_used)}<span>/ ${fB(n.mem_total)}</span></div></div><div class="ch-area"><div class="ch-yaxis"><span>100%</span><span>75</span><span>50</span><span>25</span><span>0</span></div><div class="ch-plot"><div class="ch-wrap"><canvas id="cMem"></canvas></div><div class="ch-xaxis" id="memXaxis"></div></div></div><div class="ch-sub-row"><div class="kpi"><div class="kpi-k">RAM</div><div class="kpi-v" id="kRam">${ram}<span style="font-size:11px;color:var(--t3);font-family:var(--fm)">%</span></div></div><div class="kpi"><div class="kpi-k">SWAP</div><div class="kpi-v" id="kSwap">${swap}<span style="font-size:11px;color:var(--t3);font-family:var(--fm)">%</span></div></div><div class="kpi"><div class="kpi-k">Temp</div><div class="kpi-v" id="kTemp">--</div></div></div></div>
-        <div class="p chart-panel"><div class="ch-head"><div class="ch-label">◆ NET SPEED</div><div class="ch-now" id="netNow">${fS(d.network_rx)}<span>↓</span></div></div><div class="ch-area"><div class="ch-yaxis" id="netYaxis"><span>--</span><span></span><span></span><span></span><span>0</span></div><div class="ch-plot"><div class="ch-wrap" style="position:relative"><canvas id="cNetIn"></canvas><canvas id="cNetOut" style="position:absolute;inset:2px"></canvas></div><div class="ch-xaxis" id="netXaxis"></div></div></div><div class="ch-sub-row"><div class="kpi"><div class="kpi-k">↓ IN</div><div class="kpi-v" style="color:var(--cyan)" id="kNetIn">${fS(d.network_rx)}</div></div><div class="kpi"><div class="kpi-k">↑ OUT</div><div class="kpi-v" style="color:var(--g)" id="kNetOut">${fS(d.network_tx)}</div></div><div class="kpi"><div class="kpi-k">TCP</div><div class="kpi-v" id="kTcp">${d.tcp||0}</div></div></div></div>
-        <div class="p chart-panel"><div class="ch-head"><div class="ch-label">◆ LATENCY</div><div class="ch-now" id="latNow">--<span>ms</span></div></div><div class="ch-area"><div class="ch-yaxis" id="latYaxis"><span>200</span><span>150</span><span>100</span><span>50</span><span>0</span></div><div class="ch-plot"><div class="ch-wrap"><canvas id="cLat"></canvas></div><div class="ch-xaxis" id="latXaxis"></div></div></div><div class="ch-sub-row"><div class="kpi"><div class="kpi-k">Ping</div><div class="kpi-v" id="kPing">--</div></div><div class="kpi"><div class="kpi-k">Loss</div><div class="kpi-v" id="kLoss">--</div></div><div class="kpi"><div class="kpi-k">Process</div><div class="kpi-v" id="kProc">${d.process||0}</div></div></div></div>
+        <div class="p chart-panel"><div class="ch-head"><div class="ch-label">◆ CPU LOAD</div><div style="display:flex;align-items:center;gap:6px"><div class="tb" id="cpuTimeBar"></div><div class="ch-now" id="cpuNow">${cpu}<span>%</span></div></div></div><div class="chart-wrap"><div class="chart-label">▎CPU %</div><canvas id="cCpu"></canvas></div><div class="ch-sub-row"><div class="kpi"><div class="kpi-k">Load 1m</div><div class="kpi-v" id="kLoad1">${(d.load1||0).toFixed(2)}</div></div><div class="kpi"><div class="kpi-k">Load 5m</div><div class="kpi-v" id="kLoad5">${(d.load5||0).toFixed(2)}</div></div><div class="kpi"><div class="kpi-k">Load 15m</div><div class="kpi-v" id="kLoad15">${(d.load15||0).toFixed(2)}</div></div></div></div>
+        <div class="p chart-panel"><div class="ch-head"><div class="ch-label">◆ MEMORY</div><div class="ch-now" id="memNow">${fB(d.memory_used)}<span>/ ${fB(n.mem_total)}</span></div></div><div class="chart-wrap"><div class="chart-label">▎MEMORY %</div><canvas id="cMem"></canvas></div><div class="ch-sub-row"><div class="kpi"><div class="kpi-k">RAM</div><div class="kpi-v" id="kRam">${ram}<span style="font-size:11px;color:var(--t3);font-family:var(--fm)">%</span></div></div><div class="kpi"><div class="kpi-k">SWAP</div><div class="kpi-v" id="kSwap">${swap}<span style="font-size:11px;color:var(--t3);font-family:var(--fm)">%</span></div></div><div class="kpi"><div class="kpi-k">Temp</div><div class="kpi-v" id="kTemp">--</div></div></div></div>
+        <div class="p chart-panel"><div class="ch-head"><div class="ch-label">◆ NET SPEED</div><div class="ch-now" id="netNow">${fS(d.network_rx)}<span>↓</span></div></div><div class="chart-wrap"><div class="chart-label">▎NETWORK</div><canvas id="cNetIn"></canvas></div><div class="ch-sub-row"><div class="kpi"><div class="kpi-k">↓ IN</div><div class="kpi-v" style="color:var(--cyan)" id="kNetIn">${fS(d.network_rx)}</div></div><div class="kpi"><div class="kpi-k">↑ OUT</div><div class="kpi-v" style="color:var(--g)" id="kNetOut">${fS(d.network_tx)}</div></div><div class="kpi"><div class="kpi-k">TCP</div><div class="kpi-v" id="kTcp">${d.tcp||0}</div></div></div></div>
+        <div class="p chart-panel"><div class="ch-head"><div class="ch-label">◆ LATENCY</div><div class="ch-now" id="latNow">--<span>ms</span></div></div><div class="chart-wrap"><div class="chart-label">▎LATENCY (ms)</div><canvas id="cLat"></canvas></div><div class="ch-sub-row"><div class="kpi"><div class="kpi-k">Ping</div><div class="kpi-v" id="kPing">--</div></div><div class="kpi"><div class="kpi-k">Loss</div><div class="kpi-v" id="kLoss">--</div></div><div class="kpi"><div class="kpi-k">Process</div><div class="kpi-v" id="kProc">${d.process||0}</div></div></div></div>
       </div>
       <div class="cbot">
         <div class="p cbot-sec"><div class="ch-label" style="margin-bottom:6px">◆ STORAGE</div><div class="sb"><span class="sb-l">Disk</span><div class="sb-bar"><div class="sb-fill" id="sbDisk" style="width:${disk}%;background:var(--cyan)"></div></div><span class="sb-v" id="sbDiskV">${fB(d.disk_used)} (${disk}%)</span></div><div class="sb"><span class="sb-l">Swap</span><div class="sb-bar"><div class="sb-fill" id="sbSwap" style="width:${swap}%;background:var(--am)"></div></div><span class="sb-v" id="sbSwapV">${fB(d.swap_used)} (${swap}%)</span></div></div>
@@ -482,74 +482,86 @@ function updateLive(){
 /* ── Events ── */
 function addEvent(type,msg,time){
   S.events.unshift({type,msg,time:time?fTL(time):'--'});
-  if(S.events.length>8)S.events.length=8;
+  if(S.events.length>5)S.events.length=5;
   const el=$('evList');if(!el)return;
   el.innerHTML=S.events.map(e=>`<div class="ev"><span class="ev-dot ${e.type}"></span><div class="ev-body"><div class="ev-msg">${esc(e.msg)}</div><div class="ev-time">${e.time} · ws</div></div></div>`).join('');
 }
 
-/* ── Chart drawing ── */
-/* Downsample: keep max ~200 points for smooth chart */
-function downsample(arr,maxPts){
-  if(!arr||arr.length<=maxPts)return arr;
-  const step=arr.length/maxPts;const out=[];
-  for(let i=0;i<maxPts;i++){
-    const s=Math.floor(i*step),e=Math.floor((i+1)*step);
-    let sum=0,cnt=0;for(let j=s;j<e&&j<arr.length;j++){sum+=arr[j];cnt++}
-    out.push(cnt?sum/cnt:0);
-  }return out;
-}
-function downsampleTimes(arr,maxPts){
-  if(!arr||arr.length<=maxPts)return arr;
-  const step=arr.length/maxPts;const out=[];
-  for(let i=0;i<maxPts;i++){out.push(arr[Math.floor(i*step)])}return out;
-}
-
-function drawChart(id,data,color,maxV){
-  const c=$(id);if(!c)return;
-  const dark=html.getAttribute('data-theme')==='dark';const fA=dark?0.05:0.03;
-  const ctx=c.getContext('2d');const dpr=window.devicePixelRatio||1;
-  const r=c.parentElement.getBoundingClientRect();
-  c.width=r.width*dpr;c.height=r.height*dpr;c.style.width=r.width+'px';c.style.height=r.height+'px';
-  ctx.scale(dpr,dpr);const W=r.width,H=r.height;
-  if(!data||!data.length)return;
-  const mx=maxV||Math.max(...data)*1.3||1;const n=data.length;
-  const pad=8;const pts=data.map((v,i)=>({x:(i/(n-1))*W,y:pad+((H-pad*2)*(1-v/mx)),v:v}));
-  // grid lines
-  ctx.strokeStyle=dark?'rgba(0,212,240,0.04)':'rgba(100,116,139,0.06)';ctx.lineWidth=0.5;
-  for(let i=1;i<4;i++){const gy=H*i/4;ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke()}
-  // curve helper
-  function curvePath(){
-    ctx.moveTo(pts[0].x,pts[0].y);
-    for(let i=0;i<pts.length-1;i++){
-      const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(n-1,i+2)];
-      const t=5;// tension — higher = smoother
-      ctx.bezierCurveTo(p1.x+(p2.x-p0.x)/t,p1.y+(p2.y-p0.y)/t,p2.x-(p3.x-p1.x)/t,p2.y-(p3.y-p1.y)/t,p2.x,p2.y);
+/* ── Chart drawing — copied from index.html dCh ── */
+function dCh(canvasId,opts){
+  const canvas=$(canvasId);if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.parentElement.getBoundingClientRect();
+  const chH=parseInt(getComputedStyle(canvas).height)||180;
+  canvas.width=rect.width*dpr;canvas.height=chH*dpr;
+  canvas.style.width=rect.width+'px';canvas.style.height=chH+'px';
+  ctx.scale(dpr,dpr);
+  const w=rect.width,h=chH,pad={t:10,r:16,b:30,l:45};
+  let data=opts.data||[];let labels=opts.labels||[];let rawTimes=opts.rawTimes||[];
+  if(!data.length)return;
+  const maxPts=Math.min(data.length,120);
+  if(data.length>maxPts){
+    const bSz=data.length/maxPts;const nd=[];const nl=[];const nr=[];
+    for(let i=0;i<maxPts;i++){
+      const s=Math.floor(i*bSz),e=Math.min(Math.floor((i+1)*bSz),data.length);
+      let sum=0;for(let j=s;j<e;j++)sum+=data[j];nd.push(sum/(e-s));
+      const mid=Math.floor((s+e)/2);nl.push(labels[mid]||'');nr.push(rawTimes[mid]||0);
+    }
+    data=nd;labels=nl;rawTimes=nr;
+  }
+  let max=opts.max;
+  if(!max){
+    const sorted=data.slice().filter(v=>v>0).sort((a,b)=>a-b);
+    const dMax=Math.max(...data);const dMin=sorted[0]||0;
+    const p95=sorted[Math.floor(sorted.length*0.95)]||dMax;const range=p95-dMin;
+    if(dMax<=0){max=10}else if(range<1){max=Math.max(dMax*2,5)}else{max=p95+range;if(dMax>max)max=dMax*1.1}
+    if(max>=100)max=Math.ceil(max/10)*10;else if(max>=10)max=Math.ceil(max/5)*5;else max=Math.ceil(max);
+    if(max<=0)max=10;
+  }
+  const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;const color=opts.color||'#2563eb';
+  ctx.strokeStyle='rgba(148,163,184,0.2)';ctx.lineWidth=0.5;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+ch*(i/4);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
+    ctx.fillStyle='#64748b';ctx.font='9px JetBrains Mono';ctx.textAlign='right';ctx.fillText(Math.round(max*(1-i/4)),pad.l-6,y+3);
+  }
+  let pts;
+  if(rawTimes.length===data.length&&rawTimes[0]&&rawTimes[rawTimes.length-1]){
+    const tMin=rawTimes[0],tMax=rawTimes[rawTimes.length-1],tRange=tMax-tMin||1;
+    pts=data.map((v,i)=>({x:pad.l+((rawTimes[i]-tMin)/tRange)*cw,y:pad.t+ch*(1-Math.min(v,max)/max)}));
+  }else{pts=data.map((v,i)=>({x:pad.l+(i/(data.length-1||1))*cw,y:pad.t+ch*(1-Math.min(v,max)/max)}));}
+  if(rawTimes.length>1&&rawTimes[0]&&rawTimes[rawTimes.length-1]){
+    ctx.fillStyle='#94a3b8';ctx.font='8px JetBrains Mono';ctx.textAlign='center';
+    const tickCount=Math.min(5,data.length);const tMin=rawTimes[0],tMax=rawTimes[rawTimes.length-1],tRange=tMax-tMin||1;
+    let needDate=false;const d1=new Date(tMin),d2=new Date(tMax);if(d1.getDate()!==d2.getDate()||d1.getMonth()!==d2.getMonth())needDate=true;
+    for(let i=0;i<tickCount;i++){
+      const t=tMin+i*tRange/(tickCount-1);const x=pad.l+(i/(tickCount-1))*cw;const d=new Date(t);
+      const hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');
+      let display=hh+':'+mm;if(needDate){display=String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0')+' '+display}
+      if(i===0){ctx.textAlign='left';ctx.fillText(display,Math.max(x,pad.l),h-4);ctx.textAlign='center'}
+      else if(i===tickCount-1){ctx.textAlign='right';ctx.fillText(display,Math.min(x,w-pad.r),h-4);ctx.textAlign='center'}
+      else ctx.fillText(display,x,h-4);
     }
   }
-  // fill
-  ctx.beginPath();curvePath();
-  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,color.replace(')',','+fA+')').replace('rgb','rgba'));g.addColorStop(0.6,color.replace(')',',0)').replace('rgb','rgba'));
-  ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=g;ctx.fill();
-  // stroke line
-  ctx.beginPath();curvePath();
-  ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.stroke();
-  // end dot with glow
-  const l=pts[n-1];
-  ctx.beginPath();ctx.arc(l.x,l.y,3,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
-  ctx.beginPath();ctx.arc(l.x,l.y,6,0,Math.PI*2);
-  ctx.strokeStyle=color.replace(')',',0.2)').replace('rgb','rgba');ctx.lineWidth=1;ctx.stroke();
-  // peak point annotation (like original theme)
-  if(n>10){
-    let peakI=0;for(let i=1;i<n;i++){if(pts[i].v>pts[peakI].v)peakI=i}
-    const pk=pts[peakI];
-    if(pk.v>0&&peakI>2&&peakI<n-2){
-      // circle
-      ctx.beginPath();ctx.arc(pk.x,pk.y,4,0,Math.PI*2);ctx.strokeStyle=color;ctx.lineWidth=1.2;ctx.stroke();
-      // label
-      const label=pk.v>=1?pk.v.toFixed(1):pk.v.toFixed(2);
-      ctx.font='600 10px "JetBrains Mono",monospace';ctx.fillStyle=color;ctx.textAlign='center';
-      ctx.fillText(label,pk.x,pk.y-8);
-    }
+  function drawSmooth(points){
+    if(points.length<2)return;ctx.moveTo(points[0].x,points[0].y);if(points.length===2){ctx.lineTo(points[1].x,points[1].y);return}
+    for(let i=0;i<points.length-1;i++){const p0=points[Math.max(0,i-1)],p1=points[i],p2=points[i+1],p3=points[Math.min(points.length-1,i+2)];const tension=0.25;
+      ctx.bezierCurveTo(p1.x+(p2.x-p0.x)*tension,p1.y+(p2.y-p0.y)*tension,p2.x-(p3.x-p1.x)*tension,p2.y-(p3.y-p1.y)*tension,p2.x,p2.y);}
+  }
+  ctx.save();ctx.shadowColor=color;ctx.shadowBlur=14;ctx.beginPath();ctx.strokeStyle=color+'40';ctx.lineWidth=5;ctx.lineJoin='round';ctx.lineCap='round';drawSmooth(pts);ctx.stroke();ctx.restore();
+  ctx.save();ctx.shadowColor=color;ctx.shadowBlur=6;ctx.shadowOffsetY=1;ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';drawSmooth(pts);ctx.stroke();ctx.restore();
+  ctx.beginPath();drawSmooth(pts);ctx.lineTo(pts[pts.length-1].x,pad.t+ch);ctx.lineTo(pts[0].x,pad.t+ch);ctx.closePath();
+  const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+ch);grad.addColorStop(0,color+'25');grad.addColorStop(0.6,color+'08');grad.addColorStop(1,color+'02');ctx.fillStyle=grad;ctx.fill();
+  const origData=opts.data||[];const peakVal=Math.max(...origData);const peakIdx=origData.indexOf(peakVal);
+  if(peakIdx>=0&&pts.length>1){const ratio=peakIdx/(origData.length-1||1);const px=pad.l+ratio*cw,py=pad.t+ch*(1-Math.min(peakVal,max)/max);
+    ctx.save();ctx.shadowColor=color;ctx.shadowBlur=10;ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fillStyle=color+'30';ctx.fill();ctx.restore();
+    ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.beginPath();ctx.arc(px,py,1.5,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
+    ctx.font='bold 9px Outfit';ctx.fillStyle=color;ctx.textAlign='center';ctx.fillText(opts.max?peakVal.toFixed(0):peakVal.toFixed(1),px,py-10);
+  }
+  if(pts.length>1){const lp=pts[pts.length-1];const lv=origData[origData.length-1]||data[data.length-1];
+    ctx.save();ctx.shadowColor=color;ctx.shadowBlur=8;ctx.beginPath();ctx.arc(lp.x,lp.y,4,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.restore();
+    ctx.beginPath();ctx.arc(lp.x,lp.y,2,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
+    ctx.font='bold 10px Outfit';ctx.fillStyle=color;ctx.textAlign='left';ctx.fillText(opts.max?lv.toFixed(0):lv.toFixed(1),lp.x+8,lp.y+3);
   }
 }
 function drawCore(){
@@ -583,13 +595,11 @@ async function loadChartData(){
     chartData.netIn=records.map(r=>(r.net_in||0)/1024);// KB/s
     chartData.netOut=records.map(r=>(r.net_out||0)/1024);
     chartData.times=records.map(r=>r.time);
+    chartData.rawTimes=records.map(r=>r.time?new Date(r.time).getTime():0);
     // Temp from last record
     const last=records[records.length-1];
     if(last&&last.temp&&$('kTemp'))$('kTemp').textContent=last.temp.toFixed(1)+'°C';
     drawAllCharts();
-    setXaxis('cpuXaxis',chartData.times);
-    setXaxis('memXaxis',chartData.times);
-    setXaxis('netXaxis',chartData.times);
   }catch(e){console.error('loadChartData:',e)}
 }
 
@@ -630,8 +640,8 @@ async function loadPingData(){
     if(latRecs.length){
       chartData.lat=latRecs.map(r=>r.value);
       chartData.latTimes=latRecs.map(r=>r.time);
-      drawChart('cLat',chartData.lat,'rgb(255,171,0)',Math.max(...chartData.lat)*1.3||200);
-      setXaxis('latXaxis',chartData.latTimes);
+      chartData.latRawTimes=latRecs.map(r=>r.time?new Date(r.time).getTime():0);
+      dCh('cLat',{data:chartData.lat,rawTimes:chartData.latRawTimes,color:'#ffab00',label:'ms'});
     }
     // Ping history panels
     renderPingHistory(tasks,records);
@@ -655,7 +665,9 @@ function renderPingHistory(tasks,records){
     const tRecs=records.filter(r=>r.task_id===t.id&&r.value>=0).sort((a,b)=>new Date(a.time||0)-new Date(b.time||0));
     if(tRecs.length){
       const colors=['rgb(0,184,212)','rgb(255,171,0)','rgb(0,230,118)','rgb(112,96,224)'];
-      drawChart('cPH'+i,downsample(tRecs.map(r=>r.value),150),colors[i%colors.length],Math.max(...tRecs.map(r=>r.value))*1.3||200);
+      const phData=tRecs.map(r=>r.value);
+      const phTimes=tRecs.map(r=>r.time?new Date(r.time).getTime():0);
+      dCh('cPH'+i,{data:phData,rawTimes:phTimes,color:colors[i%colors.length],label:'ms'});
       setXaxis('phX'+i,tRecs.map(r=>r.time));
     }
   });
@@ -681,13 +693,11 @@ function setXaxis(id,times){
 }
 
 function drawAllCharts(){
-  const MP=180;// max points for load charts
-  const LP=120;// fewer points for latency — cleaner wave
-  if(chartData.cpu.length)drawChart('cCpu',downsample(chartData.cpu,MP),'rgb(0,184,212)',100);
-  if(chartData.mem.length)drawChart('cMem',downsample(chartData.mem,MP),'rgb(112,96,224)',100);
-  if(chartData.netIn.length)drawChart('cNetIn',downsample(chartData.netIn,MP),'rgb(0,184,212)');
-  if(chartData.netOut.length)drawChart('cNetOut',downsample(chartData.netOut,MP),'rgb(0,230,118)');
-  if(chartData.lat&&chartData.lat.length)drawChart('cLat',downsample(chartData.lat,LP),'rgb(255,171,0)',Math.max(...chartData.lat)*1.3||200);
+  if(chartData.cpu.length)dCh('cCpu',{data:chartData.cpu,rawTimes:chartData.rawTimes,color:'#00b8d4',max:100,label:'%'});
+  if(chartData.mem.length)dCh('cMem',{data:chartData.mem,rawTimes:chartData.rawTimes,color:'#7060e0',max:100,label:'%'});
+  if(chartData.netIn.length)dCh('cNetIn',{data:chartData.netIn,rawTimes:chartData.rawTimes,color:'#00b8d4',label:'KB/s'});
+  if(chartData.netOut.length)dCh('cNetOut',{data:chartData.netOut,rawTimes:chartData.rawTimes,color:'#00e676',label:'KB/s'});
+  if(chartData.lat&&chartData.lat.length)dCh('cLat',{data:chartData.lat,rawTimes:chartData.latRawTimes,color:'#ffab00',label:'ms'});
   drawCore();
 }
 window.addEventListener('resize',drawAllCharts);
