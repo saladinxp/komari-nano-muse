@@ -2508,14 +2508,14 @@ function cAlpha(c,a){
 }
 function dCh(canvasId,opts){
   const canvas=$(canvasId);if(!canvas)return;
-  const ctx=canvas.getContext('2d');
+  const ctx=canvas.getContext('2d',{willReadFrequently:true});
   const dpr=window.devicePixelRatio||1;
-  const rect=canvas.parentElement.getBoundingClientRect();
-  const chH=parseInt(getComputedStyle(canvas).height)||180;
-  canvas.width=rect.width*dpr;canvas.height=chH*dpr;
-  canvas.style.width=rect.width+'px';canvas.style.height=chH+'px';
+  const cRect=canvas.getBoundingClientRect();
+  const w=cRect.width,chH=cRect.height||parseInt(getComputedStyle(canvas).height)||180;
+  canvas.width=w*dpr;canvas.height=chH*dpr;
+  canvas.style.width=w+'px';canvas.style.height=chH+'px';
   ctx.scale(dpr,dpr);
-  const w=rect.width,h=chH,pad={t:10,r:16,b:30,l:45};
+  const h=chH,pad={t:10,r:16,b:30,l:45};
   let data=opts.data||[];
   let labels=opts.labels||[];
   let rawTimes=opts.rawTimes||[];
