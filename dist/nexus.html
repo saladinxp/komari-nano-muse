@@ -518,6 +518,17 @@ function addEvent(type,msg,time){
   el.innerHTML=S.events.map(e=>`<div class="ev"><span class="ev-dot ${e.type}"></span><div class="ev-body"><div class="ev-msg">${esc(e.msg)}</div><div class="ev-time">${e.time} · ws</div></div></div>`).join('');
 }
 
+/* ── Color helper: append alpha to any color format ── */
+function cAlpha(c,a){
+  // a is 0-1 float. Handles hex (#xxx, #xxxxxx) and rgb(r,g,b)
+  if(c.startsWith('#')){
+    let hex=c.slice(1);if(hex.length===3)hex=hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+    return 'rgba('+parseInt(hex.slice(0,2),16)+','+parseInt(hex.slice(2,4),16)+','+parseInt(hex.slice(4,6),16)+','+a+')';
+  }
+  const m=c.match(/[\d.]+/g);
+  if(m&&m.length>=3)return 'rgba('+m[0]+','+m[1]+','+m[2]+','+a+')';
+  return c;
+}
 /* ── Chart drawing — copied from index.html dCh ── */
 function dCh(canvasId,opts){
   const canvas=$(canvasId);if(!canvas)return;
@@ -525,8 +536,7 @@ function dCh(canvasId,opts){
   const dpr=window.devicePixelRatio||1;
   const rect=canvas.parentElement.getBoundingClientRect();
   const chH=parseInt(getComputedStyle(canvas).height)||180;
-  if(canvasId.startsWith('cPH'))console.log(`[dCh] ${canvasId}: parentW=${rect.width.toFixed(0)} canvasH=${chH} dataLen=${(opts.data||[]).length}`);
-  if(rect.width<5||chH<5){console.warn(`[dCh] ${canvasId} skipped: too small`);return}
+  if(rect.width<5||chH<5)return;
   canvas.width=rect.width*dpr;canvas.height=chH*dpr;
   canvas.style.width=rect.width+'px';canvas.style.height=chH+'px';
   ctx.scale(dpr,dpr);
@@ -585,13 +595,13 @@ function dCh(canvasId,opts){
     for(let i=0;i<points.length-1;i++){const p0=points[Math.max(0,i-1)],p1=points[i],p2=points[i+1],p3=points[Math.min(points.length-1,i+2)];const tension=0.25;
       ctx.bezierCurveTo(p1.x+(p2.x-p0.x)*tension,p1.y+(p2.y-p0.y)*tension,p2.x-(p3.x-p1.x)*tension,p2.y-(p3.y-p1.y)*tension,p2.x,p2.y);}
   }
-  ctx.save();ctx.shadowColor=color;ctx.shadowBlur=14;ctx.beginPath();ctx.strokeStyle=color+'40';ctx.lineWidth=5;ctx.lineJoin='round';ctx.lineCap='round';drawSmooth(pts);ctx.stroke();ctx.restore();
+  ctx.save();ctx.shadowColor=color;ctx.shadowBlur=14;ctx.beginPath();ctx.strokeStyle=cAlpha(color,0.25);ctx.lineWidth=5;ctx.lineJoin='round';ctx.lineCap='round';drawSmooth(pts);ctx.stroke();ctx.restore();
   ctx.save();ctx.shadowColor=color;ctx.shadowBlur=6;ctx.shadowOffsetY=1;ctx.beginPath();ctx.strokeStyle=color;ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';drawSmooth(pts);ctx.stroke();ctx.restore();
   ctx.beginPath();drawSmooth(pts);ctx.lineTo(pts[pts.length-1].x,pad.t+ch);ctx.lineTo(pts[0].x,pad.t+ch);ctx.closePath();
-  const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+ch);grad.addColorStop(0,color+'25');grad.addColorStop(0.6,color+'08');grad.addColorStop(1,color+'02');ctx.fillStyle=grad;ctx.fill();
+  const grad=ctx.createLinearGradient(0,pad.t,0,pad.t+ch);grad.addColorStop(0,cAlpha(color,0.15));grad.addColorStop(0.6,cAlpha(color,0.03));grad.addColorStop(1,cAlpha(color,0.01));ctx.fillStyle=grad;ctx.fill();
   const origData=opts.data||[];const peakVal=Math.max(...origData);const peakIdx=origData.indexOf(peakVal);
   if(peakIdx>=0&&pts.length>1){const ratio=peakIdx/(origData.length-1||1);const px=pad.l+ratio*cw,py=pad.t+ch*(1-Math.min(peakVal,max)/max);
-    ctx.save();ctx.shadowColor=color;ctx.shadowBlur=10;ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fillStyle=color+'30';ctx.fill();ctx.restore();
+    ctx.save();ctx.shadowColor=color;ctx.shadowBlur=10;ctx.beginPath();ctx.arc(px,py,5,0,Math.PI*2);ctx.fillStyle=cAlpha(color,0.19);ctx.fill();ctx.restore();
     ctx.beginPath();ctx.arc(px,py,3.5,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();ctx.beginPath();ctx.arc(px,py,1.5,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
     ctx.font='bold 9px Outfit';ctx.fillStyle=color;ctx.textAlign='center';ctx.fillText(opts.max?peakVal.toFixed(0):peakVal.toFixed(1),px,py-10);
   }
@@ -611,7 +621,8 @@ function dCh(canvasId,opts){
     canvas.addEventListener('mousemove',function(e){
       const m=canvas._chMeta;if(!m||!m.pts.length)return;
       const br=canvas.getBoundingClientRect();
-      const mx=e.clientX-br.left;
+      const scaleX=m.w/br.width;
+      const mx=(e.clientX-br.left)*scaleX;
       // Find nearest point
       let best=0,bestD=Infinity;
       for(let i=0;i<m.pts.length;i++){const dx=Math.abs(m.pts[i].x-mx);if(dx<bestD){bestD=dx;best=i}}
@@ -624,7 +635,7 @@ function dCh(canvasId,opts){
       cx.beginPath();cx.moveTo(p.x,m.pad.t);cx.lineTo(p.x,m.pad.t+m.ch);
       cx.strokeStyle=m.dark?'rgba(0,212,240,0.3)':'rgba(100,116,139,0.25)';cx.lineWidth=1;cx.setLineDash([3,3]);cx.stroke();cx.setLineDash([]);
       // Dot
-      cx.beginPath();cx.arc(p.x,p.y,5,0,Math.PI*2);cx.fillStyle=m.color+'40';cx.fill();
+      cx.beginPath();cx.arc(p.x,p.y,5,0,Math.PI*2);cx.fillStyle=cAlpha(m.color,0.25);cx.fill();
       cx.beginPath();cx.arc(p.x,p.y,3,0,Math.PI*2);cx.fillStyle=m.color;cx.fill();
       cx.beginPath();cx.arc(p.x,p.y,1.5,0,Math.PI*2);cx.fillStyle='#fff';cx.fill();
       // Tooltip box
@@ -671,8 +682,6 @@ async function loadChartData(){
     const r=await fetch(`/api/records/load?uuid=${S.uuid}&hours=${S.hours}`);const j=await r.json();const dd=(j.data||j);
     const records=(dd.records||[]).sort((a,b)=>new Date(a.time||0)-new Date(b.time||0));
     if(!records.length)return;
-    // Debug: log first record to check field names
-    if(records[0])console.log('[Cockpit] Load record sample:',JSON.stringify(records[0]));
     chartData.cpu=records.map(r=>{let v=r.cpu||0;if(v<=1&&v>0)v*=100;return v});
     // API docs: ram is percentage (0-100)
     chartData.mem=records.map(r=>r.ram||0);
