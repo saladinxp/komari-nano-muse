@@ -585,12 +585,25 @@ async function loadChartData(){
     if(!records.length)return;
     // Debug: log first record to check field names
     if(records[0])console.log('[Cockpit] Load record sample:',JSON.stringify(records[0]));
+    if(records[0])console.log('[Cockpit] ram field type:',typeof records[0].ram,'value:',JSON.stringify(records[0].ram));
     chartData.cpu=records.map(r=>{let v=r.cpu||0;if(v<=1&&v>0)v*=100;return v});
     chartData.mem=records.map(r=>{
-      // ram could be percentage directly, or need calculation
-      let v=r.ram;if(v===undefined||v===null)v=r.memory||0;
-      if(v<=1&&v>0)v*=100;// if decimal 0-1
-      return v;
+      // ram can be: object {used,total}, percentage (0-100), decimal (0-1), or bytes
+      let v=r.ram;
+      if(v&&typeof v==='object'){
+        // object like {used, total} — calc percentage
+        return v.total?Math.round(v.used/v.total*1000)/10:0;
+      }
+      if(v===undefined||v===null)v=r.memory||0;
+      if(typeof v==='number'){
+        if(v<=1&&v>0)v=v*100;// decimal 0-1 → percentage
+        else if(v>100){
+          // likely bytes — need total from node info to calc %
+          const total=S.node?.mem_total||1;
+          v=Math.round(v/total*1000)/10;
+        }
+      }
+      return v||0;
     });
     chartData.netIn=records.map(r=>(r.net_in||0)/1024);// KB/s
     chartData.netOut=records.map(r=>(r.net_out||0)/1024);
