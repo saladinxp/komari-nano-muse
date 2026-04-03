@@ -597,6 +597,57 @@ function dCh(canvasId,opts){
     ctx.beginPath();ctx.arc(lp.x,lp.y,2,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
     ctx.font='bold 10px Outfit';ctx.fillStyle=color;ctx.textAlign='left';ctx.fillText(opts.max?lv.toFixed(0):lv.toFixed(1),lp.x+8,lp.y+3);
   }
+  // Save snapshot for redraw on hover
+  const snap=ctx.getImageData(0,0,canvas.width,canvas.height);
+  // Store chart meta for tooltip
+  canvas._chMeta={pts,data,rawTimes,max,pad,color,w,h,label:opts.label||'',dpr,snap,cw,ch:h-pad.t-pad.b,dark};
+  // Bind tooltip events (only once)
+  if(!canvas._chBound){
+    canvas._chBound=true;
+    canvas.style.cursor='crosshair';
+    canvas.addEventListener('mousemove',function(e){
+      const m=canvas._chMeta;if(!m||!m.pts.length)return;
+      const br=canvas.getBoundingClientRect();
+      const mx=e.clientX-br.left;
+      // Find nearest point
+      let best=0,bestD=Infinity;
+      for(let i=0;i<m.pts.length;i++){const dx=Math.abs(m.pts[i].x-mx);if(dx<bestD){bestD=dx;best=i}}
+      const p=m.pts[best],v=m.data[best],t=m.rawTimes[best];
+      // Restore clean chart then draw overlay
+      const cx=canvas.getContext('2d');
+      cx.putImageData(m.snap,0,0);
+      cx.save();cx.scale(m.dpr,m.dpr);
+      // Vertical line
+      cx.beginPath();cx.moveTo(p.x,m.pad.t);cx.lineTo(p.x,m.pad.t+m.ch);
+      cx.strokeStyle=m.dark?'rgba(0,212,240,0.3)':'rgba(100,116,139,0.25)';cx.lineWidth=1;cx.setLineDash([3,3]);cx.stroke();cx.setLineDash([]);
+      // Dot
+      cx.beginPath();cx.arc(p.x,p.y,5,0,Math.PI*2);cx.fillStyle=m.color+'40';cx.fill();
+      cx.beginPath();cx.arc(p.x,p.y,3,0,Math.PI*2);cx.fillStyle=m.color;cx.fill();
+      cx.beginPath();cx.arc(p.x,p.y,1.5,0,Math.PI*2);cx.fillStyle='#fff';cx.fill();
+      // Tooltip box
+      const valTxt=v!=null?v.toFixed(m.label==='%'?1:1)+' '+(m.label||''):'--';
+      let timeTxt='';
+      if(t){const d=new Date(t);const MM=String(d.getMonth()+1).padStart(2,'0'),DD=String(d.getDate()).padStart(2,'0'),hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');timeTxt=MM+'/'+DD+' '+hh+':'+mm}
+      cx.font='bold 10px Outfit';const tw1=cx.measureText(valTxt).width;
+      cx.font='9px JetBrains Mono';const tw2=cx.measureText(timeTxt).width;
+      const bw=Math.max(tw1,tw2)+16,bh=36,br2=6;
+      let bx=p.x+10,by=p.y-bh-8;
+      if(bx+bw>m.w-m.pad.r)bx=p.x-bw-10;
+      if(by<m.pad.t)by=p.y+12;
+      const bgC=m.dark?'rgba(14,26,45,0.92)':'rgba(255,255,255,0.95)';
+      const bdC=m.dark?'rgba(0,212,240,0.25)':'rgba(148,163,184,0.3)';
+      cx.fillStyle=bgC;cx.strokeStyle=bdC;cx.lineWidth=1;
+      cx.beginPath();cx.roundRect(bx,by,bw,bh,br2);cx.fill();cx.stroke();
+      cx.fillStyle=m.color;cx.font='bold 10px Outfit';cx.textAlign='left';cx.fillText(valTxt,bx+8,by+14);
+      cx.fillStyle=m.dark?'#7d9ab5':'#64748b';cx.font='9px JetBrains Mono';cx.fillText(timeTxt,bx+8,by+28);
+      cx.restore();
+    });
+    canvas.addEventListener('mouseleave',function(){
+      const m=canvas._chMeta;if(!m)return;
+      const cx=canvas.getContext('2d');
+      cx.putImageData(m.snap,0,0);
+    });
+  }
 }
 function drawCore(){
   const c=$('coreCanvas');if(!c)return;const dark=html.getAttribute('data-theme')==='dark';
