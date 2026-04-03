@@ -616,7 +616,13 @@ async function boot(){
       // Auto-open from URL hash: #uuid
       const hash=location.hash.replace('#','');
       if(hash&&S.nodes.find(n=>n.uuid===hash)){openNode(hash)}
-      else{showNodeSelect()}
+      else{
+        // Default: open first online node, or first node
+        const firstOnline=S.nodes.find(n=>S.onlineSet.has(n.uuid));
+        const first=firstOnline||S.nodes[0];
+        if(first){openNode(first.uuid)}
+        else{showNodeSelect()}
+      }
     },800);
   }catch(e){$('initLoad').textContent='API Error: '+e.message}
 }
