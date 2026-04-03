@@ -686,8 +686,13 @@ async function loadChartData(){
     const records=(dd.records||[]).sort((a,b)=>new Date(a.time||0)-new Date(b.time||0));
     if(!records.length)return;
     chartData.cpu=records.map(r=>{let v=r.cpu||0;if(v<=1&&v>0)v*=100;return v});
-    // API docs: ram is percentage (0-100)
-    chartData.mem=records.map(r=>r.ram||0);
+    // ram field: percentage (0-100) on some servers, bytes on others
+    // API also returns ram_total — use it to detect and convert
+    chartData.mem=records.map(r=>{
+      let v=r.ram||0;
+      if(v>100&&r.ram_total>0)v=v/r.ram_total*100;
+      return Math.round(v*10)/10;
+    });
     chartData.netIn=records.map(r=>(r.net_in||0)/1024);// KB/s
     chartData.netOut=records.map(r=>(r.net_out||0)/1024);
     chartData.times=records.map(r=>r.time);
