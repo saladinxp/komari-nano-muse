@@ -91,6 +91,15 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 .ch-plot{flex:1;display:flex;flex-direction:column}
 .ch-wrap{height:clamp(80px,9vh,130px);border:1px solid var(--kpi-bd);border-radius:clamp(4px,0.4vw,8px);background:linear-gradient(180deg,rgba(var(--cyr),0.02),transparent);padding:2px;position:relative;overflow:hidden}
 .ch-wrap canvas{width:100%;height:100%;display:block}
+.chart-wrap{background:rgba(255,255,255,0.42);border:1px solid rgba(255,255,255,0.5);border-radius:16px;padding:18px;box-shadow:0 2px 10px rgba(59,130,246,0.05),inset 0 1px 0 rgba(255,255,255,0.6);border-left:3px solid var(--cyan);position:relative;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);overflow:hidden}
+.chart-wrap::before{content:'';position:absolute;top:0;left:3px;right:0;height:1px;background:linear-gradient(90deg,rgba(0,216,255,0.2),rgba(255,255,255,0.5) 30%,transparent 70%);border-radius:0 16px 0 0}
+.chart-wrap canvas{width:100%;height:180px}
+.chart-wrap.mini{padding:12px}
+.chart-wrap.mini canvas{height:80px}
+[data-theme="dark"] .chart-wrap{background:rgba(20,38,58,0.55);border-color:rgba(0,212,240,0.15);box-shadow:0 2px 10px rgba(0,0,0,0.2),inset 0 1px 0 rgba(0,212,240,0.06)}
+[data-theme="dark"] .chart-wrap::before{background:linear-gradient(90deg,rgba(0,212,240,0.25),rgba(0,212,240,0.08) 30%,transparent 70%)}
+.chart-label{font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--blue,#2563eb);margin-bottom:8px;font-weight:700;display:flex;align-items:center;gap:6px}
+.chart-label::before{content:'';width:3px;height:10px;border-radius:1.5px;background:var(--cyan)}
 .ch-xaxis{display:flex;justify-content:space-between;padding:2px 0 0;height:14px}
 .ch-xaxis span{font-family:var(--fm);font-size:10px;color:var(--t4)}
 .ch-sub-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(3px,0.3vw,6px);margin-top:clamp(4px,0.4vh,8px)}
@@ -520,10 +529,14 @@ function dCh(canvasId,opts){
     if(max<=0)max=10;
   }
   const cw=w-pad.l-pad.r,ch=h-pad.t-pad.b;const color=opts.color||'#2563eb';
-  ctx.strokeStyle='rgba(148,163,184,0.2)';ctx.lineWidth=0.5;
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const gridColor=dark?'rgba(0,212,240,0.12)':'rgba(148,163,184,0.2)';
+  const axisColor=dark?'#7d9ab5':'#64748b';
+  const tickColor=dark?'#7d9ab5':'#94a3b8';
+  ctx.strokeStyle=gridColor;ctx.lineWidth=0.5;
   for(let i=0;i<=4;i++){
     const y=pad.t+ch*(i/4);ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
-    ctx.fillStyle='#64748b';ctx.font='9px JetBrains Mono';ctx.textAlign='right';ctx.fillText(Math.round(max*(1-i/4)),pad.l-6,y+3);
+    ctx.fillStyle=axisColor;ctx.font='9px JetBrains Mono';ctx.textAlign='right';ctx.fillText(Math.round(max*(1-i/4)),pad.l-6,y+3);
   }
   let pts;
   if(rawTimes.length===data.length&&rawTimes[0]&&rawTimes[rawTimes.length-1]){
@@ -531,7 +544,7 @@ function dCh(canvasId,opts){
     pts=data.map((v,i)=>({x:pad.l+((rawTimes[i]-tMin)/tRange)*cw,y:pad.t+ch*(1-Math.min(v,max)/max)}));
   }else{pts=data.map((v,i)=>({x:pad.l+(i/(data.length-1||1))*cw,y:pad.t+ch*(1-Math.min(v,max)/max)}));}
   if(rawTimes.length>1&&rawTimes[0]&&rawTimes[rawTimes.length-1]){
-    ctx.fillStyle='#94a3b8';ctx.font='8px JetBrains Mono';ctx.textAlign='center';
+    ctx.fillStyle=tickColor;ctx.font='8px JetBrains Mono';ctx.textAlign='center';
     const tickCount=Math.min(5,data.length);const tMin=rawTimes[0],tMax=rawTimes[rawTimes.length-1],tRange=tMax-tMin||1;
     let needDate=false;const d1=new Date(tMin),d2=new Date(tMax);if(d1.getDate()!==d2.getDate()||d1.getMonth()!==d2.getMonth())needDate=true;
     for(let i=0;i<tickCount;i++){
@@ -670,20 +683,22 @@ function renderPingHistory(tasks,records){
     const avg=valid.length?(valid.reduce((s,r)=>s+r.value,0)/valid.length).toFixed(1):'--';
     const lost=tRecs.filter(r=>r.value<0).length;
     const lossPct=tRecs.length?((lost/tRecs.length)*100).toFixed(1):'--';
-    h+=`<div class="p ext-sec"><div class="ch-label" style="margin-bottom:8px">◆ PING — ${esc(t.name)}</div><div class="ch-area"><div class="ch-yaxis"><span>200</span><span>100</span><span>0</span></div><div class="ch-plot"><div class="ch-wrap" style="height:60px"><canvas id="cPH${i}"></canvas></div><div class="ch-xaxis" id="phX${i}"></div></div></div><div style="display:flex;gap:8px;margin-top:6px"><div class="kpi" style="flex:1"><div class="kpi-k">Avg</div><div class="kpi-v">${avg}<span style="font-size:11px;color:var(--t3);font-family:var(--fm)">ms</span></div></div><div class="kpi" style="flex:1"><div class="kpi-k">Loss</div><div class="kpi-v" style="color:var(--g)">${lossPct}%</div></div><div class="kpi" style="flex:1"><div class="kpi-k">Interval</div><div class="kpi-v">${t.interval||'--'}s</div></div></div></div>`;
+    h+=`<div class="p ext-sec"><div class="ch-label" style="margin-bottom:8px">◆ PING — ${esc(t.name)}</div><div class="chart-wrap mini"><canvas id="cPH${i}"></canvas></div><div style="display:flex;gap:8px;margin-top:6px"><div class="kpi" style="flex:1"><div class="kpi-k">Avg</div><div class="kpi-v">${avg}<span style="font-size:11px;color:var(--t3);font-family:var(--fm)">ms</span></div></div><div class="kpi" style="flex:1"><div class="kpi-k">Loss</div><div class="kpi-v" style="color:var(--g)">${lossPct}%</div></div><div class="kpi" style="flex:1"><div class="kpi-k">Interval</div><div class="kpi-v">${t.interval||'--'}s</div></div></div></div>`;
   });
   row.innerHTML=h;
   // Draw mini charts
+  setTimeout(()=>{
   tasks.forEach((t,i)=>{
     const tRecs=records.filter(r=>r.task_id===t.id&&r.value>=0).sort((a,b)=>new Date(a.time||0)-new Date(b.time||0));
+    console.log(`[Cockpit] Ping task ${i} "${t.name}" records: ${tRecs.length}, canvas cPH${i}:`, $('cPH'+i)?.clientWidth+'x'+$('cPH'+i)?.clientHeight);
     if(tRecs.length){
       const colors=['rgb(0,184,212)','rgb(255,171,0)','rgb(0,230,118)','rgb(112,96,224)'];
       const phData=tRecs.map(r=>r.value);
       const phTimes=tRecs.map(r=>r.time?new Date(r.time).getTime():0);
       dCh('cPH'+i,{data:phData,rawTimes:phTimes,color:colors[i%colors.length],label:'ms'});
-      setXaxis('phX'+i,tRecs.map(r=>r.time));
     }
   });
+  },50);
 }
 
 function renderNodeMeta(){
