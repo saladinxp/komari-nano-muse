@@ -237,7 +237,6 @@ function showNodeSelect(){
       <span class="nstatus ${on?'on':'off'}">${on?'ONLINE':'OFFLINE'}</span>
     </button>`;
   });
-  });
   h+='</div>';
   app.innerHTML=h;
   document.querySelectorAll('.node-btn').forEach(b=>{b.onclick=()=>openNode(b.dataset.uuid)});
