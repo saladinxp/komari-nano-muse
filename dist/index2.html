@@ -368,24 +368,34 @@ function addEvent(type,msg,time){
 /* ── Chart drawing ── */
 function drawChart(id,data,color,maxV){
   const c=$(id);if(!c)return;
-  const dark=html.getAttribute('data-theme')==='dark';const fA=dark?0.10:0.06;
+  const dark=html.getAttribute('data-theme')==='dark';const fA=dark?0.05:0.03;
   const ctx=c.getContext('2d');const dpr=window.devicePixelRatio||1;
   const r=c.parentElement.getBoundingClientRect();
   c.width=r.width*dpr;c.height=r.height*dpr;c.style.width=r.width+'px';c.style.height=r.height+'px';
   ctx.scale(dpr,dpr);const W=r.width,H=r.height;
   if(!data||!data.length)return;
-  const mx=maxV||Math.max(...data)*1.2||1;const n=data.length;
-  const pts=data.map((v,i)=>({x:(i/(n-1))*W,y:3+((H-5)*(1-v/mx))}));
-  ctx.strokeStyle=dark?'rgba(0,212,240,0.05)':'rgba(100,116,139,0.08)';ctx.lineWidth=0.5;
+  const mx=maxV||Math.max(...data)*1.3||1;const n=data.length;
+  const pad=6;const pts=data.map((v,i)=>({x:(i/(n-1))*W,y:pad+((H-pad*2)*(1-v/mx))}));
+  // grid lines
+  ctx.strokeStyle=dark?'rgba(0,212,240,0.04)':'rgba(100,116,139,0.06)';ctx.lineWidth=0.5;
   for(let i=1;i<4;i++){const gy=H*i/4;ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke()}
-  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
-  for(let i=0;i<pts.length-1;i++){const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(n-1,i+2)];ctx.bezierCurveTo(p1.x+(p2.x-p0.x)/6,p1.y+(p2.y-p0.y)/6,p2.x-(p3.x-p1.x)/6,p2.y-(p3.y-p1.y)/6,p2.x,p2.y)}
-  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,color.replace(')',','+fA+')').replace('rgb','rgba'));g.addColorStop(1,color.replace(')',',0)').replace('rgb','rgba'));
+  // curve path helper — tighter tension (divide by 4 not 6)
+  function curvePath(){
+    ctx.moveTo(pts[0].x,pts[0].y);
+    for(let i=0;i<pts.length-1;i++){
+      const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(n-1,i+2)];
+      ctx.bezierCurveTo(p1.x+(p2.x-p0.x)/4,p1.y+(p2.y-p0.y)/4,p2.x-(p3.x-p1.x)/4,p2.y-(p3.y-p1.y)/4,p2.x,p2.y);
+    }
+  }
+  // fill — very subtle gradient
+  ctx.beginPath();curvePath();
+  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,color.replace(')',','+fA+')').replace('rgb','rgba'));g.addColorStop(0.7,color.replace(')',',0)').replace('rgb','rgba'));
   ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=g;ctx.fill();
-  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
-  for(let i=0;i<pts.length-1;i++){const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(n-1,i+2)];ctx.bezierCurveTo(p1.x+(p2.x-p0.x)/6,p1.y+(p2.y-p0.y)/6,p2.x-(p3.x-p1.x)/6,p2.y-(p3.y-p1.y)/6,p2.x,p2.y)}
-  ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.stroke();
-  const l=pts[n-1];ctx.beginPath();ctx.arc(l.x,l.y,3,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+  // stroke — thin line
+  ctx.beginPath();curvePath();
+  ctx.strokeStyle=color;ctx.lineWidth=1.2;ctx.stroke();
+  // end dot — small
+  const l=pts[n-1];ctx.beginPath();ctx.arc(l.x,l.y,2,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
 }
 function drawCore(){
   const c=$('coreCanvas');if(!c)return;const dark=html.getAttribute('data-theme')==='dark';
