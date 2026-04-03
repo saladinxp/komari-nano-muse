@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NanoMuse — Cockpit Detail</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#d8e3f0;
+  --cyan:#00b8d4;--cyr:0,184,212;
+  --p:rgba(235,244,255,0.72);--p2:rgba(242,250,255,0.90);
+  --pb:rgba(180,205,225,0.50);--pb2:rgba(0,184,212,0.45);--bdr:rgba(180,195,210,0.3);
+  --t:#1a2c3e;--t2:#3d5568;--t3:#546e85;--t4:#7d9ab5;
+  --g:#00e676;--gr:0,230,118;--r:#ff3d57;--rr:255,61,87;--am:#ffab00;--amr:255,171,0;
+  --fd:'Outfit','Noto Sans SC',sans-serif;--fm:'JetBrains Mono',monospace;--fr:'Orbitron','Rajdhani',monospace;
+  --shadow:0 2px 16px rgba(0,40,80,0.06);--header-bg:rgba(255,255,255,0.55);
+  --kpi-bg:rgba(0,184,212,0.03);--kpi-bd:rgba(0,184,212,0.08);--label-color:rgba(0,184,212,0.55);
+}
+[data-theme="dark"]{
+  --bg:#1b2a3a;--cyan:#00d4f0;--cyr:0,212,240;
+  --p:rgba(20,38,58,0.65);--p2:rgba(24,44,68,0.82);
+  --pb:rgba(0,212,240,0.18);--pb2:rgba(0,212,240,0.50);--bdr:rgba(0,212,240,0.08);
+  --t:#c8d8e8;--t2:#7d9ab5;--t3:#6e8aa5;--t4:#546e85;
+  --g:#00e676;--gr:0,230,118;--r:#ff3d57;--rr:255,61,87;--am:#ffab00;--amr:255,171,0;
+  --shadow:0 8px 32px rgba(0,0,0,0.3),0 2px 12px rgba(0,212,240,0.05);--header-bg:rgba(14,26,45,0.95);
+  --kpi-bg:rgba(0,212,240,0.03);--kpi-bd:rgba(0,212,240,0.10);--label-color:rgba(0,212,240,0.55);
+}
+html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);overflow-y:auto;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+.bg-base{position:fixed;inset:0;z-index:0;background:linear-gradient(160deg,#dce2ea 0%,#d4dbe5 20%,#e0e5ec 45%,#d8dee8 70%,#e4e9f0 100%)}
+[data-theme="dark"] .bg-base{background:#1b2a3a}
+.bg-grid{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.4;background-image:linear-gradient(rgba(150,170,190,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(150,170,190,0.07) 1px,transparent 1px);background-size:36px 36px}
+[data-theme="dark"] .bg-grid{opacity:1;background-image:linear-gradient(rgba(0,190,230,0.10) 1px,transparent 1px),linear-gradient(90deg,rgba(0,190,230,0.10) 1px,transparent 1px)}
+.bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 40% 30% at 50% 25%,rgba(255,255,255,0.4),transparent 65%),radial-gradient(ellipse 50% 35% at 65% 30%,rgba(var(--cyr),0.05),transparent 60%)}
+[data-theme="dark"] .bg-glow{background:radial-gradient(circle at 30% 20%,rgba(0,212,240,0.04),transparent 50%),radial-gradient(circle at 70% 60%,rgba(0,180,216,0.03),transparent 40%),radial-gradient(circle at 50% 50%,rgba(20,40,60,0.4),transparent 60%)}
+
+.ck{position:relative;z-index:1;padding:clamp(6px,1vh,12px);max-width:1800px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(5px,0.5vw,10px)}
+.body-row{display:flex;gap:clamp(5px,0.5vw,10px);align-items:stretch}
+.col-left{flex:0 0 clamp(240px,20%,320px);display:flex;flex-direction:column;gap:clamp(5px,0.5vw,10px)}
+.col-center{flex:1;display:flex;flex-direction:column;gap:clamp(5px,0.5vw,10px)}
+.col-right{flex:0 0 clamp(220px,18%,300px);display:flex;flex-direction:column;gap:clamp(5px,0.5vw,10px)}
+.p{background:var(--p);border:1px solid var(--pb);border-radius:clamp(8px,1vw,16px);position:relative;overflow:hidden;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:var(--shadow);transition:background .3s,border-color .3s}
+.pt{font-family:var(--fm);font-size:clamp(11px,0.9vw,13px);letter-spacing:2px;color:var(--label-color);padding:clamp(6px,0.7vh,10px) clamp(8px,0.8vw,14px) 0;display:flex;align-items:center;gap:6px;font-weight:600;text-transform:uppercase}
+.pt::before{content:'';width:5px;height:5px;background:var(--cyan);opacity:.4;border-radius:1px;transform:rotate(45deg)}
+.ptag{font-family:var(--fm);font-size:11px;letter-spacing:1.5px;color:var(--t4);border:1px solid var(--kpi-bd);padding:2px 8px;border-radius:3px;margin-left:auto}
+.hd{display:flex;align-items:center;flex-wrap:wrap;gap:clamp(4px,0.5vw,12px);border-radius:clamp(8px,1vw,16px);background:var(--header-bg);border:1px solid var(--pb);backdrop-filter:blur(20px);padding:clamp(8px,1vh,14px) clamp(12px,1.2vw,20px);position:relative;box-shadow:var(--shadow);transition:background .3s}
+.hd::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 3%,rgba(var(--cyr),0.25) 20%,rgba(var(--cyr),0.15) 50%,rgba(var(--cyr),0.25) 80%,transparent 97%)}
+.hc{padding:4px clamp(8px,1vw,16px);border-right:1px solid var(--bdr);display:flex;flex-direction:column;gap:2px}.hc:last-child{border-right:none}
+.hn{font-family:var(--fd);font-weight:600;font-size:clamp(15px,1.3vw,20px);color:var(--t);display:flex;align-items:center;gap:8px}
+.hn .dot{width:8px;height:8px;border-radius:50%;background:var(--g);box-shadow:0 0 12px rgba(var(--gr),0.5);animation:gp 2s ease-in-out infinite}
+@keyframes gp{0%,100%{box-shadow:0 0 12px rgba(var(--gr),0.5)}50%{box-shadow:0 0 20px rgba(var(--gr),0.3)}}
+.hk{font-family:var(--fm);font-size:11px;letter-spacing:2px;color:var(--t4)}
+.hu{font-family:var(--fm);font-size:11px;letter-spacing:2px;color:var(--t4)}
+.hv{font-family:var(--fd);font-size:clamp(13px,1.1vw,17px);font-weight:700}
+.hv.on{color:var(--g)}.hv.hp{color:var(--cyan)}.hv.lt{color:var(--cyan);font-family:var(--fm)}
+.theme-btn{background:none;border:1px solid var(--bdr);border-radius:6px;padding:4px 8px;cursor:pointer;font-size:14px;line-height:1;color:var(--t3);transition:.2s;margin-left:8px}
+.theme-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.back-btn{background:none;border:1px solid var(--bdr);border-radius:6px;padding:4px 12px;cursor:pointer;font-family:var(--fm);font-size:11px;letter-spacing:1px;color:var(--t3);transition:.2s;text-decoration:none}
+.back-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+
+.core-wrap{display:flex;align-items:center;justify-content:center;padding:clamp(10px,1.2vh,18px) 10px;position:relative}
+.core-bg{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(var(--cyr),0.08),transparent 50%);pointer-events:none}
+.core-ring{position:relative;width:clamp(100px,8vw,150px);height:clamp(100px,8vw,150px)}
+.core-ring canvas{position:absolute;inset:0}
+.core-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.core-num{font-family:var(--fr);font-size:clamp(20px,2vw,32px);font-weight:800;color:var(--cyan);letter-spacing:2px;text-shadow:0 0 20px rgba(var(--cyr),0.15)}
+.core-sub{font-family:var(--fm);font-size:11px;letter-spacing:2px;color:var(--t3);margin-top:3px}
+.core-top{font-family:var(--fm);font-size:11px;letter-spacing:3px;color:var(--label-color);position:absolute;top:6px;left:50%;transform:translateX(-50%)}
+.met4{display:grid;grid-template-columns:1fr 1fr;gap:clamp(4px,0.4vw,8px)}
+.mc{padding:clamp(6px,0.6vh,10px) clamp(8px,0.7vw,12px);border-radius:clamp(8px,1vw,14px)}
+.mc-k{font-family:var(--fm);font-size:11px;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin-bottom:3px}
+.mc-v{font-family:var(--fd);font-size:clamp(18px,1.6vw,26px);font-weight:800;color:var(--t);line-height:1}
+.mc-v span{font-family:var(--fm);font-size:11px;color:var(--t3);margin-left:2px}
+.mc-s{font-family:var(--fm);font-size:11px;color:var(--t4);margin-top:3px}
+.ir{display:flex;justify-content:space-between;align-items:center;padding:clamp(3px,0.3vh,6px) clamp(8px,0.7vw,14px);border-bottom:1px solid var(--bdr)}.ir:last-child{border-bottom:none}
+.ik{font-family:var(--fm);font-size:12px;letter-spacing:1.5px;color:var(--t3)}
+.iv{font-family:var(--fd);font-size:13px;font-weight:600;color:var(--t);text-align:right}.iv.c{color:var(--cyan)}.iv.g{color:var(--g)}
+
+.charts4{display:grid;grid-template-columns:1fr 1fr;gap:clamp(5px,0.5vw,10px);flex:1}
+.chart-panel{display:flex;flex-direction:column;padding:clamp(8px,0.7vw,12px)}
+.chart-panel .ch-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;flex-wrap:wrap;gap:4px}
+.ch-label{font-family:var(--fm);font-size:12px;letter-spacing:2px;color:var(--label-color);font-weight:600}
+.ch-now{font-family:var(--fd);font-size:clamp(15px,1.3vw,20px);font-weight:800;color:var(--t)}
+.ch-now span{font-family:var(--fm);font-size:11px;color:var(--t3);margin-left:2px}
+.ch-area{display:flex;gap:0;margin-top:2px}
+.ch-yaxis{width:32px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:4px}
+.ch-yaxis span{font-family:var(--fm);font-size:10px;color:var(--t4);line-height:1}
+.ch-plot{flex:1;display:flex;flex-direction:column}
+.ch-wrap{height:clamp(80px,9vh,130px);border:1px solid var(--kpi-bd);border-radius:clamp(4px,0.4vw,8px);background:linear-gradient(180deg,rgba(var(--cyr),0.02),transparent);padding:2px;position:relative;overflow:hidden}
+.ch-wrap canvas{width:100%;height:100%;display:block}
+.ch-xaxis{display:flex;justify-content:space-between;padding:2px 0 0;height:14px}
+.ch-xaxis span{font-family:var(--fm);font-size:10px;color:var(--t4)}
+.ch-sub-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(3px,0.3vw,6px);margin-top:clamp(4px,0.4vh,8px)}
+.kpi{border:1px solid var(--kpi-bd);background:var(--kpi-bg);border-radius:clamp(5px,0.5vw,8px);padding:clamp(4px,0.4vh,8px) clamp(5px,0.5vw,10px);display:flex;flex-direction:column;gap:1px}
+.kpi-k{font-family:var(--fm);font-size:11px;letter-spacing:1.5px;color:var(--t4);text-transform:uppercase}
+.kpi-v{font-family:var(--fr);font-size:clamp(13px,1.1vw,18px);font-weight:700;color:var(--t)}
+.kpi-s{font-family:var(--fm);font-size:11px;color:var(--t3);line-height:1.3}
+.tb{display:flex;gap:2px}
+.tbtn{font-family:var(--fm);font-size:11px;letter-spacing:1px;padding:2px 7px;border:1px solid var(--kpi-bd);background:transparent;color:var(--t4);cursor:pointer;border-radius:4px;transition:.2s}
+.tbtn.a{background:var(--cyan);color:#fff;border-color:var(--cyan)}
+[data-theme="dark"] .tbtn.a{color:#0a1420}
+
+.cbot{display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(5px,0.5vw,10px)}
+.cbot-sec{padding:clamp(8px,0.7vw,12px)}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:clamp(3px,0.3vw,6px);margin-top:4px}
+.sb{display:flex;align-items:center;gap:6px;padding:clamp(3px,0.3vh,5px) 0}
+.sb-l{font-family:var(--fm);font-size:12px;letter-spacing:1px;color:var(--t2);min-width:50px}
+.sb-bar{flex:1;height:6px;background:rgba(var(--cyr),0.06);border-radius:3px;overflow:hidden}
+.sb-fill{height:100%;border-radius:3px}
+.sb-v{font-family:var(--fm);font-size:11px;color:var(--t2);min-width:80px;text-align:right}
+
+.pb2{display:flex;align-items:center;gap:6px;padding:clamp(3px,0.3vh,5px) clamp(8px,0.7vw,14px)}
+.pb2-loc{font-family:var(--fm);font-size:12px;letter-spacing:1px;color:var(--t2);min-width:54px}
+.pb2-bar{flex:1;height:5px;background:rgba(var(--cyr),0.06);border-radius:3px;overflow:hidden}
+.pb2-fill{height:100%;border-radius:3px}
+.pb2-ms{font-family:var(--fm);font-size:12px;font-weight:600;min-width:50px;text-align:right}
+.sig{display:flex;align-items:center;justify-content:space-between;padding:clamp(3px,0.3vh,6px) clamp(8px,0.7vw,14px);border-top:1px solid var(--bdr)}
+.sig-k{font-family:var(--fm);font-size:12px;color:var(--t2)}
+.sig-v{font-family:var(--fr);font-size:clamp(13px,1.1vw,18px);font-weight:700;letter-spacing:1px}
+.inst-row{display:flex;align-items:center;gap:6px;padding:clamp(4px,0.35vh,7px) clamp(8px,0.7vw,14px);border-bottom:1px solid var(--bdr)}.inst-row:last-child{border-bottom:none}
+.inst-k{font-family:var(--fm);font-size:12px;letter-spacing:1px;color:var(--t2);flex:1}
+.inst-bar{width:clamp(40px,3.5vw,70px);height:5px;background:rgba(var(--cyr),0.06);border-radius:3px;overflow:hidden;margin-left:4px}
+.inst-fill{height:100%;border-radius:3px}
+.inst-v{font-family:var(--fr);font-size:clamp(12px,1vw,16px);font-weight:700;min-width:46px;text-align:right}
+.ev{padding:clamp(3px,0.3vh,6px) clamp(8px,0.7vw,14px);border-bottom:1px solid var(--bdr);display:flex;align-items:start;gap:6px}.ev:last-child{border-bottom:none}
+.ev-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.ev-dot.ok{background:var(--g);box-shadow:0 0 8px rgba(var(--gr),0.4)}.ev-dot.info{background:var(--cyan)}.ev-dot.warn{background:var(--am)}
+.ev-body{flex:1;min-width:0}.ev-msg{font-family:var(--fm);font-size:12px;color:var(--t);line-height:1.3}.ev-time{font-family:var(--fm);font-size:11px;color:var(--t4);margin-top:1px}
+
+.ext-row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(5px,0.5vw,10px)}
+.ext-full{width:100%}
+.ext-sec{padding:clamp(10px,1vw,16px)}
+.tbl{width:100%;border-collapse:collapse;margin-top:6px}
+.tbl th{font-family:var(--fm);font-size:11px;letter-spacing:1.5px;color:var(--t4);text-transform:uppercase;text-align:left;padding:6px 8px;border-bottom:1px solid var(--bdr);font-weight:600}
+.tbl td{font-family:var(--fm);font-size:12px;color:var(--t2);padding:5px 8px;border-bottom:1px solid var(--bdr)}.tbl tr:last-child td{border-bottom:none}
+.tbl .mono{color:var(--t)}
+
+.scan{position:fixed;left:0;right:0;height:1px;z-index:3;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(var(--cyr),0.03),transparent);animation:sc 10s linear infinite}
+@keyframes sc{0%{top:-1px}100%{top:100%}}
+.loading{text-align:center;padding:60px;color:var(--t4);font-family:var(--fm);font-size:13px;letter-spacing:2px}
+.node-select{display:flex;flex-wrap:wrap;gap:8px;padding:12px;justify-content:center}
+.node-btn{font-family:var(--fm);font-size:12px;letter-spacing:1px;padding:8px 16px;border:1px solid var(--pb);background:var(--p);color:var(--t);cursor:pointer;border-radius:8px;transition:.2s;backdrop-filter:blur(8px)}
+.node-btn:hover,.node-btn.a{border-color:var(--cyan);background:rgba(var(--cyr),0.1);color:var(--cyan)}
+.node-btn .ndot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px}
+.node-btn .ndot.on{background:var(--g)}.node-btn .ndot.off{background:var(--r)}
+</style>
+</head>
+<body>
+<div class="bg-base"></div>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="scan"></div>
+<div class="ck" id="app">
+  <div class="loading" id="initLoad">CONNECTING TO KOMARI API ...</div>
+</div>
+
+<script>
+;(function(){
+const html=document.documentElement;
+const $=s=>document.getElementById(s);
+/* ── Utils ── */
+function fB(b){if(!b&&b!==0)return'--';const u=['B','KB','MB','GB','TB'];let i=0;let v=Math.abs(b);while(v>=1024&&i<u.length-1){v/=1024;i++}return v.toFixed(i>0?1:0)+' '+u[i]}
+function fS(bps){if(!bps&&bps!==0)return'--';const a=Math.abs(bps);if(a>=1073741824)return(a/1073741824).toFixed(2)+' GB/s';if(a>=1048576)return(a/1048576).toFixed(1)+' MB/s';if(a>=1024)return(a/1024).toFixed(1)+' KB/s';return a.toFixed(0)+' B/s'}
+function fUs(s){if(!s)return'--';const d=Math.floor(s/86400),h=Math.floor((s%86400)/3600);return d>0?d+'d '+h+'h':h+'h'}
+function pc(u,t){return t?Math.min(100,Math.round(u/t*100)):0}
+function fTL(t){if(!t)return'';const d=new Date(t);return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+function flatLive(r){if(!r||typeof r!=='object')return r;if(typeof r.cpu==='number')return r;return{cpu:Math.round((r.cpu?.usage||0)*100)/100,memory_used:r.ram?.used||0,memory_total:r.ram?.total||0,swap_used:r.swap?.used||0,swap_total:r.swap?.total||0,disk_used:r.disk?.used||0,disk_total:r.disk?.total||0,network_tx:r.network?.up||0,network_rx:r.network?.down||0,network_total_up:r.network?.totalUp||0,network_total_down:r.network?.totalDown||0,tcp:r.connections?.tcp||0,udp:r.connections?.udp||0,load1:r.load?.load1||0,load5:r.load?.load5||0,load15:r.load?.load15||0,uptime:r.uptime||0,process:r.process||0,updated_at:r.updated_at||''}}
+
+/* ── State ── */
+const S={nodes:[],liveData:{},onlineSet:new Set(),ws:null,uuid:null,node:null,hours:12,pingTasks:[],events:[]};
+
+/* ── Theme ── */
+function setTheme(t){html.setAttribute('data-theme',t);localStorage.setItem('nm-ck-theme',t);const b=$('themeBtn');if(b)b.textContent=t==='dark'?'☀️':'🌙';requestAnimationFrame(()=>drawAllCharts())}
+function toggleTheme(){setTheme(html.getAttribute('data-theme')==='dark'?'light':'dark')}
+
+/* ── API ── */
+async function fetchNodes(){
+  const r=await fetch('/api/nodes');const j=await r.json();S.nodes=(j.data||j)||[];
+}
+function connectWS(){
+  const p=location.protocol==='https:'?'wss:':'ws:';
+  S.ws=new WebSocket(p+'//'+location.host+'/api/clients');
+  S.ws.onopen=()=>{S.ws.send('get');setInterval(()=>{if(S.ws?.readyState===1)S.ws.send('get')},3000)};
+  S.ws.onmessage=e=>{
+    try{
+      const m=JSON.parse(e.data);let payload=m.status==='success'&&m.data?m.data:m.data&&Array.isArray(m.data.online)?m.data:Array.isArray(m.online)?m:null;
+      if(!payload)return;
+      S.onlineSet=new Set(payload.online||[]);
+      if(payload.data){for(const[k,v]of Object.entries(payload.data))S.liveData[k]=flatLive(v)}
+      if(S.uuid)updateLive();
+    }catch(er){console.error(er)}
+  };
+  S.ws.onclose=()=>setTimeout(connectWS,3000);
+}
+
+/* ── Node selector ── */
+function showNodeSelect(){
+  const app=$('app');
+  let h='<div class="hd" style="margin-bottom:12px"><div class="hc"><div class="hn">NanoMuse Cockpit — 选择节点</div></div><button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button></div>';
+  h+='<div class="node-select" id="nodeList">';
+  S.nodes.forEach(n=>{
+    const on=S.onlineSet.has(n.uuid);
+    h+=`<button class="node-btn" data-uuid="${n.uuid}"><span class="ndot ${on?'on':'off'}"></span>${esc(n.name)}</button>`;
+  });
+  h+='</div>';
+  app.innerHTML=h;
+  document.querySelectorAll('.node-btn').forEach(b=>{b.onclick=()=>openNode(b.dataset.uuid)});
+}
+
+/* ── Open node ── */
+function openNode(uuid){
+  S.uuid=uuid;S.node=S.nodes.find(n=>n.uuid===uuid);
+  renderCockpit();
+  loadChartData();
+  loadPingData();
+}
+
+/* ── Render cockpit ── */
+function renderCockpit(){
+  const n=S.node;if(!n)return;
+  const d=S.liveData[S.uuid]||{};
+  const on=S.onlineSet.has(S.uuid);
+  const cpu=Math.round(d.cpu||0),ram=pc(d.memory_used,d.memory_total),disk=pc(d.disk_used,d.disk_total),swap=pc(d.swap_used,d.swap_total);
+  const health=on?Math.max(0,Math.round(100-(cpu*0.4+ram*0.35+disk*0.25))):0;
+  const app=$('app');
+  app.innerHTML=`
+  <div class="hd">
+    <a class="back-btn" href="javascript:void(0)" onclick="showNodeSelect()">← BACK</a>
+    <div class="hc" style="min-width:180px"><div class="hn"><span class="dot" id="hDot"></span><span id="hName">${esc(n.name)}</span></div><div class="hu">${esc(n.region||'')} · ${esc(n.group||'')} · ${n.arch||''}</div></div>
+    <div class="hc"><div class="hk">STATUS</div><div class="hv ${on?'on':''}" id="hStatus">${on?'Online':'Offline'}</div></div>
+    <div class="hc"><div class="hk">HEALTH</div><div class="hv hp" id="hHealth">${health}%</div></div>
+    <div class="hc"><div class="hk">LATENCY</div><div class="hv lt" id="hLat">--</div></div>
+    <div class="hc"><div class="hk">LOSS</div><div class="hv" style="color:var(--g)" id="hLoss">--</div></div>
+    <div class="hc" style="margin-left:auto"><div class="hk">UPTIME</div><div class="hv" id="hUptime">${fUs(d.uptime)}</div></div>
+    <div class="hc"><div class="hk">TIME</div><div class="hv" style="font-size:12px;font-family:var(--fm);color:var(--t2)" id="hTime">${d.updated_at?new Date(d.updated_at).toLocaleString('zh-CN'):'--'}</div></div>
+    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+  </div>
+  <div class="body-row">
+    <div class="col-left">
+      <div class="p core-wrap"><div class="core-bg"></div><div class="core-top">CORE LINK</div>
+        <div class="core-ring"><canvas id="coreCanvas"></canvas><div class="core-val"><div class="core-num" id="coreNum">${(d.uptime?(d.uptime/(d.uptime+60)*100):0).toFixed(2)}</div><div class="core-sub">% · UPTIME</div></div></div></div>
+      <div class="met4">
+        <div class="p mc"><div class="mc-k">CPU</div><div class="mc-v" id="mCpu">${cpu}<span>%</span></div><div class="mc-s" id="mCpuS">cpu.usage</div></div>
+        <div class="p mc"><div class="mc-k">MEM</div><div class="mc-v" id="mRam">${ram}<span>%</span></div><div class="mc-s" id="mRamS">${fB(d.memory_used)}/${fB(d.memory_total)}</div></div>
+        <div class="p mc"><div class="mc-k">DISK</div><div class="mc-v" id="mDisk">${disk}<span>%</span></div><div class="mc-s" id="mDiskS">${fB(d.disk_used)}/${fB(d.disk_total)}</div></div>
+        <div class="p mc"><div class="mc-k">SWAP</div><div class="mc-v" id="mSwap">${swap}<span>%</span></div><div class="mc-s" id="mSwapS">${fB(d.swap_used)}/${fB(d.swap_total)}</div></div>
+      </div>
+      <div class="p" style="flex:1;overflow:auto">
+        <div class="pt">Command Layer<span class="ptag">SYS</span></div>
+        <div style="padding:4px 0">
+          <div class="ir"><span class="ik">Region</span><span class="iv">${esc(n.region||'--')}</span></div>
+          <div class="ir"><span class="ik">Group</span><span class="iv">${esc(n.group||'--')}</span></div>
+          <div class="ir"><span class="ik">OS</span><span class="iv">${esc(n.os||'--')}</span></div>
+          <div class="ir"><span class="ik">Kernel</span><span class="iv">${esc(n.kernel_version||'--')}</span></div>
+          <div class="ir"><span class="ik">CPU</span><span class="iv">${esc(n.cpu_name||'--')}</span></div>
+          <div class="ir"><span class="ik">Cores</span><span class="iv">${n.cpu_cores||'--'}</span></div>
+          <div class="ir"><span class="ik">Arch</span><span class="iv">${n.arch||'--'}</span></div>
+          <div class="ir"><span class="ik">Virt</span><span class="iv">${esc(n.virtualization||'--')}</span></div>
+          <div class="ir"><span class="ik">RAM</span><span class="iv">${fB(n.mem_total)}</span></div>
+          <div class="ir"><span class="ik">Disk</span><span class="iv">${fB(n.disk_total)}</span></div>
+          ${n.price>0?`<div class="ir"><span class="ik">Cost</span><span class="iv c">${n.currency||''}${n.price} / ${n.billing_cycle||30}d</span></div>`:''}
+          ${n.expired_at&&!n.expired_at.startsWith('0001')?`<div class="ir"><span class="ik">Expire</span><span class="iv">${n.expired_at.split('T')[0]}</span></div>`:''}
+          ${n.tags?`<div class="ir"><span class="ik">Tags</span><span class="iv">${esc(n.tags)}</span></div>`:''}
+        </div>
+      </div>
+    </div>
+    <div class="col-center">
+      <div class="charts4">
+        <div class="p chart-panel"><div class="ch-head"><div class="ch-label">◆ CPU LOAD</div><div style="display:flex;align-items:center;gap:6px"><div class="tb" id="cpuTimeBar"></div><div class="ch-now" id="cpuNow">${cpu}<span>%</span></div></div></div><div class="ch-area"><div class="ch-yaxis"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div><div class="ch-plot"><div class="ch-wrap"><canvas id="cCpu"></canvas></div><div class="ch-xaxis" id="cpuXaxis"></div></div></div><div class="ch-sub-row"><div class="kpi"><div class="kpi-k">Load 1m</div><div class="kpi-v" id="kLoad1">${(d.load1||0).toFixed(2)}</div></div><div class="kpi"><div class="kpi-k">Load 5m</div><div class="kpi-v" id="kLoad5">${(d.load5||0).toFixed(2)}</div></div><div class="kpi"><div class="kpi-k">Load 15m</div><div class="kpi-v" id="kLoad15">${(d.load15||0).toFixed(2)}</div></div></div></div>
+        <div class="p chart-panel"><div class="ch-head"><div class="ch-label">◆ MEMORY</div><div class="ch-now" id="memNow">${fB(d.memory_used)}<span>/ ${fB(n.mem_total)}</span></div></div><div class="ch-area"><div class="ch-yaxis"><span>100%</span><span>75</span><span>50</span><span>25</span><span>0</span></div><div class="ch-plot"><div class="ch-wrap"><canvas id="cMem"></canvas></div><div class="ch-xaxis" id="memXaxis"></div></div></div><div class="ch-sub-row"><div class="kpi"><div class="kpi-k">RAM</div><div class="kpi-v" id="kRam">${ram}<span style="font-size:11px;color:var(--t3);font-family:var(--fm)">%</span></div></div><div class="kpi"><div class="kpi-k">SWAP</div><div class="kpi-v" id="kSwap">${swap}<span style="font-size:11px;color:var(--t3);font-family:var(--fm)">%</span></div></div><div class="kpi"><div class="kpi-k">Temp</div><div class="kpi-v" id="kTemp">--</div></div></div></div>
+        <div class="p chart-panel"><div class="ch-head"><div class="ch-label">◆ NET SPEED</div><div class="ch-now" id="netNow">${fS(d.network_rx)}<span>↓</span></div></div><div class="ch-area"><div class="ch-yaxis" id="netYaxis"><span>--</span><span></span><span></span><span></span><span>0</span></div><div class="ch-plot"><div class="ch-wrap" style="position:relative"><canvas id="cNetIn"></canvas><canvas id="cNetOut" style="position:absolute;inset:2px"></canvas></div><div class="ch-xaxis" id="netXaxis"></div></div></div><div class="ch-sub-row"><div class="kpi"><div class="kpi-k">↓ IN</div><div class="kpi-v" style="color:var(--cyan)" id="kNetIn">${fS(d.network_rx)}</div></div><div class="kpi"><div class="kpi-k">↑ OUT</div><div class="kpi-v" style="color:var(--g)" id="kNetOut">${fS(d.network_tx)}</div></div><div class="kpi"><div class="kpi-k">TCP</div><div class="kpi-v" id="kTcp">${d.tcp||0}</div></div></div></div>
+        <div class="p chart-panel"><div class="ch-head"><div class="ch-label">◆ LATENCY</div><div class="ch-now" id="latNow">--<span>ms</span></div></div><div class="ch-area"><div class="ch-yaxis" id="latYaxis"><span>200</span><span>150</span><span>100</span><span>50</span><span>0</span></div><div class="ch-plot"><div class="ch-wrap"><canvas id="cLat"></canvas></div><div class="ch-xaxis" id="latXaxis"></div></div></div><div class="ch-sub-row"><div class="kpi"><div class="kpi-k">Ping</div><div class="kpi-v" id="kPing">--</div></div><div class="kpi"><div class="kpi-k">Loss</div><div class="kpi-v" id="kLoss">--</div></div><div class="kpi"><div class="kpi-k">Process</div><div class="kpi-v" id="kProc">${d.process||0}</div></div></div></div>
+      </div>
+      <div class="cbot">
+        <div class="p cbot-sec"><div class="ch-label" style="margin-bottom:6px">◆ STORAGE</div><div class="sb"><span class="sb-l">Disk</span><div class="sb-bar"><div class="sb-fill" id="sbDisk" style="width:${disk}%;background:var(--cyan)"></div></div><span class="sb-v" id="sbDiskV">${fB(d.disk_used)} (${disk}%)</span></div><div class="sb"><span class="sb-l">Swap</span><div class="sb-bar"><div class="sb-fill" id="sbSwap" style="width:${swap}%;background:var(--am)"></div></div><span class="sb-v" id="sbSwapV">${fB(d.swap_used)} (${swap}%)</span></div></div>
+        <div class="p cbot-sec"><div class="ch-label" style="margin-bottom:6px">◆ CONNECTIONS</div><div class="mg"><div class="kpi"><div class="kpi-k">TCP</div><div class="kpi-v" id="kTcp2">${d.tcp||0}</div></div><div class="kpi"><div class="kpi-k">UDP</div><div class="kpi-v" id="kUdp">${d.udp||0}</div></div></div><div class="kpi" style="margin-top:4px"><div class="kpi-k">Process</div><div class="kpi-v" id="kProc2">${d.process||0}</div></div></div>
+        <div class="p cbot-sec"><div class="ch-label" style="margin-bottom:6px">◆ TOTAL TRANSFER</div><div class="mg"><div class="kpi"><div class="kpi-k">↑ Total</div><div class="kpi-v" id="kTotalUp">${fB(d.network_total_up)}</div></div><div class="kpi"><div class="kpi-k">↓ Total</div><div class="kpi-v" id="kTotalDn">${fB(d.network_total_down)}</div></div></div></div>
+      </div>
+    </div>
+    <div class="col-right">
+      <div class="p" id="pingPanel"><div class="pt">Ping Tasks<span class="ptag">ICMP</span></div><div style="padding:8px;color:var(--t4);font-size:12px">Loading...</div></div>
+      <div class="p"><div class="pt">Realtime<span class="ptag">WS</span></div><div style="padding:4px 0" id="rtBars">
+        <div class="inst-row"><span class="inst-k">CPU</span><div class="inst-bar"><div class="inst-fill" id="rtCpu" style="width:${cpu}%;background:var(--g)"></div></div><span class="inst-v" style="color:var(--g)" id="rtCpuV">${cpu}%</span></div>
+        <div class="inst-row"><span class="inst-k">RAM</span><div class="inst-bar"><div class="inst-fill" id="rtRam" style="width:${ram}%;background:var(--g)"></div></div><span class="inst-v" style="color:var(--g)" id="rtRamV">${ram}%</span></div>
+        <div class="inst-row"><span class="inst-k">Disk</span><div class="inst-bar"><div class="inst-fill" id="rtDisk" style="width:${disk}%;background:var(--cyan)"></div></div><span class="inst-v" style="color:var(--cyan)" id="rtDiskV">${disk}%</span></div>
+        <div class="inst-row"><span class="inst-k">Swap</span><div class="inst-bar"><div class="inst-fill" id="rtSwap" style="width:${swap}%;background:var(--g)"></div></div><span class="inst-v" id="rtSwapV">${swap}%</span></div>
+        <div class="inst-row"><span class="inst-k">Load</span><div class="inst-bar"><div class="inst-fill" id="rtLoad" style="width:${Math.min(100,(d.load1||0)*100/n.cpu_cores)}%;background:var(--g)"></div></div><span class="inst-v" id="rtLoadV">${(d.load1||0).toFixed(2)}</span></div>
+      </div></div>
+      <div class="p" style="flex:1;overflow:auto"><div class="pt">Event Stream<span class="ptag" style="color:var(--g);border-color:rgba(var(--gr),0.15)">● LIVE</span></div><div id="evList"></div></div>
+    </div>
+  </div>
+  <div class="ext-row" id="pingHistRow"></div>
+  <div class="ext-full" id="nodeMetaRow"></div>`;
+  initThemeBtn();
+  drawCore();
+  renderNodeMeta();
+}
+
+function initThemeBtn(){const t=localStorage.getItem('nm-ck-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');setTheme(t)}
+
+/* ── Update live data ── */
+function updateLive(){
+  const d=S.liveData[S.uuid];if(!d)return;
+  const n=S.node;if(!n)return;
+  const on=S.onlineSet.has(S.uuid);
+  const cpu=Math.round(d.cpu||0),ram=pc(d.memory_used,d.memory_total),disk=pc(d.disk_used,d.disk_total),swap=pc(d.swap_used,d.swap_total);
+  const health=on?Math.max(0,Math.round(100-(cpu*0.4+ram*0.35+disk*0.25))):0;
+  // Header
+  const hd=$('hDot');if(hd)hd.style.background=on?'var(--g)':'var(--r)';
+  const hs=$('hStatus');if(hs){hs.textContent=on?'Online':'Offline';hs.className='hv '+(on?'on':'')}
+  const hh=$('hHealth');if(hh)hh.textContent=health+'%';
+  const hu=$('hUptime');if(hu)hu.textContent=fUs(d.uptime);
+  const ht=$('hTime');if(ht)ht.textContent=d.updated_at?new Date(d.updated_at).toLocaleString('zh-CN'):'--';
+  // 4 metrics
+  const mc=$('mCpu');if(mc)mc.innerHTML=cpu+'<span>%</span>';
+  const mr=$('mRam');if(mr)mr.innerHTML=ram+'<span>%</span>';
+  const md=$('mDisk');if(md)md.innerHTML=disk+'<span>%</span>';
+  const ms=$('mSwap');if(ms)ms.innerHTML=swap+'<span>%</span>';
+  $('mRamS').textContent=fB(d.memory_used)+'/'+fB(d.memory_total);
+  $('mDiskS').textContent=fB(d.disk_used)+'/'+fB(d.disk_total);
+  $('mSwapS').textContent=fB(d.swap_used)+'/'+fB(d.swap_total);
+  // KPIs
+  if($('kLoad1'))$('kLoad1').textContent=(d.load1||0).toFixed(2);
+  if($('kLoad5'))$('kLoad5').textContent=(d.load5||0).toFixed(2);
+  if($('kLoad15'))$('kLoad15').textContent=(d.load15||0).toFixed(2);
+  if($('kRam'))$('kRam').innerHTML=ram+'<span style="font-size:11px;color:var(--t3);font-family:var(--fm)">%</span>';
+  if($('kSwap'))$('kSwap').innerHTML=swap+'<span style="font-size:11px;color:var(--t3);font-family:var(--fm)">%</span>';
+  if($('kNetIn'))$('kNetIn').textContent=fS(d.network_rx);
+  if($('kNetOut'))$('kNetOut').textContent=fS(d.network_tx);
+  if($('kTcp'))$('kTcp').textContent=d.tcp||0;
+  if($('kTcp2'))$('kTcp2').textContent=d.tcp||0;
+  if($('kUdp'))$('kUdp').textContent=d.udp||0;
+  if($('kProc'))$('kProc').textContent=d.process||0;
+  if($('kProc2'))$('kProc2').textContent=d.process||0;
+  if($('kTotalUp'))$('kTotalUp').textContent=fB(d.network_total_up);
+  if($('kTotalDn'))$('kTotalDn').textContent=fB(d.network_total_down);
+  if($('cpuNow'))$('cpuNow').innerHTML=cpu+'<span>%</span>';
+  if($('memNow'))$('memNow').innerHTML=fB(d.memory_used)+'<span>/ '+fB(n.mem_total)+'</span>';
+  if($('netNow'))$('netNow').innerHTML=fS(d.network_rx)+'<span>↓</span>';
+  // Storage bars
+  const sbd=$('sbDisk');if(sbd){sbd.style.width=disk+'%';$('sbDiskV').textContent=fB(d.disk_used)+' ('+disk+'%)'}
+  const sbs=$('sbSwap');if(sbs){sbs.style.width=swap+'%';$('sbSwapV').textContent=fB(d.swap_used)+' ('+swap+'%)'}
+  // Realtime bars
+  function uBar(id,v,idv,txt){const el=$(id);if(el){el.style.width=Math.min(100,v)+'%';el.style.background=v>=80?'var(--r)':v>=60?'var(--am)':'var(--g)'}const vel=$(idv);if(vel){vel.textContent=txt;vel.style.color=v>=80?'var(--r)':v>=60?'var(--am)':'var(--g)'}}
+  uBar('rtCpu',cpu,'rtCpuV',cpu+'%');uBar('rtRam',ram,'rtRamV',ram+'%');uBar('rtDisk',disk,'rtDiskV',disk+'%');uBar('rtSwap',swap,'rtSwapV',swap+'%');
+  const loadPct=n.cpu_cores?Math.min(100,(d.load1||0)*100/n.cpu_cores):0;
+  uBar('rtLoad',loadPct,'rtLoadV',(d.load1||0).toFixed(2));
+  // Event
+  addEvent(on?'ok':'warn',`CPU ${cpu}% · RAM ${ram}% · Disk ${disk}%`,d.updated_at);
+}
+
+/* ── Events ── */
+function addEvent(type,msg,time){
+  S.events.unshift({type,msg,time:time?fTL(time):'--'});
+  if(S.events.length>20)S.events.length=20;
+  const el=$('evList');if(!el)return;
+  el.innerHTML=S.events.map(e=>`<div class="ev"><span class="ev-dot ${e.type}"></span><div class="ev-body"><div class="ev-msg">${esc(e.msg)}</div><div class="ev-time">${e.time} · ws</div></div></div>`).join('');
+}
+
+/* ── Chart drawing ── */
+function drawChart(id,data,color,maxV){
+  const c=$(id);if(!c)return;
+  const dark=html.getAttribute('data-theme')==='dark';const fA=dark?0.10:0.06;
+  const ctx=c.getContext('2d');const dpr=window.devicePixelRatio||1;
+  const r=c.parentElement.getBoundingClientRect();
+  c.width=r.width*dpr;c.height=r.height*dpr;c.style.width=r.width+'px';c.style.height=r.height+'px';
+  ctx.scale(dpr,dpr);const W=r.width,H=r.height;
+  if(!data||!data.length)return;
+  const mx=maxV||Math.max(...data)*1.2||1;const n=data.length;
+  const pts=data.map((v,i)=>({x:(i/(n-1))*W,y:3+((H-5)*(1-v/mx))}));
+  ctx.strokeStyle=dark?'rgba(0,212,240,0.05)':'rgba(100,116,139,0.08)';ctx.lineWidth=0.5;
+  for(let i=1;i<4;i++){const gy=H*i/4;ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke()}
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+  for(let i=0;i<pts.length-1;i++){const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(n-1,i+2)];ctx.bezierCurveTo(p1.x+(p2.x-p0.x)/6,p1.y+(p2.y-p0.y)/6,p2.x-(p3.x-p1.x)/6,p2.y-(p3.y-p1.y)/6,p2.x,p2.y)}
+  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,color.replace(')',','+fA+')').replace('rgb','rgba'));g.addColorStop(1,color.replace(')',',0)').replace('rgb','rgba'));
+  ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=g;ctx.fill();
+  ctx.beginPath();ctx.moveTo(pts[0].x,pts[0].y);
+  for(let i=0;i<pts.length-1;i++){const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(n-1,i+2)];ctx.bezierCurveTo(p1.x+(p2.x-p0.x)/6,p1.y+(p2.y-p0.y)/6,p2.x-(p3.x-p1.x)/6,p2.y-(p3.y-p1.y)/6,p2.x,p2.y)}
+  ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.stroke();
+  const l=pts[n-1];ctx.beginPath();ctx.arc(l.x,l.y,3,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+}
+function drawCore(){
+  const c=$('coreCanvas');if(!c)return;const dark=html.getAttribute('data-theme')==='dark';
+  const ctx=c.getContext('2d');const dpr=window.devicePixelRatio||1;const sz=c.parentElement.getBoundingClientRect().width;
+  c.width=sz*dpr;c.height=sz*dpr;c.style.width=sz+'px';c.style.height=sz+'px';ctx.scale(dpr,dpr);
+  const cx=sz/2,cy=sz/2,R=sz*0.44;const tA=dark?0.16:0.12,tB=dark?0.04:0.03,rA=dark?0.05:0.04;
+  ctx.beginPath();ctx.arc(cx,cy,R*1.3,0,Math.PI*2);ctx.strokeStyle='rgba(var(--cyr),'+rA+')'.replace('var(--cyr)',dark?'0,212,240':'0,184,212');ctx.lineWidth=1;ctx.stroke();
+  for(let i=0;i<60;i++){const a=(i/60)*Math.PI*2-Math.PI/2;const r1=i%5===0?R*1.12:R*1.2;const r2=R*1.27;ctx.beginPath();ctx.moveTo(cx+r1*Math.cos(a),cy+r1*Math.sin(a));ctx.lineTo(cx+r2*Math.cos(a),cy+r2*Math.sin(a));const cRgb=dark?'0,212,240':'0,184,212';ctx.strokeStyle=i%5===0?'rgba('+cRgb+','+tA+')':'rgba('+cRgb+','+tB+')';ctx.lineWidth=i%5===0?1:.5;ctx.stroke()}
+  const sA=-Math.PI*.75,eA=sA+0.9998*Math.PI*1.5;const cRgb=dark?'0,212,240':'0,184,212';
+  const grd=ctx.createLinearGradient(cx-R,cy,cx+R,cy);grd.addColorStop(0,'rgba('+cRgb+',0.9)');grd.addColorStop(1,'rgba('+cRgb+',0.6)');
+  ctx.beginPath();ctx.arc(cx,cy,R,sA,eA);ctx.strokeStyle=grd;ctx.lineWidth=R*0.12;ctx.lineCap='round';ctx.stroke();
+}
+
+/* ── Load chart data from API ── */
+let chartData={cpu:[],mem:[],netIn:[],netOut:[],times:[]};
+async function loadChartData(){
+  try{
+    const r=await fetch(`/api/records/load?uuid=${S.uuid}&hours=${S.hours}`);const j=await r.json();const dd=(j.data||j);
+    const records=(dd.records||[]).sort((a,b)=>new Date(a.time||0)-new Date(b.time||0));
+    if(!records.length)return;
+    chartData.cpu=records.map(r=>{let v=r.cpu||0;if(v<=1&&v>0)v*=100;return v});
+    chartData.mem=records.map(r=>r.ram||0);
+    chartData.netIn=records.map(r=>(r.net_in||0)/1024);// KB/s
+    chartData.netOut=records.map(r=>(r.net_out||0)/1024);
+    chartData.times=records.map(r=>r.time);
+    // Temp from last record
+    const last=records[records.length-1];
+    if(last&&last.temp&&$('kTemp'))$('kTemp').textContent=last.temp.toFixed(1)+'°C';
+    drawAllCharts();
+    setXaxis('cpuXaxis',chartData.times);
+    setXaxis('memXaxis',chartData.times);
+    setXaxis('netXaxis',chartData.times);
+  }catch(e){console.error('loadChartData:',e)}
+}
+
+async function loadPingData(){
+  try{
+    const r=await fetch(`/api/records/ping?uuid=${S.uuid}&hours=${S.hours}`);const j=await r.json();const dd=j.data||j;
+    const records=dd.records||[];const tasks=dd.tasks||[];
+    S.pingTasks=tasks;
+    // Render ping task list
+    const pp=$('pingPanel');if(pp&&tasks.length){
+      let h='<div class="pt">Ping Tasks<span class="ptag">ICMP</span></div><div style="padding:4px 0">';
+      tasks.forEach(t=>{
+        const tRecs=records.filter(r=>r.task_id===t.id&&r.value>=0);
+        const avg=tRecs.length?tRecs.reduce((s,r)=>s+r.value,0)/tRecs.length:0;
+        const pct=Math.min(100,avg/2);// scale 200ms = 100%
+        const color=avg<50?'var(--g)':avg<100?'var(--cyan)':'var(--r)';
+        h+=`<div class="pb2"><span class="pb2-loc">${esc(t.name)}</span><div class="pb2-bar"><div class="pb2-fill" style="width:${pct}%;background:${color}"></div></div><span class="pb2-ms" style="color:${color}">${avg.toFixed(1)} ms</span></div>`;
+      });
+      // Total avg + loss
+      const validPings=records.filter(r=>r.value>=0);
+      const totalAvg=validPings.length?validPings.reduce((s,r)=>s+r.value,0)/validPings.length:0;
+      const totalLost=records.filter(r=>r.value<0).length;
+      const lossPct=records.length?((totalLost/records.length)*100).toFixed(1):'--';
+      h+='</div><div style="border-top:1px solid var(--bdr)">';
+      h+=`<div class="sig"><span class="sig-k">Avg Latency</span><span class="sig-v" style="color:var(--cyan)">${totalAvg.toFixed(1)}ms</span></div>`;
+      h+=`<div class="sig"><span class="sig-k">Loss</span><span class="sig-v" style="color:var(--g)">${lossPct}%</span></div>`;
+      h+='</div>';
+      pp.innerHTML=h;
+      // Update header
+      if($('hLat'))$('hLat').textContent=totalAvg.toFixed(1)+'ms';
+      if($('hLoss'))$('hLoss').textContent=lossPct+'%';
+      if($('latNow'))$('latNow').innerHTML=totalAvg.toFixed(0)+'<span>ms</span>';
+      if($('kPing'))$('kPing').textContent=totalAvg.toFixed(1)+'ms';
+      if($('kLoss'))$('kLoss').textContent=lossPct+'%';
+    }
+    // Latency chart: use first task or all
+    const latRecs=records.filter(r=>r.value>=0).sort((a,b)=>new Date(a.time||0)-new Date(b.time||0));
+    if(latRecs.length){
+      chartData.lat=latRecs.map(r=>r.value);
+      chartData.latTimes=latRecs.map(r=>r.time);
+      drawChart('cLat',chartData.lat,'rgb(255,171,0)',Math.max(...chartData.lat)*1.3||200);
+      setXaxis('latXaxis',chartData.latTimes);
+    }
+    // Ping history panels
+    renderPingHistory(tasks,records);
+  }catch(e){console.error('loadPingData:',e)}
+}
+
+function renderPingHistory(tasks,records){
+  const row=$('pingHistRow');if(!row||!tasks.length)return;
+  let h='';
+  tasks.forEach((t,i)=>{
+    const tRecs=records.filter(r=>r.task_id===t.id).sort((a,b)=>new Date(a.time||0)-new Date(b.time||0));
+    const valid=tRecs.filter(r=>r.value>=0);
+    const avg=valid.length?(valid.reduce((s,r)=>s+r.value,0)/valid.length).toFixed(1):'--';
+    const lost=tRecs.filter(r=>r.value<0).length;
+    const lossPct=tRecs.length?((lost/tRecs.length)*100).toFixed(1):'--';
+    h+=`<div class="p ext-sec"><div class="ch-label" style="margin-bottom:8px">◆ PING — ${esc(t.name)}</div><div class="ch-area"><div class="ch-yaxis"><span>200</span><span>100</span><span>0</span></div><div class="ch-plot"><div class="ch-wrap" style="height:60px"><canvas id="cPH${i}"></canvas></div><div class="ch-xaxis" id="phX${i}"></div></div></div><div style="display:flex;gap:8px;margin-top:6px"><div class="kpi" style="flex:1"><div class="kpi-k">Avg</div><div class="kpi-v">${avg}<span style="font-size:11px;color:var(--t3);font-family:var(--fm)">ms</span></div></div><div class="kpi" style="flex:1"><div class="kpi-k">Loss</div><div class="kpi-v" style="color:var(--g)">${lossPct}%</div></div><div class="kpi" style="flex:1"><div class="kpi-k">Interval</div><div class="kpi-v">${t.interval||'--'}s</div></div></div></div>`;
+  });
+  row.innerHTML=h;
+  // Draw mini charts
+  tasks.forEach((t,i)=>{
+    const tRecs=records.filter(r=>r.task_id===t.id&&r.value>=0).sort((a,b)=>new Date(a.time||0)-new Date(b.time||0));
+    if(tRecs.length){
+      const colors=['rgb(0,184,212)','rgb(255,171,0)','rgb(0,230,118)','rgb(112,96,224)'];
+      drawChart('cPH'+i,tRecs.map(r=>r.value),colors[i%colors.length],Math.max(...tRecs.map(r=>r.value))*1.3||200);
+      setXaxis('phX'+i,tRecs.map(r=>r.time));
+    }
+  });
+}
+
+function renderNodeMeta(){
+  const n=S.node;if(!n)return;const el=$('nodeMetaRow');if(!el)return;
+  el.innerHTML=`<div class="p ext-sec"><div class="ch-label" style="margin-bottom:8px">◆ NODE METADATA</div><table class="tbl"><thead><tr><th>Field</th><th>Value</th><th>Field</th><th>Value</th></tr></thead><tbody>
+    <tr><td>UUID</td><td class="mono">${n.uuid?n.uuid.substring(0,18)+'...':''}</td><td>Name</td><td class="mono">${esc(n.name)}</td></tr>
+    <tr><td>Region</td><td>${esc(n.region||'')}</td><td>Group</td><td>${esc(n.group||'')}</td></tr>
+    <tr><td>OS</td><td class="mono">${esc(n.os||'')}</td><td>Kernel</td><td class="mono">${esc(n.kernel_version||'')}</td></tr>
+    <tr><td>CPU</td><td class="mono">${esc(n.cpu_name||'')} · ${n.cpu_cores||''}c</td><td>Arch</td><td>${n.arch||''} · ${esc(n.virtualization||'')}</td></tr>
+    <tr><td>RAM</td><td>${fB(n.mem_total)}</td><td>Disk</td><td>${fB(n.disk_total)}</td></tr>
+    ${n.price>0?`<tr><td>Price</td><td>${n.currency||''}${n.price} / ${n.billing_cycle||30}d</td><td>Expire</td><td>${n.expired_at&&!n.expired_at.startsWith('0001')?n.expired_at.split('T')[0]:'--'}</td></tr>`:''}
+    <tr><td>Created</td><td>${n.created_at?n.created_at.split('T')[0]:''}</td><td>Updated</td><td>${n.updated_at?n.updated_at.split('T')[0]:''}</td></tr>
+  </tbody></table></div>`;
+}
+
+function setXaxis(id,times){
+  const el=$(id);if(!el||!times.length)return;
+  const n=times.length;const picks=[0,Math.floor(n*.25),Math.floor(n*.5),Math.floor(n*.75),n-1];
+  el.innerHTML=picks.map(i=>times[i]?'<span>'+fTL(times[i])+'</span>':'<span></span>').join('');
+}
+
+function drawAllCharts(){
+  if(chartData.cpu.length)drawChart('cCpu',chartData.cpu,'rgb(0,184,212)',100);
+  if(chartData.mem.length)drawChart('cMem',chartData.mem,'rgb(112,96,224)',100);
+  if(chartData.netIn.length)drawChart('cNetIn',chartData.netIn,'rgb(0,184,212)');
+  if(chartData.netOut.length)drawChart('cNetOut',chartData.netOut,'rgb(0,230,118)');
+  if(chartData.lat&&chartData.lat.length)drawChart('cLat',chartData.lat,'rgb(255,171,0)',Math.max(...chartData.lat)*1.3||200);
+  drawCore();
+}
+window.addEventListener('resize',drawAllCharts);
+
+/* ── Expose for onclick ── */
+window.toggleTheme=toggleTheme;
+window.showNodeSelect=showNodeSelect;
+
+/* ── Init ── */
+async function boot(){
+  const t=localStorage.getItem('nm-ck-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  setTheme(t);
+  try{
+    await fetchNodes();
+    connectWS();
+    // Wait a moment for WS data
+    setTimeout(()=>{
+      // Auto-open from URL hash: #uuid
+      const hash=location.hash.replace('#','');
+      if(hash&&S.nodes.find(n=>n.uuid===hash)){openNode(hash)}
+      else{showNodeSelect()}
+    },800);
+  }catch(e){$('initLoad').textContent='API Error: '+e.message}
+}
+boot();
+})();
+</script>
+</body>
+</html>
