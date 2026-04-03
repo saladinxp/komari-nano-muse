@@ -534,8 +534,12 @@ function dCh(canvasId,opts){
   const canvas=$(canvasId);if(!canvas)return;
   const ctx=canvas.getContext('2d',{willReadFrequently:true});
   const dpr=window.devicePixelRatio||1;
-  const cRect=canvas.getBoundingClientRect();
-  const w=cRect.width,chH=cRect.height||parseInt(getComputedStyle(canvas).height)||180;
+  const par=canvas.parentElement;
+  const parS=getComputedStyle(par);
+  const parW=par.clientWidth-(parseFloat(parS.paddingLeft)||0)-(parseFloat(parS.paddingRight)||0);
+  const canS=getComputedStyle(canvas);
+  const chH=parseInt(canS.height)||180;
+  const w=parW>5?parW:(parseInt(canS.width)||parW);
   if(w<5||chH<5)return;
   canvas.width=w*dpr;canvas.height=chH*dpr;
   canvas.style.width=w+'px';canvas.style.height=chH+'px';
@@ -621,8 +625,7 @@ function dCh(canvasId,opts){
     canvas.addEventListener('mousemove',function(e){
       const m=canvas._chMeta;if(!m||!m.pts.length)return;
       const br=canvas.getBoundingClientRect();
-      const scaleX=m.w/br.width;
-      const mx=(e.clientX-br.left)*scaleX;
+      const mx=e.clientX-br.left;
       // Find nearest point
       let best=0,bestD=Infinity;
       for(let i=0;i<m.pts.length;i++){const dx=Math.abs(m.pts[i].x-mx);if(dx<bestD){bestD=dx;best=i}}

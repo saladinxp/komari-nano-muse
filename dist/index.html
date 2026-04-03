@@ -2510,8 +2510,12 @@ function dCh(canvasId,opts){
   const canvas=$(canvasId);if(!canvas)return;
   const ctx=canvas.getContext('2d',{willReadFrequently:true});
   const dpr=window.devicePixelRatio||1;
-  const cRect=canvas.getBoundingClientRect();
-  const w=cRect.width,chH=cRect.height||parseInt(getComputedStyle(canvas).height)||180;
+  const par=canvas.parentElement;
+  const parS=getComputedStyle(par);
+  const parW=par.clientWidth-(parseFloat(parS.paddingLeft)||0)-(parseFloat(parS.paddingRight)||0);
+  const canS=getComputedStyle(canvas);
+  const chH=parseInt(canS.height)||180;
+  const w=parW>5?parW:(parseInt(canS.width)||parW);
   canvas.width=w*dpr;canvas.height=chH*dpr;
   canvas.style.width=w+'px';canvas.style.height=chH+'px';
   ctx.scale(dpr,dpr);
@@ -2693,7 +2697,7 @@ function dCh(canvasId,opts){
     canvas.addEventListener('mousemove',function(e){
       var m=canvas._chMeta;if(!m||!m.pts.length)return;
       var br=canvas.getBoundingClientRect();
-      var mx=(e.clientX-br.left)*(m.w/br.width);
+      var mx=e.clientX-br.left;
       var best=0,bestD=Infinity;
       for(var i=0;i<m.pts.length;i++){var dx=Math.abs(m.pts[i].x-mx);if(dx<bestD){bestD=dx;best=i}}
       var p=m.pts[best],v=m.data[best],t=m.rawTimes[best];
