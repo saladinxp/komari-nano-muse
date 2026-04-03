@@ -2850,8 +2850,11 @@ function hRoute(){
   const path=location.pathname;
   if(path.startsWith('/detail/')){
     const uuid=path.split('/detail/')[1];
-    if(uuid)window.location.href='/nexus.html#'+uuid;
-    return;
+    if(uuid){
+      S.detailUUID=uuid;S.detailNode=S.nodes.find(n=>n.uuid===uuid);
+      showP('detail');
+      if(S.detailNode)rDetInfo(S.detailNode,uuid);
+    }
   }else if(path==='/stability'){
     showP('stability');loadStabilityData();
   }else if(path==='/billing'){
@@ -2867,7 +2870,9 @@ function nav(path){
 }
 window.nav=nav;
 window.openDet=function(uuid){
-  window.location.href='/nexus.html#'+uuid;
+  S.detailUUID=uuid;S.detailNode=S.nodes.find(n=>n.uuid===uuid);
+  S.detailTab='load';S.detailHours=6;S.detailPingHours=6;S.detailWsData=[];
+  nav('/detail/'+uuid);
 };
 window.addEventListener('popstate',hRoute);
 

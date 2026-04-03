@@ -139,11 +139,23 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 .scan{position:fixed;left:0;right:0;height:1px;z-index:3;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(var(--cyr),0.03),transparent);animation:sc 10s linear infinite}
 @keyframes sc{0%{top:-1px}100%{top:100%}}
 .loading{text-align:center;padding:60px;color:var(--t4);font-family:var(--fm);font-size:13px;letter-spacing:2px}
-.node-select{display:flex;flex-wrap:wrap;gap:8px;padding:12px;justify-content:center}
-.node-btn{font-family:var(--fm);font-size:12px;letter-spacing:1px;padding:8px 16px;border:1px solid var(--pb);background:var(--p);color:var(--t);cursor:pointer;border-radius:8px;transition:.2s;backdrop-filter:blur(8px)}
-.node-btn:hover,.node-btn.a{border-color:var(--cyan);background:rgba(var(--cyr),0.1);color:var(--cyan)}
-.node-btn .ndot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px}
-.node-btn .ndot.on{background:var(--g)}.node-btn .ndot.off{background:var(--r)}
+.node-select{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding:12px 0}
+.node-btn{font-family:var(--fm);font-size:12px;letter-spacing:1px;padding:16px 20px;border:1px solid var(--pb);background:var(--p);color:var(--t);cursor:pointer;border-radius:12px;transition:all .35s cubic-bezier(.175,.885,.32,1.275);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);text-align:left;position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
+.node-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);opacity:.3;transition:opacity .3s}
+.node-btn::after{content:'';position:absolute;top:0;right:0;width:12px;height:12px;background:linear-gradient(225deg,rgba(var(--cyr),0.2) 50%,transparent 50%);transition:all .3s}
+.node-btn:hover{transform:translateY(-3px);border-color:var(--pb2);box-shadow:0 8px 24px rgba(var(--cyr),0.12),0 0 12px rgba(var(--cyr),0.06)}
+.node-btn:hover::before{opacity:.8}
+.node-btn:hover::after{background:linear-gradient(225deg,rgba(var(--cyr),0.5) 50%,transparent 50%)}
+.node-btn .ndot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.node-btn .ndot.on{background:var(--g);box-shadow:0 0 8px rgba(var(--gr),0.5)}
+.node-btn .ndot.off{background:var(--r);box-shadow:0 0 6px rgba(var(--rr),0.4)}
+.node-btn .ninfo{flex:1;min-width:0}
+.node-btn .nname{font-family:var(--fd);font-weight:700;font-size:14px;color:var(--t);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.node-btn .nmeta{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t4)}
+.node-btn .nstatus{font-family:var(--fm);font-size:10px;letter-spacing:1px;padding:2px 8px;border-radius:4px;font-weight:700;flex-shrink:0}
+.node-btn .nstatus.on{color:var(--g);background:rgba(var(--gr),0.08);border:1px solid rgba(var(--gr),0.15)}
+.node-btn .nstatus.off{color:var(--r);background:rgba(var(--rr),0.06);border:1px solid rgba(var(--rr),0.12)}
 </style>
 </head>
 <body>
@@ -202,7 +214,22 @@ function showNodeSelect(){
   h+='<div class="node-select" id="nodeList">';
   S.nodes.forEach(n=>{
     const on=S.onlineSet.has(n.uuid);
-    h+=`<button class="node-btn" data-uuid="${n.uuid}"><span class="ndot ${on?'on':'off'}"></span>${esc(n.name)}</button>`;
+    const d=S.liveData[n.uuid]||{};
+    const cpu=Math.round(d.cpu||0);
+    const ram=pc(d.memory_used,d.memory_total);
+    const region=n.region||'';
+    const group=n.group||'';
+    const meta=[region,group,n.os?n.os.split(' ').slice(0,3).join(' '):''].filter(Boolean).join(' · ');
+    h+=`<button class="node-btn" data-uuid="${n.uuid}">
+      <span class="ndot ${on?'on':'off'}"></span>
+      <div class="ninfo">
+        <div class="nname">${esc(n.name)}</div>
+        <div class="nmeta">${esc(meta)}</div>
+        ${on&&d.cpu!==undefined?`<div class="nmeta" style="margin-top:2px;color:var(--t3)">CPU ${cpu}% · RAM ${ram}% · ${fUs(d.uptime)}</div>`:''}
+      </div>
+      <span class="nstatus ${on?'on':'off'}">${on?'ONLINE':'OFFLINE'}</span>
+    </button>`;
+  });
   });
   h+='</div>';
   app.innerHTML=h;
