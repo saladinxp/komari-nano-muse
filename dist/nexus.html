@@ -138,6 +138,13 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 
 .scan{position:fixed;left:0;right:0;height:1px;z-index:3;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(var(--cyr),0.03),transparent);animation:sc 10s linear infinite}
 @keyframes sc{0%{top:-1px}100%{top:100%}}
+
+.time-bar{display:flex;align-items:center;gap:6px;padding:12px 0 8px;flex-wrap:wrap}
+.time-label{font-family:var(--fm);font-size:12px;letter-spacing:2px;color:var(--label-color);font-weight:600;margin-right:8px}
+.time-btn{font-family:var(--fm);font-size:12px;letter-spacing:1px;padding:5px 14px;border:1px solid var(--kpi-bd);background:var(--p);color:var(--t3);cursor:pointer;border-radius:6px;transition:all .2s;font-weight:600;backdrop-filter:blur(8px)}
+.time-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.time-btn.a{background:var(--cyan);color:#fff;border-color:var(--cyan);box-shadow:0 2px 10px rgba(var(--cyr),0.25)}
+[data-theme="dark"] .time-btn.a{color:#0a1420}
 .loading{text-align:center;padding:60px;color:var(--t4);font-family:var(--fm);font-size:13px;letter-spacing:2px}
 .node-select{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding:12px 0}
 .node-btn{font-family:var(--fm);font-size:12px;letter-spacing:1px;padding:16px 20px;border:1px solid var(--pb);background:var(--p);color:var(--t);cursor:pointer;border-radius:12px;transition:all .35s cubic-bezier(.175,.885,.32,1.275);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);text-align:left;position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);
@@ -324,6 +331,20 @@ function renderCockpit(){
   initThemeBtn();
   drawCore();
   renderNodeMeta();
+  renderTimeBar();
+}
+
+function renderTimeBar(){
+  // Insert time bar before pingHistRow
+  const phr=$('pingHistRow');if(!phr)return;
+  const bar=document.createElement('div');
+  bar.className='time-bar';
+  bar.id='nexusTimeBar';
+  bar.innerHTML='<span class="time-label">◆ DATA RANGE</span>'+[6,12,24,72,168].map(h=>`<button class="time-btn${h===S.hours?' a':''}" data-h="${h}">${h<=24?h+'h':Math.round(h/24)+'d'}</button>`).join('');
+  phr.parentNode.insertBefore(bar,phr);
+  bar.querySelectorAll('.time-btn').forEach(b=>{
+    b.onclick=()=>{S.hours=+b.dataset.h;bar.querySelectorAll('.time-btn').forEach(x=>x.classList.remove('a'));b.classList.add('a');loadChartData();loadPingData()}
+  });
 }
 
 function initThemeBtn(){const t=localStorage.getItem('nm-ck-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');setTheme(t)}
