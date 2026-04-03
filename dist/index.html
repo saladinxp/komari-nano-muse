@@ -1805,6 +1805,8 @@ function genFake(uuid){
 async function fetchP(){
   try{const r=await fetch('/api/public');const j=await r.json();const d=j.data||j;
     S.sitename=d.sitename||'KOMARI';S.themeSettings=d.theme_settings||{};
+    S.recordRetention=d.record_preserve_time||720;
+    S.pingRetention=d.ping_record_preserve_time||720;
     $('siteName').textContent=S.sitename;$('footerSite').textContent=S.sitename+' MONITOR';
     if(S.themeSettings.version_tag)S.VER=S.themeSettings.version_tag;
     S._alertCPU=parseInt(S.themeSettings.alert_cpu)||80;
@@ -2307,13 +2309,27 @@ function rDetInfo(node,uuid){
   });
   ldDetData();
 }
+function genTimeSteps(maxH){
+  var all=[1,3,6,12,24,48,72,168,336,720];
+  var steps=all.filter(function(h){return h<=maxH});
+  if(steps.length===0||steps[steps.length-1]<maxH)steps.push(maxH);
+  if(steps.length<=5)return steps;
+  var pick=[steps[0]];var gap=(steps.length-1)/4;
+  for(var i=1;i<4;i++)pick.push(steps[Math.round(i*gap)]);
+  pick.push(steps[steps.length-1]);
+  var unique=[];pick.forEach(function(v){if(unique.indexOf(v)===-1)unique.push(v)});
+  return unique.sort(function(a,b){return a-b});
+}
+function fmtH(h){if(h<24)return h+'h';var d=Math.round(h/24);return d+'d'}
 async function ldDetData(){
   const uuid=S.detailUUID;if(!uuid)return;
   const hours=S.detailTab==='load'?S.detailHours:S.detailPingHours;
   /* Time row */
   const tr=$('detTimeRow');
   if(tr){
-    tr.innerHTML=[6,12,24,72,168].map(h=>`<button class="${h===hours?'a':''}" data-h="${h}">${h}h</button>`).join('');
+    const maxH=S.detailTab==='load'?(S.recordRetention||720):(S.pingRetention||720);
+    const steps=genTimeSteps(maxH);
+    tr.innerHTML=steps.map(h=>`<button class="${h===hours?'a':''}" data-h="${h}">${fmtH(h)}</button>`).join('');
     tr.querySelectorAll('button').forEach(b=>{
       b.onclick=()=>{
         if(S.detailTab==='load')S.detailHours=+b.dataset.h;else S.detailPingHours=+b.dataset.h;
@@ -2827,7 +2843,9 @@ function renderStability(){
   /* Time & sort buttons */
   const tr=$('stabTime');
   if(tr){
-    tr.innerHTML=[6,24,168,720].map(h=>`<button class="${h===STAB.hours?'a':''}" data-h="${h}">${h===6?'6H':h===24?'24H':h===168?'7D':'30D'}</button>`).join('')+
+    const stabMaxH=S.pingRetention||720;
+    const stabSteps=genTimeSteps(stabMaxH);
+    tr.innerHTML=stabSteps.map(h=>`<button class="${h===STAB.hours?'a':''}" data-h="${h}">${fmtH(h)}</button>`).join('')+
       '&nbsp;&nbsp;'+['name','uptime','loss'].map(s=>`<button class="${s===STAB.sort?'a':''}" data-s="${s}">${s.toUpperCase()}</button>`).join('');
     tr.querySelectorAll('button[data-h]').forEach(b=>{
       b.onclick=()=>{STAB.hours=+b.dataset.h;fetchStability(STAB.hours)}

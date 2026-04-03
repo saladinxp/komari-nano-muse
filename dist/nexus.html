@@ -221,7 +221,7 @@ function esc(s){const d=document.createElement('div');d.textContent=s;return d.i
 function flatLive(r){if(!r||typeof r!=='object')return r;if(typeof r.cpu==='number')return r;return{cpu:Math.round((r.cpu?.usage||0)*100)/100,memory_used:r.ram?.used||0,memory_total:r.ram?.total||0,swap_used:r.swap?.used||0,swap_total:r.swap?.total||0,disk_used:r.disk?.used||0,disk_total:r.disk?.total||0,network_tx:r.network?.up||0,network_rx:r.network?.down||0,network_total_up:r.network?.totalUp||0,network_total_down:r.network?.totalDown||0,tcp:r.connections?.tcp||0,udp:r.connections?.udp||0,load1:r.load?.load1||0,load5:r.load?.load5||0,load15:r.load?.load15||0,uptime:r.uptime||0,process:r.process||0,updated_at:r.updated_at||''}}
 
 /* ── State ── */
-const S={nodes:[],liveData:{},onlineSet:new Set(),ws:null,uuid:null,node:null,hours:12,pingTasks:[],events:[],_lastSnap:''};
+const S={nodes:[],liveData:{},onlineSet:new Set(),ws:null,uuid:null,node:null,hours:6,pingTasks:[],events:[],_lastSnap:'',maxLoadH:24,maxPingH:24};
 
 /* ── Theme ── */
 function setTheme(t){html.setAttribute('data-theme',t);localStorage.setItem('nm-ck-theme',t);const b=$('themeBtn');if(b)b.textContent=t==='dark'?'☀️':'🌙';requestAnimationFrame(()=>drawAllCharts())}
@@ -370,14 +370,35 @@ function renderCockpit(){
   renderNodeSwDrop();
 }
 
+function genTimeSteps(maxH){
+  // Generate sensible time range buttons up to maxH
+  const all=[1,3,6,12,24,48,72,168,336,720];
+  const steps=all.filter(h=>h<=maxH);
+  // Always include maxH itself if not already there
+  if(steps.length===0||steps[steps.length-1]<maxH){
+    steps.push(maxH);
+  }
+  // Pick at most 5 evenly spaced steps
+  if(steps.length<=5)return steps;
+  const pick=[steps[0]];
+  const gap=(steps.length-1)/4;
+  for(let i=1;i<4;i++)pick.push(steps[Math.round(i*gap)]);
+  pick.push(steps[steps.length-1]);
+  return [...new Set(pick)].sort((a,b)=>a-b);
+}
+function fmtH(h){if(h<24)return h+'h';const d=Math.round(h/24);return d+'d'}
 function renderTimeBar(){
-  // Insert time bar before pingHistRow
   const phr=$('pingHistRow');if(!phr)return;
-  const bar=document.createElement('div');
-  bar.className='time-bar';
-  bar.id='nexusTimeBar';
-  bar.innerHTML='<span class="time-label">◆ DATA RANGE</span>'+[6,12,24,72,168].map(h=>`<button class="time-btn${h===S.hours?' a':''}" data-h="${h}">${h<=24?h+'h':Math.round(h/24)+'d'}</button>`).join('');
-  phr.parentNode.insertBefore(bar,phr);
+  let bar=$('nexusTimeBar');
+  if(!bar){
+    bar=document.createElement('div');bar.className='time-bar';bar.id='nexusTimeBar';
+    phr.parentNode.insertBefore(bar,phr);
+  }
+  const maxH=Math.max(S.maxLoadH||24,S.maxPingH||24);
+  const steps=genTimeSteps(maxH);
+  // Default to first step if current hours exceeds max
+  if(S.hours>maxH)S.hours=steps[0];
+  bar.innerHTML='<span class="time-label">◆ DATA RANGE</span>'+steps.map(h=>`<button class="time-btn${h===S.hours?' a':''}" data-h="${h}">${fmtH(h)}</button>`).join('');
   bar.querySelectorAll('.time-btn').forEach(b=>{
     b.onclick=()=>{S.hours=+b.dataset.h;bar.querySelectorAll('.time-btn').forEach(x=>x.classList.remove('a'));b.classList.add('a');loadChartData();loadPingData()}
   });
@@ -598,26 +619,9 @@ async function loadChartData(){
     if(!records.length)return;
     // Debug: log first record to check field names
     if(records[0])console.log('[Cockpit] Load record sample:',JSON.stringify(records[0]));
-    if(records[0])console.log('[Cockpit] ram field type:',typeof records[0].ram,'value:',JSON.stringify(records[0].ram));
     chartData.cpu=records.map(r=>{let v=r.cpu||0;if(v<=1&&v>0)v*=100;return v});
-    chartData.mem=records.map(r=>{
-      // ram can be: object {used,total}, percentage (0-100), decimal (0-1), or bytes
-      let v=r.ram;
-      if(v&&typeof v==='object'){
-        // object like {used, total} — calc percentage
-        return v.total?Math.round(v.used/v.total*1000)/10:0;
-      }
-      if(v===undefined||v===null)v=r.memory||0;
-      if(typeof v==='number'){
-        if(v<=1&&v>0)v=v*100;// decimal 0-1 → percentage
-        else if(v>100){
-          // likely bytes — need total from node info to calc %
-          const total=S.node?.mem_total||1;
-          v=Math.round(v/total*1000)/10;
-        }
-      }
-      return v||0;
-    });
+    // API docs: ram is percentage (0-100)
+    chartData.mem=records.map(r=>r.ram||0);
     chartData.netIn=records.map(r=>(r.net_in||0)/1024);// KB/s
     chartData.netOut=records.map(r=>(r.net_out||0)/1024);
     chartData.times=records.map(r=>r.time);
@@ -743,6 +747,12 @@ async function boot(){
   const t=localStorage.getItem('nm-ck-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
   setTheme(t);
   try{
+    // Fetch retention settings from /api/public
+    try{
+      const pr=await fetch('/api/public');const pj=await pr.json();const pd=pj.data||pj;
+      if(pd.record_preserve_time)S.maxLoadH=pd.record_preserve_time;
+      if(pd.ping_record_preserve_time)S.maxPingH=pd.ping_record_preserve_time;
+    }catch(e){console.warn('Failed to fetch public config:',e)}
     await fetchNodes();
     connectWS();
     // Wait a moment for WS data
