@@ -366,6 +366,22 @@ function addEvent(type,msg,time){
 }
 
 /* ── Chart drawing ── */
+/* Downsample: keep max ~200 points for smooth chart */
+function downsample(arr,maxPts){
+  if(!arr||arr.length<=maxPts)return arr;
+  const step=arr.length/maxPts;const out=[];
+  for(let i=0;i<maxPts;i++){
+    const s=Math.floor(i*step),e=Math.floor((i+1)*step);
+    let sum=0,cnt=0;for(let j=s;j<e&&j<arr.length;j++){sum+=arr[j];cnt++}
+    out.push(cnt?sum/cnt:0);
+  }return out;
+}
+function downsampleTimes(arr,maxPts){
+  if(!arr||arr.length<=maxPts)return arr;
+  const step=arr.length/maxPts;const out=[];
+  for(let i=0;i<maxPts;i++){out.push(arr[Math.floor(i*step)])}return out;
+}
+
 function drawChart(id,data,color,maxV){
   const c=$(id);if(!c)return;
   const dark=html.getAttribute('data-theme')==='dark';const fA=dark?0.05:0.03;
@@ -416,8 +432,15 @@ async function loadChartData(){
     const r=await fetch(`/api/records/load?uuid=${S.uuid}&hours=${S.hours}`);const j=await r.json();const dd=(j.data||j);
     const records=(dd.records||[]).sort((a,b)=>new Date(a.time||0)-new Date(b.time||0));
     if(!records.length)return;
+    // Debug: log first record to check field names
+    if(records[0])console.log('[Cockpit] Load record sample:',JSON.stringify(records[0]));
     chartData.cpu=records.map(r=>{let v=r.cpu||0;if(v<=1&&v>0)v*=100;return v});
-    chartData.mem=records.map(r=>r.ram||0);
+    chartData.mem=records.map(r=>{
+      // ram could be percentage directly, or need calculation
+      let v=r.ram;if(v===undefined||v===null)v=r.memory||0;
+      if(v<=1&&v>0)v*=100;// if decimal 0-1
+      return v;
+    });
     chartData.netIn=records.map(r=>(r.net_in||0)/1024);// KB/s
     chartData.netOut=records.map(r=>(r.net_out||0)/1024);
     chartData.times=records.map(r=>r.time);
@@ -493,7 +516,7 @@ function renderPingHistory(tasks,records){
     const tRecs=records.filter(r=>r.task_id===t.id&&r.value>=0).sort((a,b)=>new Date(a.time||0)-new Date(b.time||0));
     if(tRecs.length){
       const colors=['rgb(0,184,212)','rgb(255,171,0)','rgb(0,230,118)','rgb(112,96,224)'];
-      drawChart('cPH'+i,tRecs.map(r=>r.value),colors[i%colors.length],Math.max(...tRecs.map(r=>r.value))*1.3||200);
+      drawChart('cPH'+i,downsample(tRecs.map(r=>r.value),150),colors[i%colors.length],Math.max(...tRecs.map(r=>r.value))*1.3||200);
       setXaxis('phX'+i,tRecs.map(r=>r.time));
     }
   });
@@ -519,11 +542,12 @@ function setXaxis(id,times){
 }
 
 function drawAllCharts(){
-  if(chartData.cpu.length)drawChart('cCpu',chartData.cpu,'rgb(0,184,212)',100);
-  if(chartData.mem.length)drawChart('cMem',chartData.mem,'rgb(112,96,224)',100);
-  if(chartData.netIn.length)drawChart('cNetIn',chartData.netIn,'rgb(0,184,212)');
-  if(chartData.netOut.length)drawChart('cNetOut',chartData.netOut,'rgb(0,230,118)');
-  if(chartData.lat&&chartData.lat.length)drawChart('cLat',chartData.lat,'rgb(255,171,0)',Math.max(...chartData.lat)*1.3||200);
+  const MP=200;// max points per chart
+  if(chartData.cpu.length)drawChart('cCpu',downsample(chartData.cpu,MP),'rgb(0,184,212)',100);
+  if(chartData.mem.length)drawChart('cMem',downsample(chartData.mem,MP),'rgb(112,96,224)',100);
+  if(chartData.netIn.length)drawChart('cNetIn',downsample(chartData.netIn,MP),'rgb(0,184,212)');
+  if(chartData.netOut.length)drawChart('cNetOut',downsample(chartData.netOut,MP),'rgb(0,230,118)');
+  if(chartData.lat&&chartData.lat.length)drawChart('cLat',downsample(chartData.lat,MP),'rgb(255,171,0)',Math.max(...chartData.lat)*1.3||200);
   drawCore();
 }
 window.addEventListener('resize',drawAllCharts);
