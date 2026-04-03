@@ -686,19 +686,22 @@ function renderPingHistory(tasks,records){
     h+=`<div class="p ext-sec"><div class="ch-label" style="margin-bottom:8px">◆ PING — ${esc(t.name)}</div><div class="chart-wrap mini"><canvas id="cPH${i}"></canvas></div><div style="display:flex;gap:8px;margin-top:6px"><div class="kpi" style="flex:1"><div class="kpi-k">Avg</div><div class="kpi-v">${avg}<span style="font-size:11px;color:var(--t3);font-family:var(--fm)">ms</span></div></div><div class="kpi" style="flex:1"><div class="kpi-k">Loss</div><div class="kpi-v" style="color:var(--g)">${lossPct}%</div></div><div class="kpi" style="flex:1"><div class="kpi-k">Interval</div><div class="kpi-v">${t.interval||'--'}s</div></div></div></div>`;
   });
   row.innerHTML=h;
-  // Draw mini charts
-  setTimeout(()=>{
+  // Draw mini charts — wait for each canvas to have layout dimensions
+  function drawWhenReady(canvasId,data,rawTimes,color,retries){
+    const cv=$(canvasId);if(!cv)return;
+    const pw=cv.parentElement?.getBoundingClientRect().width||0;
+    if(pw<10&&retries>0){requestAnimationFrame(()=>drawWhenReady(canvasId,data,rawTimes,color,retries-1));return}
+    dCh(canvasId,{data,rawTimes,color,label:'ms'});
+  }
   tasks.forEach((t,i)=>{
     const tRecs=records.filter(r=>r.task_id===t.id&&r.value>=0).sort((a,b)=>new Date(a.time||0)-new Date(b.time||0));
-    console.log(`[Cockpit] Ping task ${i} "${t.name}" records: ${tRecs.length}, canvas cPH${i}:`, $('cPH'+i)?.clientWidth+'x'+$('cPH'+i)?.clientHeight);
     if(tRecs.length){
       const colors=['rgb(0,184,212)','rgb(255,171,0)','rgb(0,230,118)','rgb(112,96,224)'];
       const phData=tRecs.map(r=>r.value);
       const phTimes=tRecs.map(r=>r.time?new Date(r.time).getTime():0);
-      dCh('cPH'+i,{data:phData,rawTimes:phTimes,color:colors[i%colors.length],label:'ms'});
+      drawWhenReady('cPH'+i,phData,phTimes,colors[i%colors.length],30);
     }
   });
-  },50);
 }
 
 function renderNodeMeta(){
