@@ -34,6 +34,8 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 [data-theme="dark"] .bg-grid{opacity:1;background-image:linear-gradient(rgba(0,190,230,0.10) 1px,transparent 1px),linear-gradient(90deg,rgba(0,190,230,0.10) 1px,transparent 1px)}
 .bg-glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 40% 30% at 50% 25%,rgba(255,255,255,0.4),transparent 65%),radial-gradient(ellipse 50% 35% at 65% 30%,rgba(var(--cyr),0.05),transparent 60%)}
 [data-theme="dark"] .bg-glow{background:radial-gradient(circle at 30% 20%,rgba(0,212,240,0.04),transparent 50%),radial-gradient(circle at 70% 60%,rgba(0,180,216,0.03),transparent 40%),radial-gradient(circle at 50% 50%,rgba(20,40,60,0.4),transparent 60%)}
+.bg-char{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:0;pointer-events:none;width:60vw;max-width:800px;opacity:0.06;filter:blur(2px) saturate(0.3)}
+[data-theme="dark"] .bg-char{opacity:0.04;filter:blur(3px) saturate(0.2)}
 
 .ck{position:relative;z-index:1;padding:clamp(6px,1vh,12px);max-width:1800px;margin:0 auto;display:flex;flex-direction:column;gap:clamp(5px,0.5vw,10px)}
 .body-row{display:flex;gap:clamp(5px,0.5vw,10px);align-items:stretch}
@@ -44,7 +46,7 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 .pt{font-family:var(--fm);font-size:clamp(11px,0.9vw,13px);letter-spacing:2px;color:var(--label-color);padding:clamp(6px,0.7vh,10px) clamp(8px,0.8vw,14px) 0;display:flex;align-items:center;gap:6px;font-weight:600;text-transform:uppercase}
 .pt::before{content:'';width:5px;height:5px;background:var(--cyan);opacity:.4;border-radius:1px;transform:rotate(45deg)}
 .ptag{font-family:var(--fm);font-size:11px;letter-spacing:1.5px;color:var(--t4);border:1px solid var(--kpi-bd);padding:2px 8px;border-radius:3px;margin-left:auto}
-.hd{display:flex;align-items:center;flex-wrap:wrap;gap:clamp(4px,0.5vw,12px);border-radius:clamp(8px,1vw,16px);background:var(--header-bg);border:1px solid var(--pb);backdrop-filter:blur(20px);padding:clamp(8px,1vh,14px) clamp(12px,1.2vw,20px);position:relative;box-shadow:var(--shadow);transition:background .3s}
+.hd{display:flex;align-items:center;flex-wrap:wrap;gap:clamp(4px,0.5vw,12px);border-radius:clamp(8px,1vw,16px);background:var(--header-bg);border:1px solid var(--pb);backdrop-filter:blur(20px);padding:clamp(8px,1vh,14px) clamp(12px,1.2vw,20px);position:relative;box-shadow:var(--shadow);transition:background .3s;z-index:50;overflow:visible}
 .hd::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 3%,rgba(var(--cyr),0.25) 20%,rgba(var(--cyr),0.15) 50%,rgba(var(--cyr),0.25) 80%,transparent 97%)}
 .hc{padding:4px clamp(8px,1vw,16px);border-right:1px solid var(--bdr);display:flex;flex-direction:column;gap:2px}.hc:last-child{border-right:none}
 .hn{font-family:var(--fd);font-weight:600;font-size:clamp(15px,1.3vw,20px);color:var(--t);display:flex;align-items:center;gap:8px}
@@ -147,15 +149,15 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 [data-theme="dark"] .time-btn.a{color:#0a1420}
 
 /* Node switcher dropdown */
-.node-sw{position:relative;cursor:pointer;padding:4px 12px;border:1px solid var(--pb);border-radius:8px;background:var(--p);backdrop-filter:blur(8px);transition:.2s;min-width:180px}
+.node-sw{position:relative;cursor:pointer;padding:6px 14px;border:1px solid var(--pb);border-radius:10px;background:var(--p);backdrop-filter:blur(8px);transition:.2s;min-width:200px;z-index:60}
 .node-sw:hover{border-color:var(--cyan)}
 .node-sw-name{font-family:var(--fd);font-weight:700;font-size:14px;color:var(--t);display:flex;align-items:center;gap:8px}
 .node-sw-meta{font-family:var(--fm);font-size:10px;letter-spacing:1px;color:var(--t4)}
 .node-sw-arrow{font-size:10px;color:var(--t4);margin-left:auto;transition:transform .2s}
 .node-sw.open .node-sw-arrow{transform:rotate(180deg)}
-.node-sw-drop{display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:280px;max-height:400px;overflow-y:auto;z-index:100;
-  background:var(--p2);border:1px solid var(--pb);border-radius:12px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  box-shadow:0 12px 40px rgba(0,0,0,0.15),0 0 12px rgba(var(--cyr),0.05);padding:6px}
+.node-sw-drop{display:none;position:absolute;top:calc(100% + 8px);left:0;min-width:300px;max-height:70vh;overflow-y:auto;z-index:999;
+  background:var(--p2);border:1px solid var(--pb);border-radius:14px;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  box-shadow:0 16px 48px rgba(0,0,0,0.2),0 0 16px rgba(var(--cyr),0.06);padding:8px}
 .node-sw.open .node-sw-drop{display:block}
 .nsw-group{font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--label-color);padding:8px 12px 4px;font-weight:600}
 .nsw-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;transition:.15s}
@@ -190,6 +192,7 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 <div class="bg-base"></div>
 <div class="bg-grid"></div>
 <div class="bg-glow"></div>
+<img class="bg-char" src="char.png" alt="" loading="lazy">
 <div class="scan"></div>
 <div class="ck" id="app">
   <div class="loading" id="initLoad">CONNECTING TO KOMARI API ...</div>
@@ -510,27 +513,44 @@ function drawChart(id,data,color,maxV){
   ctx.scale(dpr,dpr);const W=r.width,H=r.height;
   if(!data||!data.length)return;
   const mx=maxV||Math.max(...data)*1.3||1;const n=data.length;
-  const pad=6;const pts=data.map((v,i)=>({x:(i/(n-1))*W,y:pad+((H-pad*2)*(1-v/mx))}));
+  const pad=8;const pts=data.map((v,i)=>({x:(i/(n-1))*W,y:pad+((H-pad*2)*(1-v/mx)),v:v}));
   // grid lines
   ctx.strokeStyle=dark?'rgba(0,212,240,0.04)':'rgba(100,116,139,0.06)';ctx.lineWidth=0.5;
   for(let i=1;i<4;i++){const gy=H*i/4;ctx.beginPath();ctx.moveTo(0,gy);ctx.lineTo(W,gy);ctx.stroke()}
-  // curve path helper — tighter tension (divide by 4 not 6)
+  // curve helper
   function curvePath(){
     ctx.moveTo(pts[0].x,pts[0].y);
     for(let i=0;i<pts.length-1;i++){
       const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(n-1,i+2)];
-      ctx.bezierCurveTo(p1.x+(p2.x-p0.x)/4,p1.y+(p2.y-p0.y)/4,p2.x-(p3.x-p1.x)/4,p2.y-(p3.y-p1.y)/4,p2.x,p2.y);
+      const t=5;// tension — higher = smoother
+      ctx.bezierCurveTo(p1.x+(p2.x-p0.x)/t,p1.y+(p2.y-p0.y)/t,p2.x-(p3.x-p1.x)/t,p2.y-(p3.y-p1.y)/t,p2.x,p2.y);
     }
   }
-  // fill — very subtle gradient
+  // fill
   ctx.beginPath();curvePath();
-  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,color.replace(')',','+fA+')').replace('rgb','rgba'));g.addColorStop(0.7,color.replace(')',',0)').replace('rgb','rgba'));
+  const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,color.replace(')',','+fA+')').replace('rgb','rgba'));g.addColorStop(0.6,color.replace(')',',0)').replace('rgb','rgba'));
   ctx.lineTo(W,H);ctx.lineTo(0,H);ctx.closePath();ctx.fillStyle=g;ctx.fill();
-  // stroke — thin line
+  // stroke line
   ctx.beginPath();curvePath();
-  ctx.strokeStyle=color;ctx.lineWidth=1.2;ctx.stroke();
-  // end dot — small
-  const l=pts[n-1];ctx.beginPath();ctx.arc(l.x,l.y,2,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+  ctx.strokeStyle=color;ctx.lineWidth=1.5;ctx.stroke();
+  // end dot with glow
+  const l=pts[n-1];
+  ctx.beginPath();ctx.arc(l.x,l.y,3,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();
+  ctx.beginPath();ctx.arc(l.x,l.y,6,0,Math.PI*2);
+  ctx.strokeStyle=color.replace(')',',0.2)').replace('rgb','rgba');ctx.lineWidth=1;ctx.stroke();
+  // peak point annotation (like original theme)
+  if(n>10){
+    let peakI=0;for(let i=1;i<n;i++){if(pts[i].v>pts[peakI].v)peakI=i}
+    const pk=pts[peakI];
+    if(pk.v>0&&peakI>2&&peakI<n-2){
+      // circle
+      ctx.beginPath();ctx.arc(pk.x,pk.y,4,0,Math.PI*2);ctx.strokeStyle=color;ctx.lineWidth=1.2;ctx.stroke();
+      // label
+      const label=pk.v>=1?pk.v.toFixed(1):pk.v.toFixed(2);
+      ctx.font='600 10px "JetBrains Mono",monospace';ctx.fillStyle=color;ctx.textAlign='center';
+      ctx.fillText(label,pk.x,pk.y-8);
+    }
+  }
 }
 function drawCore(){
   const c=$('coreCanvas');if(!c)return;const dark=html.getAttribute('data-theme')==='dark';
@@ -661,12 +681,13 @@ function setXaxis(id,times){
 }
 
 function drawAllCharts(){
-  const MP=200;// max points per chart
+  const MP=180;// max points for load charts
+  const LP=120;// fewer points for latency — cleaner wave
   if(chartData.cpu.length)drawChart('cCpu',downsample(chartData.cpu,MP),'rgb(0,184,212)',100);
   if(chartData.mem.length)drawChart('cMem',downsample(chartData.mem,MP),'rgb(112,96,224)',100);
   if(chartData.netIn.length)drawChart('cNetIn',downsample(chartData.netIn,MP),'rgb(0,184,212)');
   if(chartData.netOut.length)drawChart('cNetOut',downsample(chartData.netOut,MP),'rgb(0,230,118)');
-  if(chartData.lat&&chartData.lat.length)drawChart('cLat',downsample(chartData.lat,MP),'rgb(255,171,0)',Math.max(...chartData.lat)*1.3||200);
+  if(chartData.lat&&chartData.lat.length)drawChart('cLat',downsample(chartData.lat,LP),'rgb(255,171,0)',Math.max(...chartData.lat)*1.3||200);
   drawCore();
 }
 window.addEventListener('resize',drawAllCharts);
