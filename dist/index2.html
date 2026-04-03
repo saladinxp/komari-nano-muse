@@ -169,7 +169,7 @@ function esc(s){const d=document.createElement('div');d.textContent=s;return d.i
 function flatLive(r){if(!r||typeof r!=='object')return r;if(typeof r.cpu==='number')return r;return{cpu:Math.round((r.cpu?.usage||0)*100)/100,memory_used:r.ram?.used||0,memory_total:r.ram?.total||0,swap_used:r.swap?.used||0,swap_total:r.swap?.total||0,disk_used:r.disk?.used||0,disk_total:r.disk?.total||0,network_tx:r.network?.up||0,network_rx:r.network?.down||0,network_total_up:r.network?.totalUp||0,network_total_down:r.network?.totalDown||0,tcp:r.connections?.tcp||0,udp:r.connections?.udp||0,load1:r.load?.load1||0,load5:r.load?.load5||0,load15:r.load?.load15||0,uptime:r.uptime||0,process:r.process||0,updated_at:r.updated_at||''}}
 
 /* ── State ── */
-const S={nodes:[],liveData:{},onlineSet:new Set(),ws:null,uuid:null,node:null,hours:12,pingTasks:[],events:[]};
+const S={nodes:[],liveData:{},onlineSet:new Set(),ws:null,uuid:null,node:null,hours:12,pingTasks:[],events:[],_lastSnap:''};
 
 /* ── Theme ── */
 function setTheme(t){html.setAttribute('data-theme',t);localStorage.setItem('nm-ck-theme',t);const b=$('themeBtn');if(b)b.textContent=t==='dark'?'☀️':'🌙';requestAnimationFrame(()=>drawAllCharts())}
@@ -348,13 +348,19 @@ function updateLive(){
   const loadPct=n.cpu_cores?Math.min(100,(d.load1||0)*100/n.cpu_cores):0;
   uBar('rtLoad',loadPct,'rtLoadV',(d.load1||0).toFixed(2));
   // Event
-  addEvent(on?'ok':'warn',`CPU ${cpu}% · RAM ${ram}% · Disk ${disk}%`,d.updated_at);
+  // Only log event when values actually change
+  const snap=`${cpu}-${ram}-${disk}-${swap}`;
+  if(snap!==S._lastSnap){
+    S._lastSnap=snap;
+    addEvent(on?'ok':'warn',`CPU ${cpu}% · RAM ${ram}% · Disk ${disk}% · Swap ${swap}%`,d.updated_at);
+    if(d.tcp)addEvent('info',`TCP ${d.tcp} · UDP ${d.udp||0} · Proc ${d.process||0}`,d.updated_at);
+  }
 }
 
 /* ── Events ── */
 function addEvent(type,msg,time){
   S.events.unshift({type,msg,time:time?fTL(time):'--'});
-  if(S.events.length>20)S.events.length=20;
+  if(S.events.length>8)S.events.length=8;
   const el=$('evList');if(!el)return;
   el.innerHTML=S.events.map(e=>`<div class="ev"><span class="ev-dot ${e.type}"></span><div class="ev-body"><div class="ev-msg">${esc(e.msg)}</div><div class="ev-time">${e.time} · ws</div></div></div>`).join('');
 }
