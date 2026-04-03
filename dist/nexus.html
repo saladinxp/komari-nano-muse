@@ -145,6 +145,27 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 .time-btn:hover{border-color:var(--cyan);color:var(--cyan)}
 .time-btn.a{background:var(--cyan);color:#fff;border-color:var(--cyan);box-shadow:0 2px 10px rgba(var(--cyr),0.25)}
 [data-theme="dark"] .time-btn.a{color:#0a1420}
+
+/* Node switcher dropdown */
+.node-sw{position:relative;cursor:pointer;padding:4px 12px;border:1px solid var(--pb);border-radius:8px;background:var(--p);backdrop-filter:blur(8px);transition:.2s;min-width:180px}
+.node-sw:hover{border-color:var(--cyan)}
+.node-sw-name{font-family:var(--fd);font-weight:700;font-size:14px;color:var(--t);display:flex;align-items:center;gap:8px}
+.node-sw-meta{font-family:var(--fm);font-size:10px;letter-spacing:1px;color:var(--t4)}
+.node-sw-arrow{font-size:10px;color:var(--t4);margin-left:auto;transition:transform .2s}
+.node-sw.open .node-sw-arrow{transform:rotate(180deg)}
+.node-sw-drop{display:none;position:absolute;top:calc(100% + 6px);left:0;min-width:280px;max-height:400px;overflow-y:auto;z-index:100;
+  background:var(--p2);border:1px solid var(--pb);border-radius:12px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  box-shadow:0 12px 40px rgba(0,0,0,0.15),0 0 12px rgba(var(--cyr),0.05);padding:6px}
+.node-sw.open .node-sw-drop{display:block}
+.nsw-group{font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--label-color);padding:8px 12px 4px;font-weight:600}
+.nsw-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:8px;cursor:pointer;transition:.15s}
+.nsw-item:hover{background:rgba(var(--cyr),0.06)}
+.nsw-item.active{background:rgba(var(--cyr),0.10);border:1px solid rgba(var(--cyr),0.15)}
+.nsw-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.nsw-dot.on{background:var(--g);box-shadow:0 0 6px rgba(var(--gr),0.4)}.nsw-dot.off{background:var(--r)}
+.nsw-info{flex:1;min-width:0}
+.nsw-name{font-family:var(--fd);font-weight:600;font-size:13px;color:var(--t);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nsw-sub{font-family:var(--fm);font-size:10px;color:var(--t4)}
 .loading{text-align:center;padding:60px;color:var(--t4);font-family:var(--fm);font-size:13px;letter-spacing:2px}
 .node-select{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding:12px 0}
 .node-btn{font-family:var(--fm);font-size:12px;letter-spacing:1px;padding:16px 20px;border:1px solid var(--pb);background:var(--p);color:var(--t);cursor:pointer;border-radius:12px;transition:all .35s cubic-bezier(.175,.885,.32,1.275);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);text-align:left;position:relative;overflow:hidden;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);
@@ -260,9 +281,12 @@ function renderCockpit(){
   const app=$('app');
   app.innerHTML=`
   <div class="hd">
-    <a class="back-btn" href="javascript:void(0)" onclick="showNodeSelect()">← NEXUS</a>
-    <a class="back-btn" href="/" style="margin-left:4px">← DASHBOARD</a>
-    <div class="hc" style="min-width:180px"><div class="hn"><span class="dot" id="hDot"></span><span id="hName">${esc(n.name)}</span></div><div class="hu">${esc(n.region||'')} · ${esc(n.group||'')} · ${n.arch||''}</div></div>
+    <a class="back-btn" href="/">← DASHBOARD</a>
+    <div class="node-sw" id="nodeSw" onclick="toggleNodeSw()">
+      <div class="node-sw-name"><span class="dot" id="hDot"></span><span id="hName">${esc(n.name)}</span><span class="node-sw-arrow">▼</span></div>
+      <div class="node-sw-meta">${esc(n.region||'')} · ${esc(n.group||'')}</div>
+      <div class="node-sw-drop" id="nodeSwDrop"></div>
+    </div>
     <div class="hc"><div class="hk">STATUS</div><div class="hv ${on?'on':''}" id="hStatus">${on?'Online':'Offline'}</div></div>
     <div class="hc"><div class="hk">HEALTH</div><div class="hv hp" id="hHealth">${health}%</div></div>
     <div class="hc"><div class="hk">LATENCY</div><div class="hv lt" id="hLat">--</div></div>
@@ -331,6 +355,7 @@ function renderCockpit(){
   drawCore();
   renderNodeMeta();
   renderTimeBar();
+  renderNodeSwDrop();
 }
 
 function renderTimeBar(){
@@ -345,6 +370,52 @@ function renderTimeBar(){
     b.onclick=()=>{S.hours=+b.dataset.h;bar.querySelectorAll('.time-btn').forEach(x=>x.classList.remove('a'));b.classList.add('a');loadChartData();loadPingData()}
   });
 }
+
+/* ── Node switcher dropdown ── */
+function renderNodeSwDrop(){
+  const drop=$('nodeSwDrop');if(!drop)return;
+  // Group nodes by group field
+  const groups=new Map();
+  S.nodes.forEach(n=>{
+    const g=n.group||'其他';
+    if(!groups.has(g))groups.set(g,[]);
+    groups.get(g).push(n);
+  });
+  let h='';
+  groups.forEach((nodes,gName)=>{
+    h+=`<div class="nsw-group">${esc(gName)}</div>`;
+    nodes.forEach(n=>{
+      const on=S.onlineSet.has(n.uuid);
+      const d=S.liveData[n.uuid]||{};
+      const cpu=Math.round(d.cpu||0);
+      const isActive=n.uuid===S.uuid;
+      h+=`<div class="nsw-item${isActive?' active':''}" data-uuid="${n.uuid}">
+        <span class="nsw-dot ${on?'on':'off'}"></span>
+        <div class="nsw-info"><div class="nsw-name">${esc(n.name)}</div><div class="nsw-sub">${on?'CPU '+cpu+'% · '+fUs(d.uptime):'OFFLINE'}</div></div>
+      </div>`;
+    });
+  });
+  drop.innerHTML=h;
+  drop.querySelectorAll('.nsw-item').forEach(el=>{
+    el.onclick=e=>{
+      e.stopPropagation();
+      const uuid=el.dataset.uuid;
+      if(uuid&&uuid!==S.uuid){
+        S._lastSnap='';S.events=[];
+        openNode(uuid);
+        location.hash=uuid;
+      }
+      closeNodeSw();
+    };
+  });
+}
+function toggleNodeSw(){const sw=$('nodeSw');if(sw)sw.classList.toggle('open')}
+function closeNodeSw(){const sw=$('nodeSw');if(sw)sw.classList.remove('open')}
+// Close dropdown when clicking outside
+document.addEventListener('click',e=>{
+  const sw=$('nodeSw');
+  if(sw&&!sw.contains(e.target))closeNodeSw();
+});
 
 function initThemeBtn(){const t=localStorage.getItem('nm-ck-theme')||(matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');setTheme(t)}
 
@@ -603,6 +674,7 @@ window.addEventListener('resize',drawAllCharts);
 /* ── Expose for onclick ── */
 window.toggleTheme=toggleTheme;
 window.showNodeSelect=showNodeSelect;
+window.toggleNodeSw=toggleNodeSw;
 
 /* ── Init ── */
 async function boot(){
