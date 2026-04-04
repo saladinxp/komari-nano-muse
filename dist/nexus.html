@@ -143,7 +143,10 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 .ext-row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(5px,0.5vw,10px)}
 .ext-full{width:100%}
 .ext-sec{padding:clamp(10px,1vw,16px)}
-.mini-map{border-radius:8px;overflow:hidden}
+.meta-split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(5px,0.5vw,10px);align-items:start}
+.meta-left .tbl td:first-child{font-weight:600;color:var(--t3);white-space:nowrap;width:70px}
+.meta-right{display:flex;flex-direction:column}
+.mini-map{flex:1;min-height:200px;border-radius:8px;overflow:hidden}
 .tbl{width:100%;border-collapse:collapse;margin-top:6px}
 .tbl th{font-family:var(--fm);font-size:11px;letter-spacing:1.5px;color:var(--t4);text-transform:uppercase;text-align:left;padding:6px 8px;border-bottom:1px solid var(--bdr);font-weight:600}
 .tbl td{font-family:var(--fm);font-size:12px;color:var(--t2);padding:5px 8px;border-bottom:1px solid var(--bdr)}.tbl tr:last-child td{border-bottom:none}
@@ -179,6 +182,7 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
   .chart-wrap{padding:12px;border-radius:10px}
   .chart-wrap canvas{height:140px}
   .ext-row{grid-template-columns:1fr}
+  .meta-split{grid-template-columns:1fr}
   .cbot{grid-template-columns:1fr 1fr}
   .met4{grid-template-columns:1fr 1fr}
   .tbl{display:block;overflow-x:auto}
@@ -842,6 +846,7 @@ function renderPingHistory(tasks,records){
 function renderNodeMeta(){
   const n=S.node;if(!n)return;const el=$('nodeMetaRow');if(!el)return;
   const dark=html.getAttribute('data-theme')==='dark';
+  const d=S.liveData[n.uuid]||{};const on=S.onlineSet.has(n.uuid);
   const RC={
     '\U0001f1ef\U0001f1f5':[35.7,139.7],'JP':[35.7,139.7],'\U0001f1fa\U0001f1f8':[37.8,-122.4],'US':[37.8,-122.4],
     '\U0001f1ed\U0001f1f0':[22.3,114.2],'HK':[22.3,114.2],'\U0001f1f9\U0001f1fc':[25.0,121.5],'TW':[25.0,121.5],
@@ -864,7 +869,26 @@ function renderNodeMeta(){
   };
   const reg=(n.region||'').trim();
   const coord=RC[reg]||null;
-  const W=800,H=380,PAD=20;
+  // Left: full metadata table
+  let tbl='<table class="tbl"><tbody>';
+  tbl+=`<tr><td>UUID</td><td class="mono">${n.uuid?n.uuid.substring(0,20)+'...':''}</td></tr>`;
+  tbl+=`<tr><td>Name</td><td class="mono">${esc(n.name)}</td></tr>`;
+  tbl+=`<tr><td>Region</td><td>${esc(n.region||'')} ${esc(n.group||'')}</td></tr>`;
+  tbl+=`<tr><td>OS</td><td class="mono">${esc(n.os||'')}</td></tr>`;
+  tbl+=`<tr><td>Kernel</td><td class="mono">${esc(n.kernel_version||'')}</td></tr>`;
+  tbl+=`<tr><td>CPU</td><td class="mono">${esc(n.cpu_name||'')} \xb7 ${n.cpu_cores||'?'}c</td></tr>`;
+  tbl+=`<tr><td>Arch</td><td>${n.arch||''} \xb7 ${esc(n.virtualization||'')}</td></tr>`;
+  tbl+=`<tr><td>RAM</td><td>${fB(n.mem_total)}</td></tr>`;
+  tbl+=`<tr><td>Disk</td><td>${fB(n.disk_total)}</td></tr>`;
+  tbl+=`<tr><td>Swap</td><td>${fB(n.swap_total||0)}</td></tr>`;
+  if(n.price>0)tbl+=`<tr><td>Price</td><td style="color:var(--cyan)">${n.currency||''}${n.price} / ${n.billing_cycle||30}d</td></tr>`;
+  if(n.expired_at&&!n.expired_at.startsWith('0001'))tbl+=`<tr><td>Expire</td><td>${n.expired_at.split('T')[0]}</td></tr>`;
+  if(n.tags)tbl+=`<tr><td>Tags</td><td>${esc(n.tags)}</td></tr>`;
+  tbl+=`<tr><td>Created</td><td>${n.created_at?n.created_at.split('T')[0]:''}</td></tr>`;
+  tbl+=`<tr><td>Updated</td><td>${n.updated_at?n.updated_at.split('T')[0]:''}</td></tr>`;
+  tbl+='</tbody></table>';
+  // Right: dot-matrix world map
+  const W=400,H=280,PAD=12;
   function toXY(lat,lng){
     const x=PAD+(lng+180)/360*(W-2*PAD);
     const latR=lat*Math.PI/180;
@@ -873,33 +897,29 @@ function renderNodeMeta(){
     return [Math.round(x*10)/10,Math.max(PAD,Math.min(H-PAD,Math.round(y*10)/10))];
   }
   const gridC=dark?'rgba(0,212,240,0.06)':'rgba(140,170,200,0.08)';
-  const landF=dark?'rgba(0,212,240,0.06)':'rgba(160,190,220,0.1)';
+  const landF=dark?'rgba(0,212,240,0.08)':'rgba(160,190,220,0.12)';
   let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">`;
   for(let lng=-150;lng<=180;lng+=30){const[x]=toXY(0,lng);svg+=`<line x1="${x}" y1="${PAD}" x2="${x}" y2="${H-PAD}" stroke="${gridC}" stroke-width="0.5"/>`}
   for(let lat=-60;lat<=80;lat+=20){const[,y]=toXY(lat,0);svg+=`<line x1="${PAD}" y1="${y}" x2="${W-PAD}" y2="${y}" stroke="${gridC}" stroke-width="0.5"/>`}
   const LP=[[-125,50],[-120,48],[-115,47],[-110,45],[-105,42],[-100,40],[-95,38],[-90,35],[-85,33],[-80,30],[-75,42],[-70,45],[-65,47],[-120,55],[-115,55],[-110,53],[-105,50],[-100,48],[-95,45],[-90,42],[-85,38],[-80,35],[-130,60],[-125,58],[-120,60],[-115,58],[-110,55],[-105,52],[-100,50],[-95,48],[-100,30],[-95,32],[-90,30],[-85,28],[-100,20],[-95,18],[-90,16],[-85,14],[-80,10],[-75,5],[-70,0],[-65,-5],[-60,-10],[-55,-15],[-50,-20],[-45,-25],[-40,-15],[-35,-10],[-70,-15],[-65,-20],[-60,-25],[-55,-30],[-50,-28],[-45,-23],[-70,-30],[-72,-35],[-70,-40],[-68,-45],[-5,52],[0,52],[5,50],[10,48],[15,50],[20,52],[25,50],[30,52],[35,55],[40,58],[0,45],[5,45],[10,45],[15,42],[20,40],[25,38],[30,40],[-8,40],[-5,38],[0,42],[5,48],[10,52],[15,55],[20,58],[25,60],[10,55],[15,58],[20,55],[25,55],[30,58],[0,30],[5,28],[10,25],[15,20],[20,15],[25,10],[30,5],[35,0],[40,-5],[10,0],[15,-5],[20,-10],[25,-15],[30,-20],[35,-25],[28,-30],[-5,15],[0,10],[5,5],[10,0],[-15,10],[-10,15],[-5,10],[0,5],[30,-10],[35,-15],[30,-25],[25,-28],[45,40],[50,42],[55,45],[60,48],[65,50],[70,55],[75,58],[80,55],[50,35],[55,38],[60,40],[65,35],[70,30],[75,28],[80,25],[85,22],[90,25],[85,30],[90,28],[95,20],[100,15],[105,18],[110,22],[115,25],[120,30],[125,35],[130,38],[135,35],[140,38],[100,25],[105,22],[110,18],[115,15],[120,18],[100,10],[105,5],[110,0],[115,-5],[50,30],[55,28],[60,25],[65,28],[60,55],[65,58],[70,60],[80,62],[90,60],[100,55],[110,50],[120,48],[130,45],[140,42],[70,65],[80,68],[90,65],[100,62],[110,58],[120,55],[130,50],[120,-20],[125,-22],[130,-25],[135,-28],[140,-30],[145,-32],[150,-28],[148,-22],[142,-18],[135,-15],[128,-16],[150,-35],[148,-38],[145,-35],[142,-32],[170,-38],[172,-42],[175,-44]];
-  LP.forEach(function(p){const[x,y]=toXY(p[1],p[0]);svg+=`<circle cx="${x}" cy="${y}" r="2.5" fill="${landF}" stroke="none"/>`});
+  LP.forEach(function(p){const[x,y]=toXY(p[1],p[0]);svg+=`<circle cx="${x}" cy="${y}" r="2" fill="${landF}" stroke="none"/>`});
   S.nodes.forEach(function(nd){
     const r2=(nd.region||'').trim();const c2=RC[r2];
     if(c2&&nd.uuid!==n.uuid){
-      const[x,y]=toXY(c2[0],c2[1]);
-      const on=S.onlineSet.has(nd.uuid);
-      svg+=`<circle cx="${x}" cy="${y}" r="3" fill="${on?'rgba(0,230,118,0.5)':'rgba(148,163,184,0.35)'}" stroke="${on?'rgba(0,230,118,0.3)':'none'}" stroke-width="1"/>`;
-      svg+=`<text x="${x}" y="${y-7}" text-anchor="middle" fill="${dark?'#546e85':'#94a3b8'}" font-family="JetBrains Mono" font-size="7" letter-spacing="0.5">${esc(nd.name)}</text>`;
+      const[x,y]=toXY(c2[0],c2[1]);const on2=S.onlineSet.has(nd.uuid);
+      svg+=`<circle cx="${x}" cy="${y}" r="2.5" fill="${on2?'rgba(0,230,118,0.5)':'rgba(148,163,184,0.35)'}" stroke="none"/>`;
     }
   });
   if(coord){
     const[x,y]=toXY(coord[0],coord[1]);
-    const on=S.onlineSet.has(n.uuid);
     const col=on?(dark?'#00d4f0':'#00b8d4'):'#ff3d57';
-    svg+=`<circle cx="${x}" cy="${y}" r="18" fill="none" stroke="${col}" stroke-width="1" opacity="0.2"><animate attributeName="r" values="12;22;12" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.3;0.05;0.3" dur="3s" repeatCount="indefinite"/></circle>`;
-    svg+=`<circle cx="${x}" cy="${y}" r="10" fill="${col}" opacity="0.08"><animate attributeName="r" values="8;13;8" dur="3s" repeatCount="indefinite"/></circle>`;
-    svg+=`<circle cx="${x}" cy="${y}" r="5" fill="${col}" stroke="#fff" stroke-width="1.5" style="filter:drop-shadow(0 0 6px ${col})"/>`;
-    svg+=`<text x="${x+12}" y="${y+4}" fill="${dark?'#c8d8e8':'#1a2c3e'}" font-family="Outfit" font-weight="700" font-size="11">${esc(n.name)}</text>`;
-    svg+=`<text x="${x+12}" y="${y+15}" fill="${dark?'#546e85':'#7d9ab5'}" font-family="JetBrains Mono" font-size="8" letter-spacing="1">${esc(reg)} \xb7 ${esc(n.group||'')}</text>`;
+    svg+=`<circle cx="${x}" cy="${y}" r="16" fill="none" stroke="${col}" stroke-width="1" opacity="0.15"><animate attributeName="r" values="10;20;10" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.25;0.05;0.25" dur="3s" repeatCount="indefinite"/></circle>`;
+    svg+=`<circle cx="${x}" cy="${y}" r="4.5" fill="${col}" stroke="#fff" stroke-width="1.5" style="filter:drop-shadow(0 0 5px ${col})"/>`;
+    svg+=`<text x="${x+10}" y="${y+3}" fill="${dark?'#c8d8e8':'#1a2c3e'}" font-family="Outfit" font-weight="700" font-size="10">${esc(n.name)}</text>`;
+    svg+=`<text x="${x+10}" y="${y+13}" fill="${dark?'#546e85':'#7d9ab5'}" font-family="JetBrains Mono" font-size="7" letter-spacing="0.5">${esc(reg)} \xb7 ${esc(n.group||'')}</text>`;
   }
   svg+='</svg>';
-  el.innerHTML=`<div class="p ext-sec" style="padding:clamp(8px,0.8vw,14px)"><div class="ch-label" style="margin-bottom:6px">\u25c6 NODE LOCATION</div><div class="mini-map">${svg}</div></div>`;
+  el.innerHTML=`<div class="meta-split"><div class="p ext-sec meta-left"><div class="ch-label" style="margin-bottom:8px">\u25c6 NODE METADATA</div>${tbl}</div><div class="p ext-sec meta-right"><div class="ch-label" style="margin-bottom:8px">\u25c6 LOCATION</div><div class="mini-map">${svg}</div></div></div>`;
 }
 function setXaxis(id,times){
   const el=$(id);if(!el||!times.length)return;
