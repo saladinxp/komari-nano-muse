@@ -158,6 +158,48 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 .time-btn.a{background:var(--cyan);color:#fff;border-color:var(--cyan);box-shadow:0 2px 10px rgba(var(--cyr),0.25)}
 [data-theme="dark"] .time-btn.a{color:#0a1420}
 
+/* ── Mobile responsive ── */
+@media(max-width:1024px){
+  .body-row{flex-direction:column}
+  .col-left,.col-right{flex:none;width:100%}
+  .col-left{order:0}
+  .col-center{order:1}
+  .col-right{order:2}
+  .charts4{grid-template-columns:1fr}
+  .cbot{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .ck{padding:6px}
+  .hd{padding:8px 10px;gap:6px;flex-wrap:wrap}
+  .hc{padding:3px 8px;min-width:0}
+  .node-sw{min-width:140px}
+  .node-sw-drop{min-width:240px;left:-20px}
+  .charts4{grid-template-columns:1fr}
+  .chart-wrap{padding:12px;border-radius:10px}
+  .chart-wrap canvas{height:140px}
+  .ext-row{grid-template-columns:1fr}
+  .cbot{grid-template-columns:1fr 1fr}
+  .met4{grid-template-columns:1fr 1fr}
+  .tbl{display:block;overflow-x:auto}
+  .core-ring{width:90px!important;height:90px!important}
+  .ch-sub-row{grid-template-columns:1fr 1fr 1fr}
+}
+@media(max-width:480px){
+  .hd{padding:6px 8px}
+  .hc{padding:2px 6px}
+  .hc .hk,.hc .hv{font-size:10px}
+  .node-sw{min-width:120px;padding:5px 10px}
+  .node-sw-name{font-size:12px}
+  .chart-wrap canvas{height:120px}
+  .chart-wrap.mini canvas{height:60px}
+  .cbot{grid-template-columns:1fr}
+  .mg{grid-template-columns:1fr}
+  .kpi-v{font-size:13px}
+  .back-btn{padding:3px 8px;font-size:10px}
+  .theme-btn{padding:3px 6px;font-size:12px}
+  .hide-sm{display:none}
+}
+
 /* Node switcher dropdown */
 .node-sw{position:relative;cursor:pointer;padding:6px 14px;border:1px solid var(--pb);border-radius:10px;background:var(--p);backdrop-filter:blur(8px);transition:.2s;min-width:200px;z-index:60}
 .node-sw:hover{border-color:var(--cyan)}
@@ -304,8 +346,8 @@ function renderCockpit(){
     <div class="hc"><div class="hk">HEALTH</div><div class="hv hp" id="hHealth">${health}%</div></div>
     <div class="hc"><div class="hk">LATENCY</div><div class="hv lt" id="hLat">--</div></div>
     <div class="hc"><div class="hk">LOSS</div><div class="hv" style="color:var(--g)" id="hLoss">--</div></div>
-    <div class="hc" style="margin-left:auto"><div class="hk">UPTIME</div><div class="hv" id="hUptime">${fUs(d.uptime)}</div></div>
-    <div class="hc"><div class="hk">TIME</div><div class="hv" style="font-size:12px;font-family:var(--fm);color:var(--t2)" id="hTime">${d.updated_at?new Date(d.updated_at).toLocaleString('zh-CN'):'--'}</div></div>
+    <div class="hc hide-sm" style="margin-left:auto"><div class="hk">UPTIME</div><div class="hv" id="hUptime">${fUs(d.uptime)}</div></div>
+    <div class="hc hide-sm"><div class="hk">TIME</div><div class="hv" style="font-size:12px;font-family:var(--fm);color:var(--t2)" id="hTime">${d.updated_at?new Date(d.updated_at).toLocaleString('zh-CN'):'--'}</div></div>
     <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
   </div>
   <div class="body-row">
