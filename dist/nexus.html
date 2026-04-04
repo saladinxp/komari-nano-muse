@@ -780,12 +780,12 @@ function drawCore(skipLoop){
     ctx.stroke();ctx.shadowBlur=0;
   }
 
-  // 5) Breathing inner ring
-  const breathR=R*0.72+Math.sin(_corePulse)*R*0.04;
-  const breathA=0.15+Math.sin(_corePulse)*0.12;
+  // 5) Breathing inner ring (solid, cyan, matching reference)
+  const breathR=R*0.72+Math.sin(_corePulse)*R*0.06;
+  const breathA=0.18+Math.sin(_corePulse)*0.12;
   ctx.beginPath();ctx.arc(cx,cy,breathR,0,Math.PI*2);
   ctx.strokeStyle='rgba('+cRgb+','+breathA+')';
-  ctx.lineWidth=1.5;ctx.setLineDash([6,5]);ctx.stroke();ctx.setLineDash([]);
+  ctx.lineWidth=2;ctx.stroke();
 
   // 6) 12 orbiting data points (slow spin with main arc)
   for(let i=0;i<12;i++){
