@@ -770,18 +770,18 @@ function drawCore(skipLoop){
   ctx.shadowColor='rgba('+cRgb+',0.45)';ctx.shadowBlur=R*0.25;
   ctx.stroke();ctx.shadowBlur=0;
 
-  // 4) Green progress arc (uptime-based, static position from 12 o'clock)
+  // 4) Green progress arc (spaced inside main arc)
   const d=S.liveData[S.uuid]||{};
   const uptPct=d.uptime?(d.uptime/(d.uptime+60)):0;
   if(uptPct>0){
-    ctx.beginPath();ctx.arc(cx,cy,R*0.88,-Math.PI/2,-Math.PI/2+Math.PI*2*uptPct);
+    ctx.beginPath();ctx.arc(cx,cy,R*0.75,-Math.PI/2,-Math.PI/2+Math.PI*2*uptPct);
     ctx.strokeStyle='rgba('+gRgb+',0.4)';ctx.lineWidth=R*0.06;ctx.lineCap='round';
     ctx.shadowColor='rgba('+gRgb+',0.3)';ctx.shadowBlur=6;
     ctx.stroke();ctx.shadowBlur=0;
   }
 
-  // 5) Breathing inner ring (solid, cyan, matching reference)
-  const breathR=R*0.72+Math.sin(_corePulse)*R*0.06;
+  // 5) Breathing inner ring (solid, cyan, spaced further inside)
+  const breathR=R*0.58+Math.sin(_corePulse)*R*0.05;
   const breathA=0.18+Math.sin(_corePulse)*0.12;
   ctx.beginPath();ctx.arc(cx,cy,breathR,0,Math.PI*2);
   ctx.strokeStyle='rgba('+cRgb+','+breathA+')';
