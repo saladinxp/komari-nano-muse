@@ -782,7 +782,7 @@ function drawCore(skipLoop){
 
   // 5) Breathing inner ring (solid, cyan, spaced further inside)
   const breathR=R*0.58+Math.sin(_corePulse)*R*0.05;
-  const breathA=0.18+Math.sin(_corePulse)*0.12;
+  const breathA=0.3+Math.sin(_corePulse)*0.15;
   ctx.beginPath();ctx.arc(cx,cy,breathR,0,Math.PI*2);
   ctx.strokeStyle='rgba('+cRgb+','+breathA+')';
   ctx.lineWidth=2;ctx.stroke();
