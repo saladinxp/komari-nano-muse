@@ -143,6 +143,10 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 .ext-row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(5px,0.5vw,10px)}
 .ext-full{width:100%}
 .ext-sec{padding:clamp(10px,1vw,16px)}
+.meta-split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(5px,0.5vw,10px)}
+.meta-left{overflow-x:auto}
+.meta-right{display:flex;flex-direction:column}
+.mini-map{flex:1;min-height:160px;border-radius:8px;overflow:hidden}
 .tbl{width:100%;border-collapse:collapse;margin-top:6px}
 .tbl th{font-family:var(--fm);font-size:11px;letter-spacing:1.5px;color:var(--t4);text-transform:uppercase;text-align:left;padding:6px 8px;border-bottom:1px solid var(--bdr);font-weight:600}
 .tbl td{font-family:var(--fm);font-size:12px;color:var(--t2);padding:5px 8px;border-bottom:1px solid var(--bdr)}.tbl tr:last-child td{border-bottom:none}
@@ -178,6 +182,7 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
   .chart-wrap{padding:12px;border-radius:10px}
   .chart-wrap canvas{height:140px}
   .ext-row{grid-template-columns:1fr}
+  .meta-split{grid-template-columns:1fr}
   .cbot{grid-template-columns:1fr 1fr}
   .met4{grid-template-columns:1fr 1fr}
   .tbl{display:block;overflow-x:auto}
@@ -840,15 +845,102 @@ function renderPingHistory(tasks,records){
 
 function renderNodeMeta(){
   const n=S.node;if(!n)return;const el=$('nodeMetaRow');if(!el)return;
-  el.innerHTML=`<div class="p ext-sec"><div class="ch-label" style="margin-bottom:8px">◆ NODE METADATA</div><table class="tbl"><thead><tr><th>Field</th><th>Value</th><th>Field</th><th>Value</th></tr></thead><tbody>
-    <tr><td>UUID</td><td class="mono">${n.uuid?n.uuid.substring(0,18)+'...':''}</td><td>Name</td><td class="mono">${esc(n.name)}</td></tr>
-    <tr><td>Region</td><td>${esc(n.region||'')}</td><td>Group</td><td>${esc(n.group||'')}</td></tr>
-    <tr><td>OS</td><td class="mono">${esc(n.os||'')}</td><td>Kernel</td><td class="mono">${esc(n.kernel_version||'')}</td></tr>
-    <tr><td>CPU</td><td class="mono">${esc(n.cpu_name||'')} · ${n.cpu_cores||''}c</td><td>Arch</td><td>${n.arch||''} · ${esc(n.virtualization||'')}</td></tr>
-    <tr><td>RAM</td><td>${fB(n.mem_total)}</td><td>Disk</td><td>${fB(n.disk_total)}</td></tr>
-    ${n.price>0?`<tr><td>Price</td><td>${n.currency||''}${n.price} / ${n.billing_cycle||30}d</td><td>Expire</td><td>${n.expired_at&&!n.expired_at.startsWith('0001')?n.expired_at.split('T')[0]:'--'}</td></tr>`:''}
-    <tr><td>Created</td><td>${n.created_at?n.created_at.split('T')[0]:''}</td><td>Updated</td><td>${n.updated_at?n.updated_at.split('T')[0]:''}</td></tr>
-  </tbody></table></div>`;
+  // Region to approximate lat/lng mapping
+  const regionCoords={
+    '🇯🇵':{'lat':35.7,'lng':139.7,'name':'Japan'},'JP':{'lat':35.7,'lng':139.7,'name':'Japan'},
+    '🇺🇸':{'lat':37.8,'lng':-122.4,'name':'USA'},'US':{'lat':37.8,'lng':-122.4,'name':'USA'},
+    '🇭🇰':{'lat':22.3,'lng':114.2,'name':'Hong Kong'},'HK':{'lat':22.3,'lng':114.2,'name':'Hong Kong'},
+    '🇹🇼':{'lat':25.0,'lng':121.5,'name':'Taiwan'},'TW':{'lat':25.0,'lng':121.5,'name':'Taiwan'},
+    '🇸🇬':{'lat':1.3,'lng':103.8,'name':'Singapore'},'SG':{'lat':1.3,'lng':103.8,'name':'Singapore'},
+    '🇰🇷':{'lat':37.6,'lng':127.0,'name':'Korea'},'KR':{'lat':37.6,'lng':127.0,'name':'Korea'},
+    '🇩🇪':{'lat':52.5,'lng':13.4,'name':'Germany'},'DE':{'lat':52.5,'lng':13.4,'name':'Germany'},
+    '🇬🇧':{'lat':51.5,'lng':-0.1,'name':'UK'},'GB':{'lat':51.5,'lng':-0.1,'name':'UK'},
+    '🇫🇷':{'lat':48.9,'lng':2.3,'name':'France'},'FR':{'lat':48.9,'lng':2.3,'name':'France'},
+    '🇳🇱':{'lat':52.4,'lng':4.9,'name':'Netherlands'},'NL':{'lat':52.4,'lng':4.9,'name':'Netherlands'},
+    '🇦🇺':{'lat':-33.9,'lng':151.2,'name':'Australia'},'AU':{'lat':-33.9,'lng':151.2,'name':'Australia'},
+    '🇨🇦':{'lat':43.7,'lng':-79.4,'name':'Canada'},'CA':{'lat':43.7,'lng':-79.4,'name':'Canada'},
+    '🇧🇷':{'lat':-23.5,'lng':-46.6,'name':'Brazil'},'BR':{'lat':-23.5,'lng':-46.6,'name':'Brazil'},
+    '🇮🇳':{'lat':19.1,'lng':72.9,'name':'India'},'IN':{'lat':19.1,'lng':72.9,'name':'India'},
+    '🇷🇺':{'lat':55.8,'lng':37.6,'name':'Russia'},'RU':{'lat':55.8,'lng':37.6,'name':'Russia'},
+    '🇨🇳':{'lat':39.9,'lng':116.4,'name':'China'},'CN':{'lat':39.9,'lng':116.4,'name':'China'},
+  };
+  const reg=(n.region||'').trim();
+  const coord=regionCoords[reg]||null;
+  // Mercator projection helper
+  function toXY(lat,lng,w,h){
+    const x=(lng+180)/360*w;
+    const latRad=lat*Math.PI/180;
+    const mercN=Math.log(Math.tan(Math.PI/4+latRad/2));
+    const y=(h/2)-(w*mercN/(2*Math.PI));
+    return {x,y:Math.max(8,Math.min(h-8,y))};
+  }
+  // Left: compact metadata
+  const rows=[
+    ['Name',esc(n.name),'Region',esc(n.region||'')+' '+esc(n.group||'')],
+    ['OS',esc(n.os||''),'Kernel',esc(n.kernel_version||'')],
+    ['CPU',esc(n.cpu_name||'')+' · '+n.cpu_cores+'c','Arch',n.arch+' · '+esc(n.virtualization||'')],
+    ['RAM',fB(n.mem_total),'Disk',fB(n.disk_total)],
+  ];
+  if(n.price>0)rows.push(['Price',(n.currency||'')+n.price+' / '+(n.billing_cycle||30)+'d','Expire',n.expired_at&&!n.expired_at.startsWith('0001')?n.expired_at.split('T')[0]:'--']);
+  let tblH='<table class="tbl"><tbody>';
+  rows.forEach(r=>{tblH+=`<tr><td>${r[0]}</td><td class="mono">${r[1]}</td><td>${r[2]}</td><td class="mono">${r[3]}</td></tr>`});
+  tblH+='</tbody></table>';
+  // Right: mini world map SVG
+  const mw=320,mh=180;
+  let mapSvg=`<svg viewBox="0 0 ${mw} ${mh}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">`;
+  // Background
+  const dark=html.getAttribute('data-theme')==='dark';
+  mapSvg+=`<rect width="${mw}" height="${mh}" fill="${dark?'rgba(20,38,58,0.3)':'rgba(200,216,230,0.25)'}" rx="8"/>`;
+  // Simplified continent outlines (dots grid style)
+  const continents=[
+    // North America
+    {pts:[[30,45],[35,40],[40,35],[50,30],[60,28],[70,30],[75,35],[80,45],[85,50],[80,55],[70,60],[60,55],[50,50],[40,48],[35,47]]},
+    // South America
+    {pts:[[75,65],[80,70],[85,80],[88,90],[90,100],[92,110],[90,120],[85,130],[78,135],[72,130],[68,120],[65,110],[65,100],[68,90],[70,80],[72,70]]},
+    // Europe
+    {pts:[[150,30],[155,28],[160,25],[168,28],[172,32],[170,38],[165,42],[158,45],[152,42],[148,38]]},
+    // Africa
+    {pts:[[150,50],[158,48],[165,50],[172,55],[178,65],[180,80],[178,95],[175,105],[168,112],[160,108],[155,100],[150,90],[148,78],[146,65],[148,55]]},
+    // Asia
+    {pts:[[175,25],[185,22],[200,20],[215,18],[230,20],[245,22],[260,28],[270,35],[275,42],[272,50],[265,55],[255,52],[245,48],[235,42],[225,38],[215,35],[205,30],[195,25],[185,24]]},
+    // Oceania
+    {pts:[[250,95],[258,90],[268,88],[278,90],[285,95],[288,102],[285,108],[278,112],[268,110],[258,105],[252,100]]},
+  ];
+  const gridColor=dark?'rgba(0,212,240,0.12)':'rgba(100,140,180,0.1)';
+  // Draw grid
+  for(let i=0;i<=6;i++){mapSvg+=`<line x1="0" y1="${i*30}" x2="${mw}" y2="${i*30}" stroke="${gridColor}" stroke-width="0.5"/>`}
+  for(let i=0;i<=10;i++){mapSvg+=`<line x1="${i*32}" y1="0" x2="${i*32}" y2="${mh}" stroke="${gridColor}" stroke-width="0.5"/>`}
+  // Draw continents as filled polygons
+  const landColor=dark?'rgba(0,212,240,0.08)':'rgba(100,150,200,0.08)';
+  const borderColor=dark?'rgba(0,212,240,0.2)':'rgba(100,150,200,0.18)';
+  continents.forEach(c=>{
+    const d=c.pts.map((p,i)=>(i===0?'M':'L')+p[0]+','+p[1]).join(' ')+'Z';
+    mapSvg+=`<path d="${d}" fill="${landColor}" stroke="${borderColor}" stroke-width="0.8"/>`;
+  });
+  // Plot all nodes as dim dots
+  S.nodes.forEach(nd=>{
+    const r2=(nd.region||'').trim();
+    const c2=regionCoords[r2];
+    if(c2){
+      const p=toXY(c2.lat,c2.lng,mw,mh);
+      const isMe=nd.uuid===n.uuid;
+      const on=S.onlineSet.has(nd.uuid);
+      if(!isMe){
+        mapSvg+=`<circle cx="${p.x}" cy="${p.y}" r="2.5" fill="${on?'rgba(0,230,118,0.4)':'rgba(148,163,184,0.3)'}" stroke="none"/>`;
+      }
+    }
+  });
+  // Current node — bright with glow
+  if(coord){
+    const p=toXY(coord.lat,coord.lng,mw,mh);
+    const on=S.onlineSet.has(n.uuid);
+    const col=on?'var(--cyan)':'var(--r)';
+    mapSvg+=`<circle cx="${p.x}" cy="${p.y}" r="12" fill="${dark?'rgba(0,212,240,0.08)':'rgba(0,184,212,0.06)'}" stroke="none"><animate attributeName="r" values="8;14;8" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0.2;0.6" dur="3s" repeatCount="indefinite"/></circle>`;
+    mapSvg+=`<circle cx="${p.x}" cy="${p.y}" r="4" fill="${col}" stroke="#fff" stroke-width="1.5" style="filter:drop-shadow(0 0 4px ${dark?'rgba(0,212,240,0.6)':'rgba(0,184,212,0.5)'})"/>`;
+    mapSvg+=`<text x="${p.x}" y="${p.y-10}" text-anchor="middle" fill="${dark?'#7d9ab5':'#546e85'}" font-family="JetBrains Mono" font-size="8" letter-spacing="1">${esc(n.name)}</text>`;
+  }
+  mapSvg+='</svg>';
+  el.innerHTML=`<div class="meta-split"><div class="p ext-sec meta-left"><div class="ch-label" style="margin-bottom:8px">◆ NODE METADATA</div>${tblH}</div><div class="p ext-sec meta-right"><div class="ch-label" style="margin-bottom:8px">◆ LOCATION</div><div class="mini-map">${mapSvg}</div></div></div>`;
 }
 
 function setXaxis(id,times){
