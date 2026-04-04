@@ -730,16 +730,75 @@ function dCh(canvasId,opts){
     });
   }
 }
-function drawCore(){
-  const c=$('coreCanvas');if(!c)return;const dark=html.getAttribute('data-theme')==='dark';
-  const ctx=c.getContext('2d');const dpr=window.devicePixelRatio||1;const sz=c.parentElement.getBoundingClientRect().width;
-  c.width=sz*dpr;c.height=sz*dpr;c.style.width=sz+'px';c.style.height=sz+'px';ctx.scale(dpr,dpr);
-  const cx=sz/2,cy=sz/2,R=sz*0.44;const tA=dark?0.16:0.12,tB=dark?0.04:0.03,rA=dark?0.05:0.04;
-  ctx.beginPath();ctx.arc(cx,cy,R*1.3,0,Math.PI*2);ctx.strokeStyle='rgba(var(--cyr),'+rA+')'.replace('var(--cyr)',dark?'0,212,240':'0,184,212');ctx.lineWidth=1;ctx.stroke();
-  for(let i=0;i<60;i++){const a=(i/60)*Math.PI*2-Math.PI/2;const r1=i%5===0?R*1.12:R*1.2;const r2=R*1.27;ctx.beginPath();ctx.moveTo(cx+r1*Math.cos(a),cy+r1*Math.sin(a));ctx.lineTo(cx+r2*Math.cos(a),cy+r2*Math.sin(a));const cRgb=dark?'0,212,240':'0,184,212';ctx.strokeStyle=i%5===0?'rgba('+cRgb+','+tA+')':'rgba('+cRgb+','+tB+')';ctx.lineWidth=i%5===0?1:.5;ctx.stroke()}
-  const sA=-Math.PI*.75,eA=sA+0.9998*Math.PI*1.5;const cRgb=dark?'0,212,240':'0,184,212';
-  const grd=ctx.createLinearGradient(cx-R,cy,cx+R,cy);grd.addColorStop(0,'rgba('+cRgb+',0.9)');grd.addColorStop(1,'rgba('+cRgb+',0.6)');
-  ctx.beginPath();ctx.arc(cx,cy,R,sA,eA);ctx.strokeStyle=grd;ctx.lineWidth=R*0.12;ctx.lineCap='round';ctx.stroke();
+/* ── Core Ring Animation ── */
+let _coreRaf=0,_coreRot=0,_corePulse=0;
+function drawCore(skipLoop){
+  const c=$('coreCanvas');if(!c)return;
+  const dark=html.getAttribute('data-theme')==='dark';
+  const ctx=c.getContext('2d');if(!ctx)return;
+  const dpr=window.devicePixelRatio||1;
+  const sz=c.parentElement.getBoundingClientRect().width;
+  const needW=Math.round(sz*dpr);
+  if(c.width!==needW||c.height!==needW){c.width=needW;c.height=needW;c.style.width=sz+'px';c.style.height=sz+'px'}
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,sz,sz);
+  const cx=sz/2,cy=sz/2,R=sz*0.44;
+  const cRgb=dark?'0,212,240':'0,184,212';
+  const gRgb=dark?'0,230,118':'0,200,100';
+
+  // 1) Outermost dashed ring (static)
+  ctx.beginPath();ctx.arc(cx,cy,R*1.35,0,Math.PI*2);
+  ctx.strokeStyle='rgba('+cRgb+','+(dark?0.10:0.06)+')';
+  ctx.lineWidth=1;ctx.setLineDash([4,4]);ctx.stroke();ctx.setLineDash([]);
+
+  // 2) Tick marks (60, static)
+  const tA=dark?0.16:0.12,tB=dark?0.04:0.03;
+  for(let i=0;i<60;i++){
+    const a=(i/60)*Math.PI*2-Math.PI/2;
+    const r1=i%5===0?R*1.12:R*1.2,r2=R*1.27;
+    ctx.beginPath();ctx.moveTo(cx+r1*Math.cos(a),cy+r1*Math.sin(a));
+    ctx.lineTo(cx+r2*Math.cos(a),cy+r2*Math.sin(a));
+    ctx.strokeStyle='rgba('+cRgb+','+(i%5===0?tA:tB)+')';
+    ctx.lineWidth=i%5===0?1:.5;ctx.stroke();
+  }
+
+  // 3) Rotating main arc (3/4 circle, the big cyan arc)
+  const grd=ctx.createLinearGradient(cx-R,cy-R,cx+R,cy+R);
+  grd.addColorStop(0,'rgba('+cRgb+',0.9)');grd.addColorStop(0.5,'rgba('+cRgb+',0.55)');grd.addColorStop(1,'rgba('+cRgb+',0.9)');
+  ctx.beginPath();ctx.arc(cx,cy,R,_coreRot,_coreRot+Math.PI*1.5);
+  ctx.strokeStyle=grd;ctx.lineWidth=R*0.1;ctx.lineCap='round';
+  ctx.shadowColor='rgba('+cRgb+',0.45)';ctx.shadowBlur=R*0.25;
+  ctx.stroke();ctx.shadowBlur=0;
+
+  // 4) Green progress arc (uptime-based, static position from 12 o'clock)
+  const d=S.liveData[S.uuid]||{};
+  const uptPct=d.uptime?(d.uptime/(d.uptime+60)):0;
+  if(uptPct>0){
+    ctx.beginPath();ctx.arc(cx,cy,R*0.88,-Math.PI/2,-Math.PI/2+Math.PI*2*uptPct);
+    ctx.strokeStyle='rgba('+gRgb+',0.4)';ctx.lineWidth=R*0.06;ctx.lineCap='round';
+    ctx.shadowColor='rgba('+gRgb+',0.3)';ctx.shadowBlur=6;
+    ctx.stroke();ctx.shadowBlur=0;
+  }
+
+  // 5) Breathing inner ring
+  const breathR=R*0.72+Math.sin(_corePulse)*R*0.04;
+  const breathA=0.15+Math.sin(_corePulse)*0.12;
+  ctx.beginPath();ctx.arc(cx,cy,breathR,0,Math.PI*2);
+  ctx.strokeStyle='rgba('+cRgb+','+breathA+')';
+  ctx.lineWidth=1.5;ctx.setLineDash([6,5]);ctx.stroke();ctx.setLineDash([]);
+
+  // 6) 12 orbiting data points (slow spin with main arc)
+  for(let i=0;i<12;i++){
+    const a=(i/12)*Math.PI*2-Math.PI/2+_coreRot*0.5;
+    const x=cx+Math.cos(a)*R*1.3,y=cy+Math.sin(a)*R*1.3;
+    const s=i%3===0?R*0.03:R*0.018;
+    ctx.beginPath();ctx.arc(x,y,s,0,Math.PI*2);
+    ctx.fillStyle='rgba('+cRgb+','+(0.2+Math.sin(_corePulse+i)*0.18)+')';
+    ctx.fill();
+  }
+
+  _coreRot+=0.004;_corePulse+=0.025;
+  if(!skipLoop){if(_coreRaf)cancelAnimationFrame(_coreRaf);_coreRaf=requestAnimationFrame(()=>drawCore())}
 }
 
 /* ── Load chart data from API ── */
