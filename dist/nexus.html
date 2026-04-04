@@ -500,13 +500,13 @@ function updateLive(){
   uBar('rtCpu',cpu,'rtCpuV',cpu+'%');uBar('rtRam',ram,'rtRamV',ram+'%');uBar('rtDisk',disk,'rtDiskV',disk+'%');uBar('rtSwap',swap,'rtSwapV',swap+'%');
   const loadPct=n.cpu_cores?Math.min(100,(d.load1||0)*100/n.cpu_cores):0;
   uBar('rtLoad',loadPct,'rtLoadV',(d.load1||0).toFixed(2));
-  // Event
-  // Only log event when values actually change
+  // Event — merge resource + connections into one line
   const snap=`${cpu}-${ram}-${disk}-${swap}`;
   if(snap!==S._lastSnap){
     S._lastSnap=snap;
-    addEvent(on?'ok':'warn',`CPU ${cpu}% · RAM ${ram}% · Disk ${disk}% · Swap ${swap}%`,d.updated_at);
-    if(d.tcp)addEvent('info',`TCP ${d.tcp} · UDP ${d.udp||0} · Proc ${d.process||0}`,d.updated_at);
+    const parts=[`CPU ${cpu}%`,`RAM ${ram}%`,`Disk ${disk}%`,`Swap ${swap}%`];
+    if(d.tcp)parts.push(`TCP ${d.tcp}`,`Proc ${d.process||0}`);
+    addEvent(on?'ok':'warn',parts.join(' · '),d.updated_at);
   }
 }
 
