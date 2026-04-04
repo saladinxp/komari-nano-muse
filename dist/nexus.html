@@ -143,10 +143,7 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 .ext-row{display:grid;grid-template-columns:1fr 1fr;gap:clamp(5px,0.5vw,10px)}
 .ext-full{width:100%}
 .ext-sec{padding:clamp(10px,1vw,16px)}
-.meta-split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(5px,0.5vw,10px)}
-.meta-left{overflow-x:auto}
-.meta-right{display:flex;flex-direction:column}
-.mini-map{flex:1;min-height:160px;border-radius:8px;overflow:hidden}
+.mini-map{border-radius:8px;overflow:hidden}
 .tbl{width:100%;border-collapse:collapse;margin-top:6px}
 .tbl th{font-family:var(--fm);font-size:11px;letter-spacing:1.5px;color:var(--t4);text-transform:uppercase;text-align:left;padding:6px 8px;border-bottom:1px solid var(--bdr);font-weight:600}
 .tbl td{font-family:var(--fm);font-size:12px;color:var(--t2);padding:5px 8px;border-bottom:1px solid var(--bdr)}.tbl tr:last-child td{border-bottom:none}
@@ -182,7 +179,6 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
   .chart-wrap{padding:12px;border-radius:10px}
   .chart-wrap canvas{height:140px}
   .ext-row{grid-template-columns:1fr}
-  .meta-split{grid-template-columns:1fr}
   .cbot{grid-template-columns:1fr 1fr}
   .met4{grid-template-columns:1fr 1fr}
   .tbl{display:block;overflow-x:auto}
@@ -845,104 +841,66 @@ function renderPingHistory(tasks,records){
 
 function renderNodeMeta(){
   const n=S.node;if(!n)return;const el=$('nodeMetaRow');if(!el)return;
-  // Region to approximate lat/lng mapping
-  const regionCoords={
-    '🇯🇵':{'lat':35.7,'lng':139.7,'name':'Japan'},'JP':{'lat':35.7,'lng':139.7,'name':'Japan'},
-    '🇺🇸':{'lat':37.8,'lng':-122.4,'name':'USA'},'US':{'lat':37.8,'lng':-122.4,'name':'USA'},
-    '🇭🇰':{'lat':22.3,'lng':114.2,'name':'Hong Kong'},'HK':{'lat':22.3,'lng':114.2,'name':'Hong Kong'},
-    '🇹🇼':{'lat':25.0,'lng':121.5,'name':'Taiwan'},'TW':{'lat':25.0,'lng':121.5,'name':'Taiwan'},
-    '🇸🇬':{'lat':1.3,'lng':103.8,'name':'Singapore'},'SG':{'lat':1.3,'lng':103.8,'name':'Singapore'},
-    '🇰🇷':{'lat':37.6,'lng':127.0,'name':'Korea'},'KR':{'lat':37.6,'lng':127.0,'name':'Korea'},
-    '🇩🇪':{'lat':52.5,'lng':13.4,'name':'Germany'},'DE':{'lat':52.5,'lng':13.4,'name':'Germany'},
-    '🇬🇧':{'lat':51.5,'lng':-0.1,'name':'UK'},'GB':{'lat':51.5,'lng':-0.1,'name':'UK'},
-    '🇫🇷':{'lat':48.9,'lng':2.3,'name':'France'},'FR':{'lat':48.9,'lng':2.3,'name':'France'},
-    '🇳🇱':{'lat':52.4,'lng':4.9,'name':'Netherlands'},'NL':{'lat':52.4,'lng':4.9,'name':'Netherlands'},
-    '🇦🇺':{'lat':-33.9,'lng':151.2,'name':'Australia'},'AU':{'lat':-33.9,'lng':151.2,'name':'Australia'},
-    '🇨🇦':{'lat':43.7,'lng':-79.4,'name':'Canada'},'CA':{'lat':43.7,'lng':-79.4,'name':'Canada'},
-    '🇧🇷':{'lat':-23.5,'lng':-46.6,'name':'Brazil'},'BR':{'lat':-23.5,'lng':-46.6,'name':'Brazil'},
-    '🇮🇳':{'lat':19.1,'lng':72.9,'name':'India'},'IN':{'lat':19.1,'lng':72.9,'name':'India'},
-    '🇷🇺':{'lat':55.8,'lng':37.6,'name':'Russia'},'RU':{'lat':55.8,'lng':37.6,'name':'Russia'},
-    '🇨🇳':{'lat':39.9,'lng':116.4,'name':'China'},'CN':{'lat':39.9,'lng':116.4,'name':'China'},
+  const dark=html.getAttribute('data-theme')==='dark';
+  const RC={
+    '\U0001f1ef\U0001f1f5':[35.7,139.7],'JP':[35.7,139.7],'\U0001f1fa\U0001f1f8':[37.8,-122.4],'US':[37.8,-122.4],
+    '\U0001f1ed\U0001f1f0':[22.3,114.2],'HK':[22.3,114.2],'\U0001f1f9\U0001f1fc':[25.0,121.5],'TW':[25.0,121.5],
+    '\U0001f1f8\U0001f1ec':[1.3,103.8],'SG':[1.3,103.8],'\U0001f1f0\U0001f1f7':[37.6,127.0],'KR':[37.6,127.0],
+    '\U0001f1e9\U0001f1ea':[52.5,13.4],'DE':[52.5,13.4],'\U0001f1ec\U0001f1e7':[51.5,-0.1],'GB':[51.5,-0.1],
+    '\U0001f1eb\U0001f1f7':[48.9,2.3],'FR':[48.9,2.3],'\U0001f1f3\U0001f1f1':[52.4,4.9],'NL':[52.4,4.9],
+    '\U0001f1e6\U0001f1fa':[-33.9,151.2],'AU':[-33.9,151.2],'\U0001f1e8\U0001f1e6':[43.7,-79.4],'CA':[43.7,-79.4],
+    '\U0001f1e7\U0001f1f7':[-23.5,-46.6],'BR':[-23.5,-46.6],'\U0001f1ee\U0001f1f3':[19.1,72.9],'IN':[19.1,72.9],
+    '\U0001f1f7\U0001f1fa':[55.8,37.6],'RU':[55.8,37.6],'\U0001f1e8\U0001f1f3':[39.9,116.4],'CN':[39.9,116.4],
+    '\U0001f1f9\U0001f1ed':[13.8,100.5],'TH':[13.8,100.5],'\U0001f1fb\U0001f1f3':[21.0,105.9],'VN':[21.0,105.9],
+    '\U0001f1f2\U0001f1fe':[3.1,101.7],'MY':[3.1,101.7],'\U0001f1ee\U0001f1e9':[-6.2,106.8],'ID':[-6.2,106.8],
+    '\U0001f1f5\U0001f1ed':[14.6,121.0],'PH':[14.6,121.0],'\U0001f1ff\U0001f1e6':[-33.9,18.4],'ZA':[-33.9,18.4],
+    '\U0001f1e6\U0001f1ea':[25.2,55.3],'AE':[25.2,55.3],'\U0001f1f9\U0001f1f7':[41.0,28.9],'TR':[41.0,28.9],
+    '\U0001f1ee\U0001f1f9':[41.9,12.5],'IT':[41.9,12.5],'\U0001f1ea\U0001f1f8':[40.4,-3.7],'ES':[40.4,-3.7],
+    '\U0001f1f5\U0001f1f1':[52.2,21.0],'PL':[52.2,21.0],'\U0001f1e8\U0001f1ed':[46.9,7.4],'CH':[46.9,7.4],
+    '\U0001f1f8\U0001f1ea':[59.3,18.1],'SE':[59.3,18.1],'\U0001f1f3\U0001f1f4':[59.9,10.8],'NO':[59.9,10.8],
+    '\U0001f1f2\U0001f1fd':[19.4,-99.1],'MX':[19.4,-99.1],'\U0001f1e6\U0001f1f7':[-34.6,-58.4],'AR':[-34.6,-58.4],
+    '\U0001f1f3\U0001f1ff':[-36.8,174.8],'NZ':[-36.8,174.8],'\U0001f1ee\U0001f1f1':[32.1,34.8],'IL':[32.1,34.8],
+    '\U0001f1fa\U0001f1e6':[50.4,30.5],'UA':[50.4,30.5],'\U0001f1eb\U0001f1ee':[60.2,24.9],'FI':[60.2,24.9],
   };
   const reg=(n.region||'').trim();
-  const coord=regionCoords[reg]||null;
-  // Mercator projection helper
-  function toXY(lat,lng,w,h){
-    const x=(lng+180)/360*w;
-    const latRad=lat*Math.PI/180;
-    const mercN=Math.log(Math.tan(Math.PI/4+latRad/2));
-    const y=(h/2)-(w*mercN/(2*Math.PI));
-    return {x,y:Math.max(8,Math.min(h-8,y))};
+  const coord=RC[reg]||null;
+  const W=800,H=380,PAD=20;
+  function toXY(lat,lng){
+    const x=PAD+(lng+180)/360*(W-2*PAD);
+    const latR=lat*Math.PI/180;
+    const mercN=Math.log(Math.tan(Math.PI/4+latR/2));
+    const y=(H/2)-(W-2*PAD)*mercN/(2*Math.PI);
+    return [Math.round(x*10)/10,Math.max(PAD,Math.min(H-PAD,Math.round(y*10)/10))];
   }
-  // Left: compact metadata
-  const rows=[
-    ['Name',esc(n.name),'Region',esc(n.region||'')+' '+esc(n.group||'')],
-    ['OS',esc(n.os||''),'Kernel',esc(n.kernel_version||'')],
-    ['CPU',esc(n.cpu_name||'')+' · '+n.cpu_cores+'c','Arch',n.arch+' · '+esc(n.virtualization||'')],
-    ['RAM',fB(n.mem_total),'Disk',fB(n.disk_total)],
-  ];
-  if(n.price>0)rows.push(['Price',(n.currency||'')+n.price+' / '+(n.billing_cycle||30)+'d','Expire',n.expired_at&&!n.expired_at.startsWith('0001')?n.expired_at.split('T')[0]:'--']);
-  let tblH='<table class="tbl"><tbody>';
-  rows.forEach(r=>{tblH+=`<tr><td>${r[0]}</td><td class="mono">${r[1]}</td><td>${r[2]}</td><td class="mono">${r[3]}</td></tr>`});
-  tblH+='</tbody></table>';
-  // Right: mini world map SVG
-  const mw=320,mh=180;
-  let mapSvg=`<svg viewBox="0 0 ${mw} ${mh}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">`;
-  // Background
-  const dark=html.getAttribute('data-theme')==='dark';
-  mapSvg+=`<rect width="${mw}" height="${mh}" fill="${dark?'rgba(20,38,58,0.3)':'rgba(200,216,230,0.25)'}" rx="8"/>`;
-  // Simplified continent outlines (dots grid style)
-  const continents=[
-    // North America
-    {pts:[[30,45],[35,40],[40,35],[50,30],[60,28],[70,30],[75,35],[80,45],[85,50],[80,55],[70,60],[60,55],[50,50],[40,48],[35,47]]},
-    // South America
-    {pts:[[75,65],[80,70],[85,80],[88,90],[90,100],[92,110],[90,120],[85,130],[78,135],[72,130],[68,120],[65,110],[65,100],[68,90],[70,80],[72,70]]},
-    // Europe
-    {pts:[[150,30],[155,28],[160,25],[168,28],[172,32],[170,38],[165,42],[158,45],[152,42],[148,38]]},
-    // Africa
-    {pts:[[150,50],[158,48],[165,50],[172,55],[178,65],[180,80],[178,95],[175,105],[168,112],[160,108],[155,100],[150,90],[148,78],[146,65],[148,55]]},
-    // Asia
-    {pts:[[175,25],[185,22],[200,20],[215,18],[230,20],[245,22],[260,28],[270,35],[275,42],[272,50],[265,55],[255,52],[245,48],[235,42],[225,38],[215,35],[205,30],[195,25],[185,24]]},
-    // Oceania
-    {pts:[[250,95],[258,90],[268,88],[278,90],[285,95],[288,102],[285,108],[278,112],[268,110],[258,105],[252,100]]},
-  ];
-  const gridColor=dark?'rgba(0,212,240,0.12)':'rgba(100,140,180,0.1)';
-  // Draw grid
-  for(let i=0;i<=6;i++){mapSvg+=`<line x1="0" y1="${i*30}" x2="${mw}" y2="${i*30}" stroke="${gridColor}" stroke-width="0.5"/>`}
-  for(let i=0;i<=10;i++){mapSvg+=`<line x1="${i*32}" y1="0" x2="${i*32}" y2="${mh}" stroke="${gridColor}" stroke-width="0.5"/>`}
-  // Draw continents as filled polygons
-  const landColor=dark?'rgba(0,212,240,0.08)':'rgba(100,150,200,0.08)';
-  const borderColor=dark?'rgba(0,212,240,0.2)':'rgba(100,150,200,0.18)';
-  continents.forEach(c=>{
-    const d=c.pts.map((p,i)=>(i===0?'M':'L')+p[0]+','+p[1]).join(' ')+'Z';
-    mapSvg+=`<path d="${d}" fill="${landColor}" stroke="${borderColor}" stroke-width="0.8"/>`;
-  });
-  // Plot all nodes as dim dots
-  S.nodes.forEach(nd=>{
-    const r2=(nd.region||'').trim();
-    const c2=regionCoords[r2];
-    if(c2){
-      const p=toXY(c2.lat,c2.lng,mw,mh);
-      const isMe=nd.uuid===n.uuid;
+  const gridC=dark?'rgba(0,212,240,0.06)':'rgba(140,170,200,0.08)';
+  const landF=dark?'rgba(0,212,240,0.06)':'rgba(160,190,220,0.1)';
+  let svg=`<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block">`;
+  for(let lng=-150;lng<=180;lng+=30){const[x]=toXY(0,lng);svg+=`<line x1="${x}" y1="${PAD}" x2="${x}" y2="${H-PAD}" stroke="${gridC}" stroke-width="0.5"/>`}
+  for(let lat=-60;lat<=80;lat+=20){const[,y]=toXY(lat,0);svg+=`<line x1="${PAD}" y1="${y}" x2="${W-PAD}" y2="${y}" stroke="${gridC}" stroke-width="0.5"/>`}
+  const LP=[[-125,50],[-120,48],[-115,47],[-110,45],[-105,42],[-100,40],[-95,38],[-90,35],[-85,33],[-80,30],[-75,42],[-70,45],[-65,47],[-120,55],[-115,55],[-110,53],[-105,50],[-100,48],[-95,45],[-90,42],[-85,38],[-80,35],[-130,60],[-125,58],[-120,60],[-115,58],[-110,55],[-105,52],[-100,50],[-95,48],[-100,30],[-95,32],[-90,30],[-85,28],[-100,20],[-95,18],[-90,16],[-85,14],[-80,10],[-75,5],[-70,0],[-65,-5],[-60,-10],[-55,-15],[-50,-20],[-45,-25],[-40,-15],[-35,-10],[-70,-15],[-65,-20],[-60,-25],[-55,-30],[-50,-28],[-45,-23],[-70,-30],[-72,-35],[-70,-40],[-68,-45],[-5,52],[0,52],[5,50],[10,48],[15,50],[20,52],[25,50],[30,52],[35,55],[40,58],[0,45],[5,45],[10,45],[15,42],[20,40],[25,38],[30,40],[-8,40],[-5,38],[0,42],[5,48],[10,52],[15,55],[20,58],[25,60],[10,55],[15,58],[20,55],[25,55],[30,58],[0,30],[5,28],[10,25],[15,20],[20,15],[25,10],[30,5],[35,0],[40,-5],[10,0],[15,-5],[20,-10],[25,-15],[30,-20],[35,-25],[28,-30],[-5,15],[0,10],[5,5],[10,0],[-15,10],[-10,15],[-5,10],[0,5],[30,-10],[35,-15],[30,-25],[25,-28],[45,40],[50,42],[55,45],[60,48],[65,50],[70,55],[75,58],[80,55],[50,35],[55,38],[60,40],[65,35],[70,30],[75,28],[80,25],[85,22],[90,25],[85,30],[90,28],[95,20],[100,15],[105,18],[110,22],[115,25],[120,30],[125,35],[130,38],[135,35],[140,38],[100,25],[105,22],[110,18],[115,15],[120,18],[100,10],[105,5],[110,0],[115,-5],[50,30],[55,28],[60,25],[65,28],[60,55],[65,58],[70,60],[80,62],[90,60],[100,55],[110,50],[120,48],[130,45],[140,42],[70,65],[80,68],[90,65],[100,62],[110,58],[120,55],[130,50],[120,-20],[125,-22],[130,-25],[135,-28],[140,-30],[145,-32],[150,-28],[148,-22],[142,-18],[135,-15],[128,-16],[150,-35],[148,-38],[145,-35],[142,-32],[170,-38],[172,-42],[175,-44]];
+  LP.forEach(function(p){const[x,y]=toXY(p[1],p[0]);svg+=`<circle cx="${x}" cy="${y}" r="2.5" fill="${landF}" stroke="none"/>`});
+  S.nodes.forEach(function(nd){
+    const r2=(nd.region||'').trim();const c2=RC[r2];
+    if(c2&&nd.uuid!==n.uuid){
+      const[x,y]=toXY(c2[0],c2[1]);
       const on=S.onlineSet.has(nd.uuid);
-      if(!isMe){
-        mapSvg+=`<circle cx="${p.x}" cy="${p.y}" r="2.5" fill="${on?'rgba(0,230,118,0.4)':'rgba(148,163,184,0.3)'}" stroke="none"/>`;
-      }
+      svg+=`<circle cx="${x}" cy="${y}" r="3" fill="${on?'rgba(0,230,118,0.5)':'rgba(148,163,184,0.35)'}" stroke="${on?'rgba(0,230,118,0.3)':'none'}" stroke-width="1"/>`;
+      svg+=`<text x="${x}" y="${y-7}" text-anchor="middle" fill="${dark?'#546e85':'#94a3b8'}" font-family="JetBrains Mono" font-size="7" letter-spacing="0.5">${esc(nd.name)}</text>`;
     }
   });
-  // Current node — bright with glow
   if(coord){
-    const p=toXY(coord.lat,coord.lng,mw,mh);
+    const[x,y]=toXY(coord[0],coord[1]);
     const on=S.onlineSet.has(n.uuid);
-    const col=on?'var(--cyan)':'var(--r)';
-    mapSvg+=`<circle cx="${p.x}" cy="${p.y}" r="12" fill="${dark?'rgba(0,212,240,0.08)':'rgba(0,184,212,0.06)'}" stroke="none"><animate attributeName="r" values="8;14;8" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;0.2;0.6" dur="3s" repeatCount="indefinite"/></circle>`;
-    mapSvg+=`<circle cx="${p.x}" cy="${p.y}" r="4" fill="${col}" stroke="#fff" stroke-width="1.5" style="filter:drop-shadow(0 0 4px ${dark?'rgba(0,212,240,0.6)':'rgba(0,184,212,0.5)'})"/>`;
-    mapSvg+=`<text x="${p.x}" y="${p.y-10}" text-anchor="middle" fill="${dark?'#7d9ab5':'#546e85'}" font-family="JetBrains Mono" font-size="8" letter-spacing="1">${esc(n.name)}</text>`;
+    const col=on?(dark?'#00d4f0':'#00b8d4'):'#ff3d57';
+    svg+=`<circle cx="${x}" cy="${y}" r="18" fill="none" stroke="${col}" stroke-width="1" opacity="0.2"><animate attributeName="r" values="12;22;12" dur="3s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.3;0.05;0.3" dur="3s" repeatCount="indefinite"/></circle>`;
+    svg+=`<circle cx="${x}" cy="${y}" r="10" fill="${col}" opacity="0.08"><animate attributeName="r" values="8;13;8" dur="3s" repeatCount="indefinite"/></circle>`;
+    svg+=`<circle cx="${x}" cy="${y}" r="5" fill="${col}" stroke="#fff" stroke-width="1.5" style="filter:drop-shadow(0 0 6px ${col})"/>`;
+    svg+=`<text x="${x+12}" y="${y+4}" fill="${dark?'#c8d8e8':'#1a2c3e'}" font-family="Outfit" font-weight="700" font-size="11">${esc(n.name)}</text>`;
+    svg+=`<text x="${x+12}" y="${y+15}" fill="${dark?'#546e85':'#7d9ab5'}" font-family="JetBrains Mono" font-size="8" letter-spacing="1">${esc(reg)} \xb7 ${esc(n.group||'')}</text>`;
   }
-  mapSvg+='</svg>';
-  el.innerHTML=`<div class="meta-split"><div class="p ext-sec meta-left"><div class="ch-label" style="margin-bottom:8px">◆ NODE METADATA</div>${tblH}</div><div class="p ext-sec meta-right"><div class="ch-label" style="margin-bottom:8px">◆ LOCATION</div><div class="mini-map">${mapSvg}</div></div></div>`;
+  svg+='</svg>';
+  el.innerHTML=`<div class="p ext-sec" style="padding:clamp(8px,0.8vw,14px)"><div class="ch-label" style="margin-bottom:6px">\u25c6 NODE LOCATION</div><div class="mini-map">${svg}</div></div>`;
 }
-
 function setXaxis(id,times){
   const el=$(id);if(!el||!times.length)return;
   const n=times.length;const picks=[0,Math.floor(n*.25),Math.floor(n*.5),Math.floor(n*.75),n-1];
