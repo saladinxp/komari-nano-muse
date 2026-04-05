@@ -583,8 +583,8 @@ body{
 .nc-hbar-lbl{font-family:var(--fm);font-size:6.5px;letter-spacing:1.5px;color:var(--t4);margin-right:3px;flex-shrink:0}
 .nc-hblk{flex:1;height:3.5px;border-radius:1.5px;background:rgba(var(--cyan-rgb),0.06);transition:background .3s}
 .nc-hblk.g{background:var(--g)}.nc-hblk.a{background:var(--am)}.nc-hblk.r{background:var(--r)}
-/* Core pulse blocks — top right */
-.nc-cpb{position:absolute;top:10px;right:12px;display:flex;gap:3px;z-index:3}
+/* Core pulse blocks — inline before badge */
+.nc-cpb{display:flex;gap:3px;align-items:center;margin-left:auto;margin-right:6px}
 .nc-cb{width:6px;height:6px;border-radius:1.5px;animation:cb-pulse 2s ease-in-out infinite}
 .nc-cb:nth-child(2){animation-delay:.4s}
 .nc-cb:nth-child(3){animation-delay:.8s}
@@ -2079,8 +2079,7 @@ function rCards(fl){
     const offCls=on?'':(fake&&fake.atk?'off atk':'off ovl');
     const dly=Math.min(9,Math.floor(i/2)+4);
     html+=`<div class="nc ${offCls} an d${dly}" data-uuid="${n.uuid}" onclick="openDet('${n.uuid}')">
-      ${on?`<div class="nc-cpb"><div class="nc-cb ${cpu>=80?'r':cpu>=60?'am':'g'}"></div><div class="nc-cb ${ram>=80?'r':ram>=60?'am':'g'}"></div><div class="nc-cb ${disk>=80?'r':disk>=60?'am':'g'}"></div></div>`:`<div class="nc-cpb"><div class="nc-cb dead"></div><div class="nc-cb dead"></div><div class="nc-cb dead"></div></div>`}
-      <div class="nc-h"><div class="nc-n"><span class="nc-dot ${on?'on':'off'}"></span>${esc(n.name||n.uuid)}</div><span class="nc-badge ${on?'on':'off'}">${on?'ONLINE':'OFFLINE'}</span></div>
+      <div class="nc-h"><div class="nc-n"><span class="nc-dot ${on?'on':'off'}"></span>${esc(n.name||n.uuid)}</div>${on?`<div class="nc-cpb"><div class="nc-cb ${cpu>=80?'r':cpu>=60?'am':'g'}"></div><div class="nc-cb ${ram>=80?'r':ram>=60?'am':'g'}"></div><div class="nc-cb ${disk>=80?'r':disk>=60?'am':'g'}"></div></div>`:`<div class="nc-cpb"><div class="nc-cb dead"></div><div class="nc-cb dead"></div><div class="nc-cb dead"></div></div>`}<span class="nc-badge ${on?'on':'off'}">${on?'ONLINE':'OFFLINE'}</span></div>
       <div class="nc-meta">${chips}</div>
       <div class="nc-body">
         <div class="nc-ring"><svg viewBox="0 0 52 52"><circle class="nc-ring-bg" cx="26" cy="26" r="21"/><circle class="nc-ring-fg ${hc}" cx="26" cy="26" r="21" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/></svg><div class="nc-ring-val" style="color:var(--${hc})">${health}</div><div class="nc-ring-lbl">HEALTH</div></div>
