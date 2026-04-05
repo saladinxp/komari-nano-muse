@@ -589,8 +589,12 @@ body{
 .nc-cb:nth-child(2){animation-delay:.4s}
 .nc-cb:nth-child(3){animation-delay:.8s}
 .nc-cb.g{background:var(--g);color:var(--g)}.nc-cb.am{background:var(--am);color:var(--am)}.nc-cb.r{background:var(--r);color:var(--r)}
-.nc-cb.dead{background:var(--r);opacity:.15;animation:none}
-@keyframes cb-pulse{0%,100%{opacity:.3;box-shadow:none}50%{opacity:1;box-shadow:0 0 6px currentColor}}
+/* Offline: red urgent blink */
+.nc-cb.dead{background:var(--r);color:var(--r);animation:cb-dead 1s ease-in-out infinite}
+.nc-cb.dead:nth-child(2){animation-delay:.15s}
+.nc-cb.dead:nth-child(3){animation-delay:.3s}
+@keyframes cb-pulse{0%,100%{opacity:.25;box-shadow:none}50%{opacity:1;box-shadow:0 0 6px currentColor}}
+@keyframes cb-dead{0%,100%{opacity:.15}50%{opacity:.9;box-shadow:0 0 8px var(--r)}}
 .nc-fd{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid rgba(148,190,230,0.15);font-family:var(--fm)}
 .nc-fd-cell{padding:6px 8px;display:flex;flex-direction:column;align-items:center;gap:1px}
 .nc-fd-cell+.nc-fd-cell{border-left:1px solid rgba(148,190,230,0.1)}
