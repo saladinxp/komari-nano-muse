@@ -578,6 +578,11 @@ body{
 .nc-mv{font-family:var(--fm);font-size:10px;font-weight:600;width:36px;text-align:right;flex-shrink:0}
 .nc-net{display:flex;gap:12px;margin-top:5px;font-family:var(--fm);font-size:9.5px;color:var(--t2)}
 .nc-net span{display:flex;align-items:center;gap:3px}.au{color:var(--g);font-weight:700}.ad{color:var(--blue);font-weight:700}
+/* Health blocks bar */
+.nc-hbar{display:flex;align-items:center;gap:3px;padding:4px 14px 6px;border-top:1px solid rgba(148,190,230,0.1)}
+.nc-hbar-lbl{font-family:var(--fm);font-size:7px;letter-spacing:2px;color:var(--t4);margin-right:4px;flex-shrink:0}
+.nc-hblk{flex:1;height:5px;border-radius:2px;background:rgba(var(--cyan-rgb),0.08);transition:background .3s}
+.nc-hblk.g{background:var(--g)}.nc-hblk.a{background:var(--am)}.nc-hblk.r{background:var(--r)}
 .nc-fd{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid rgba(148,190,230,0.15);font-family:var(--fm)}
 .nc-fd-cell{padding:6px 8px;display:flex;flex-direction:column;align-items:center;gap:1px}
 .nc-fd-cell+.nc-fd-cell{border-left:1px solid rgba(148,190,230,0.1)}
@@ -2073,6 +2078,7 @@ function rCards(fl){
         <div class="nc-data"><div class="nc-meters">${mH('CPU',cpu,!on,hwCpu)}${mH('RAM',ram,!on,hwRam)}${mH('DISK',disk,!on,hwDisk)}</div>
         <div class="nc-net"><span${on?'':' style="opacity:.4"'}><span class="au">↑</span>${netUp}</span><span${on?'':' style="opacity:.4"'}><span class="ad">↓</span>${netDn}</span></div></div>
       </div>
+      <div class="nc-hbar"><span class="nc-hbar-lbl">HEALTH</span>${(function(){let b='';for(let i=0;i<10;i++){const filled=i<(on?Math.ceil(health/10):0);b+='<div class="nc-hblk'+(filled?(health>=90?' g':health>=70?' a':' r'):'')+'"></div>'}return b})()}</div>
       ${on?`<div class="nc-fd"><div class="nc-fd-cell"><span class="nc-fd-lbl">UPTIME</span><span class="nc-fd-val" style="color:var(--g)">${uptime}</span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">TX TOTAL</span><span class="nc-fd-val"><span class="au">↑</span>${totalUp}</span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">RX TOTAL</span><span class="nc-fd-val"><span class="ad">↓</span>${totalDn}</span></div></div>`:`<div class="nc-f-off"><span style="color:var(--r)">⚠ ${fake&&fake.atk?'UNDER ATTACK':'OVERLOAD'}</span></div>`}
     </div>`;
   });
@@ -2104,6 +2110,9 @@ function uCards(){
     if(ring){ring.setAttribute('class','nc-ring-fg '+hc);ring.setAttribute('stroke-dashoffset',off.toFixed(1))}
     const rv=card.querySelector('.nc-ring-val');
     if(rv){rv.textContent=health;rv.style.color='var(--'+hc+')'}
+    /* Update health blocks */
+    const hblks=card.querySelectorAll('.nc-hblk');
+    if(hblks.length===10){for(let i=0;i<10;i++){const filled=i<(on?Math.ceil(health/10):0);hblks[i].className='nc-hblk'+(filled?(health>=90?' g':health>=70?' a':' r'):'')}}
     /* Update net — incremental, no innerHTML */
     const netEl=card.querySelector('.nc-net');
     if(netEl&&on){
