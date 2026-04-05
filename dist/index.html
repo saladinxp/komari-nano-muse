@@ -584,7 +584,7 @@ body{
 .nc-hblk{flex:1;height:3.5px;border-radius:1.5px;background:rgba(var(--cyan-rgb),0.06);transition:background .3s}
 .nc-hblk.g{background:var(--g)}.nc-hblk.a{background:var(--am)}.nc-hblk.r{background:var(--r)}
 /* Core pulse blocks — top right */
-.nc-cpb{position:absolute;top:8px;right:10px;display:flex;gap:3px;z-index:2}
+.nc-cpb{position:absolute;top:10px;right:12px;display:flex;gap:3px;z-index:3}
 .nc-cb{width:6px;height:6px;border-radius:1.5px;animation:cb-pulse 2s ease-in-out infinite}
 .nc-cb:nth-child(2){animation-delay:.4s}
 .nc-cb:nth-child(3){animation-delay:.8s}
@@ -2079,7 +2079,7 @@ function rCards(fl){
     const offCls=on?'':(fake&&fake.atk?'off atk':'off ovl');
     const dly=Math.min(9,Math.floor(i/2)+4);
     html+=`<div class="nc ${offCls} an d${dly}" data-uuid="${n.uuid}" onclick="openDet('${n.uuid}')">
-      ${on?`<div class="nc-cpb"><div class="nc-cb ${mColor(cpu)}"></div><div class="nc-cb ${mColor(ram)}"></div><div class="nc-cb ${mColor(disk)}"></div></div>`:`<div class="nc-cpb"><div class="nc-cb dead"></div><div class="nc-cb dead"></div><div class="nc-cb dead"></div></div>`}
+      ${on?`<div class="nc-cpb"><div class="nc-cb ${cpu>=80?'r':cpu>=60?'am':'g'}"></div><div class="nc-cb ${ram>=80?'r':ram>=60?'am':'g'}"></div><div class="nc-cb ${disk>=80?'r':disk>=60?'am':'g'}"></div></div>`:`<div class="nc-cpb"><div class="nc-cb dead"></div><div class="nc-cb dead"></div><div class="nc-cb dead"></div></div>`}
       <div class="nc-h"><div class="nc-n"><span class="nc-dot ${on?'on':'off'}"></span>${esc(n.name||n.uuid)}</div><span class="nc-badge ${on?'on':'off'}">${on?'ONLINE':'OFFLINE'}</span></div>
       <div class="nc-meta">${chips}</div>
       <div class="nc-body">
@@ -2124,7 +2124,7 @@ function uCards(){
     if(hblks.length===20){for(let i=0;i<20;i++){const filled=i<(on?Math.ceil(health/5):0);hblks[i].className='nc-hblk'+(filled?(health>=90?' g':health>=70?' a':' r'):'')}}
     /* Update core pulse blocks */
     const cbs=card.querySelectorAll('.nc-cb');
-    if(cbs.length===3){if(on){cbs[0].className='nc-cb '+mColor(cpu);cbs[1].className='nc-cb '+mColor(ram);cbs[2].className='nc-cb '+mColor(disk)}else{cbs.forEach(c=>c.className='nc-cb dead')}}
+    if(cbs.length===3){const cbC=v=>v>=80?'r':v>=60?'am':'g';if(on){cbs[0].className='nc-cb '+cbC(cpu);cbs[1].className='nc-cb '+cbC(ram);cbs[2].className='nc-cb '+cbC(disk)}else{cbs.forEach(c=>c.className='nc-cb dead')}}
     /* Update net — incremental, no innerHTML */
     const netEl=card.querySelector('.nc-net');
     if(netEl&&on){
