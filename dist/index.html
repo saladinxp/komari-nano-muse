@@ -1258,6 +1258,8 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .det-copy-btn{background:none;border:1px solid rgba(37,99,235,0.2);color:var(--blue);font-size:12px;padding:6px 16px;border-radius:6px;cursor:pointer;transition:.2s;font-family:var(--fm);letter-spacing:1px}
 .det-copy-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 8px rgba(37,99,235,0.3)}
 .det-copy-btn.copied{background:var(--g);border-color:var(--g);color:#fff}
+.det-nexus-btn{background:none;border:1px solid rgba(var(--cyan-rgb),0.25);color:var(--cyan);font-size:12px;padding:6px 16px;border-radius:6px;cursor:pointer;transition:.2s;font-family:var(--fm);letter-spacing:1.5px;font-weight:600}
+.det-nexus-btn:hover{background:var(--cyan);color:#0a1420;border-color:var(--cyan);box-shadow:0 2px 8px rgba(var(--cyan-rgb),0.3)}
 
 /* ── Expiry Calendar ── */
 .bill-cal{margin:20px 0;background:rgba(255,255,255,0.5);border:1px solid rgba(148,170,200,0.12);border-radius:14px;padding:18px 20px}
@@ -1691,6 +1693,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
     <div class="content-area">
       <div class="det-back" onclick="nav('/')">← BACK TO DASHBOARD</div>
         <button class="det-copy-btn" onclick="copyNodeInfo()">COPY INFO</button>
+        <button class="det-nexus-btn" onclick="jumpNexus()">◈ NEXUS</button>
       <div class="sec-div"><span class="sd-line"></span><span class="sd-label"><span class="sd-dot"></span>NODE DETAIL · 节点详情</span><span class="sd-line r"></span></div>
       <div id="detContent"></div>
     </div>
@@ -3636,6 +3639,10 @@ function initHeartbeat(){
 
 
 /* ── Copy node info to clipboard ── */
+window.jumpNexus=function(){
+  var uuid=S.detailUUID||'';
+  window.location.href=uuid?'/nexus.html#'+uuid:'/nexus.html';
+};
 window.copyNodeInfo=function(){
   var uuid=S.detailUUID;if(!uuid)return;
   var n=S.detailNode||{};var d=S.liveData[uuid]||{};
