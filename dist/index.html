@@ -168,21 +168,6 @@
   border-color:rgba(0,212,240,0.2);
   color:var(--t);
 }
-[data-theme="dark"] .bill-sum-card{
-  background:rgba(18,34,56,0.8);
-  border-color:rgba(0,212,240,0.3);
-  box-shadow:0 1px 3px rgba(0,0,0,0.3),0 4px 12px rgba(0,0,0,0.2),0 10px 28px rgba(0,0,0,0.12);
-}
-[data-theme="dark"] .bill-table th{
-  background:rgba(14,26,45,0.95);
-  border-bottom-color:rgba(0,212,240,0.15);
-}
-[data-theme="dark"] .bill-table td{
-  border-bottom-color:rgba(0,212,240,0.06);
-}
-[data-theme="dark"] .bill-table tr:hover td{
-  background:rgba(0,212,240,0.04);
-}
 
 /* Theme Toggle Button Styles */
 .theme-toggle{
@@ -829,63 +814,135 @@ body.alert-active .scan-line{background:linear-gradient(90deg,transparent,rgba(1
 
 
 /* ═══ Currency Selector & Enhanced Billing ═══ */
-.bill-currency-bar{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding:12px 18px;background:var(--glass);border:1px solid var(--gborder);border-radius:10px}
+.bill-currency-bar{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding:12px 18px;background:var(--glass);border:1px solid var(--gborder);border-radius:14px}
 .bill-currency-label{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--t3);font-weight:600}
-.bill-cur-btn{font-family:var(--fm);font-size:11px;letter-spacing:1px;padding:4px 12px;border-radius:6px;border:1px solid rgba(100,116,139,0.15);background:transparent;color:var(--t2);cursor:pointer;font-weight:600;transition:all .2s}
-.bill-cur-btn:hover{border-color:var(--blue);color:var(--blue)}
+.bill-cur-btn{font-family:var(--fm);font-size:11px;letter-spacing:1px;padding:4px 12px;border-radius:8px;border:1px solid rgba(100,116,139,0.15);background:transparent;color:var(--t2);cursor:pointer;font-weight:600;transition:all .2s}
+.bill-cur-btn:hover{border-color:var(--cyan);color:var(--cyan)}
 .bill-cur-btn.a{background:linear-gradient(135deg,var(--blue),var(--cyan));color:#fff;border-color:transparent}
-.bill-sum-card.highlight{border-left:3px solid var(--blue)}
-.bill-sum-card.warn{border-left:3px solid var(--am)}
-.bill-due-list{margin-top:8px;font-size:12px;color:var(--t2)}
-.bill-due-item{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(100,116,139,0.06)}
-.bill-due-item:last-child{border-bottom:none}
-.bill-due-name{font-weight:600;cursor:pointer}
-.bill-due-name:hover{color:var(--blue)}
-.bill-due-days{font-family:var(--fm);font-size:10px;letter-spacing:1px}
-.bill-due-days.urgent{color:var(--r);font-weight:700}
-.bill-due-days.soon{color:var(--am);font-weight:600}
-.bill-due-days.ok{color:var(--t3)}
-/* ═══ BILLING PAGE ═══ */
+/* ═══ BILLING PAGE — Flow Card Layout ═══ */
 #pg-billing .content-area{background:rgba(225,232,242,0.55);border-radius:0 0 18px 18px;min-height:80vh;position:relative;overflow:hidden}
 #pg-billing .content-area>*{position:relative;z-index:1}
-.bill-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:28px}
-.bill-sum-card{background:rgba(245,250,255,0.82);border:1.5px solid rgba(160,190,215,0.45);border-radius:12px;padding:20px 24px;text-align:center;transition:background .4s,border-color .4s;box-shadow:0 1px 3px rgba(0,20,50,0.06),0 4px 12px rgba(0,20,50,0.04),0 10px 28px rgba(0,20,50,0.03)}
-.bill-sum-val{font-family:var(--fd);font-weight:800;font-size:32px;color:var(--t);line-height:1.1}
-.bill-sum-lbl{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--t3);font-weight:600;margin-top:6px}
-.bill-table{width:100%;border-collapse:separate;border-spacing:0;font-family:var(--fd);font-size:13px}
-.bill-table thead{position:sticky;top:0;z-index:2}
-.bill-table th{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--t3);font-weight:600;padding:10px 14px;text-align:left;background:var(--glass2);border-bottom:1px solid var(--border);transition:background .4s}
-.bill-table td{padding:10px 14px;border-bottom:1px solid rgba(var(--cyan-rgb),0.08);color:var(--t);vertical-align:middle;transition:background .3s}
-.bill-table tr:hover td{background:rgba(var(--cyan-rgb),0.04)}
-.bill-node-name{font-weight:600;cursor:pointer}
-.bill-node-name:hover{color:var(--blue)}
-.bill-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-family:var(--fm);font-size:9px;letter-spacing:1px;font-weight:600}
-.bill-badge.on{background:rgba(34,197,94,0.1);color:var(--g)}
-.bill-badge.off{background:rgba(255,77,79,0.1);color:var(--r)}
-.bill-monthly{font-family:var(--fm);font-weight:700;color:var(--cyan)}
-.bill-free{font-family:var(--fm);font-weight:500;color:var(--t4)}
-.bill-cycle{font-size:11px;color:var(--t3)}
-.bill-total-row td{font-weight:700;border-top:2px solid rgba(var(--cyan-rgb),0.25);background:rgba(var(--cyan-rgb),0.04)}
-
-.bill-group{margin-bottom:28px}
-.bill-group-hdr{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding:0 2px}
-.bill-group-name{font-family:var(--fr);font-size:13px;letter-spacing:2.5px;color:var(--t);font-weight:700}
-.bill-group-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(var(--cyan-rgb),0.25),transparent)}
-.bill-group-stats{font-family:var(--fm);font-size:10px;letter-spacing:1px;color:var(--t3)}
-.bill-group-cost{font-family:var(--fm);font-size:12px;font-weight:700;color:var(--cyan);margin-left:auto}
-.bill-view-toggle{display:flex;gap:0;margin-bottom:20px}
-.bill-view-btn{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;padding:8px 18px;cursor:pointer;border:1px solid var(--border);background:var(--card-bg);color:var(--t3);font-weight:500;transition:all .3s}
-.bill-view-btn:first-child{border-radius:6px 0 0 6px}
-.bill-view-btn:last-child{border-radius:0 6px 6px 0}
-.bill-view-btn.a{background:var(--cyan);color:#0a1420;border-color:var(--cyan);font-weight:700}
-.bill-export-btn{background:none;border:1px solid rgba(37,99,235,0.2);color:var(--blue);font-size:14px;width:28px;height:28px;border-radius:6px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;padding:0}
-.bill-export-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 8px rgba(37,99,235,0.3)}
-.fleet-cost-cell{cursor:pointer;transition:.3s}
-.fleet-cost-cell:hover{background:rgba(var(--cyan-rgb),0.04)}
-
-/* ═══ POSTER EXPORT ═══ */
+.bf-grid{display:grid;grid-template-columns:1.1fr 0.9fr;gap:28px}
+.bf-left,.bf-right{display:flex;flex-direction:column}
+.bf-sec-label{font-family:var(--fm);font-size:9px;letter-spacing:3.2px;color:var(--t3);font-weight:600;margin-bottom:12px;text-transform:uppercase}
+.bf-card{background:rgba(245,250,255,0.58);border:1.5px solid rgba(var(--cyan-rgb),0.12);border-radius:24px;padding:24px 28px;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 8px 40px rgba(100,140,180,0.08);transition:background .4s,border-color .4s}
+.bf-card-title{font-family:var(--fd);font-size:20px;font-weight:700;color:var(--t);letter-spacing:.3px}
+.bf-card-sub{font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--t4);margin-top:4px}
+/* Overview cards */
+.bf-overview{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.bf-ov-card{background:rgba(245,250,255,0.70);border:1.5px solid rgba(var(--cyan-rgb),0.12);border-radius:22px;padding:22px 24px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);transition:all .3s}
+.bf-ov-card:hover{border-color:rgba(var(--cyan-rgb),0.28)}
+.bf-ov-val{font-family:var(--fd);font-weight:800;font-size:36px;line-height:1.1}
+.bf-ov-val.cyan{color:var(--cyan)}
+.bf-ov-val.green{color:var(--g)}
+.bf-ov-label{font-family:var(--fm);font-size:9px;letter-spacing:2.4px;color:var(--t3);font-weight:600;margin-top:10px}
+.bf-ov-sub{font-family:var(--fm);font-size:8px;letter-spacing:1.8px;color:var(--t4);margin-top:4px}
+/* Cost Flow */
+.bf-flow-card{padding:28px}
+.bf-flow-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;margin-bottom:24px}
+.bf-big-cyan{font-family:var(--fd);font-size:32px;font-weight:800;color:var(--cyan)}
+.bf-big-amber{font-family:var(--fd);font-size:32px;font-weight:800;color:var(--am)}
+.bf-flow-bars{display:flex;flex-direction:column;gap:16px}
+.bf-flow-row .bf-flow-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--t3);font-weight:600}
+.bf-flow-row .bf-flow-note{color:var(--t4);font-weight:400;margin-left:8px}
+.bf-flow-row .bf-flow-val{font-family:var(--fd);font-weight:700;color:var(--t);font-size:12px;letter-spacing:0}
+.bf-flow-track{height:14px;border-radius:99px;background:rgba(var(--cyan-rgb),0.06);overflow:hidden}
+.bf-flow-fill{height:100%;border-radius:99px;transition:width .6s ease}
+.bf-flow-fill.cyan{background:linear-gradient(90deg,rgba(var(--cyan-rgb),0.7),var(--cyan));box-shadow:0 0 16px rgba(var(--cyan-rgb),0.22)}
+.bf-flow-fill.blue{background:linear-gradient(90deg,rgba(var(--blue-r),0.7),var(--blue));box-shadow:0 0 16px rgba(var(--blue-r),0.22)}
+.bf-flow-fill.green{background:linear-gradient(90deg,rgba(var(--gr),0.7),var(--g));box-shadow:0 0 16px rgba(var(--gr),0.18)}
+/* View toggle */
+.bf-view-toggle{display:flex;gap:6px}
+.bf-vbtn{font-family:var(--fm);font-size:9px;letter-spacing:1.5px;padding:6px 14px;border-radius:99px;border:1px solid rgba(var(--cyan-rgb),0.15);background:transparent;color:var(--t3);cursor:pointer;font-weight:600;transition:all .2s}
+.bf-vbtn.a{background:var(--cyan);color:#0a1420;border-color:var(--cyan);font-weight:700}
+.bf-vbtn:hover:not(.a){border-color:var(--cyan);color:var(--cyan)}
+/* Node grid */
+.bf-node-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.bf-ncard{background:rgba(245,250,255,0.78);border:1.5px solid rgba(var(--cyan-rgb),0.10);border-radius:20px;padding:18px 20px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);transition:all .3s;cursor:pointer}
+.bf-ncard:hover{border-color:rgba(var(--cyan-rgb),0.28);box-shadow:0 8px 28px rgba(var(--cyan-rgb),0.10)}
+.bf-ncard-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.bf-ncard-name{font-family:var(--fd);font-size:14px;font-weight:700;color:var(--t)}
+.bf-ncard-unit{font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--t4);margin-top:3px}
+.bf-pill{font-family:var(--fm);font-size:8px;letter-spacing:1.5px;font-weight:700;padding:3px 10px;border-radius:99px;border:1px solid;white-space:nowrap}
+.bf-pill.critical{background:rgba(var(--rr),0.06);color:var(--r);border-color:rgba(var(--rr),0.15)}
+.bf-pill.warning{background:rgba(var(--amr),0.06);color:var(--am);border-color:rgba(var(--amr),0.15)}
+.bf-pill.safe{background:rgba(var(--gr),0.06);color:var(--g);border-color:rgba(var(--gr),0.15)}
+.bf-pill.nominal{background:rgba(var(--cyan-rgb),0.06);color:var(--cyan);border-color:rgba(var(--cyan-rgb),0.15)}
+.bf-ncard-body{display:flex;align-items:center;gap:14px;margin-top:14px}
+.bf-ring-mini{width:52px;height:52px;border-radius:50%;padding:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.bf-ring-mini-inner{width:100%;height:100%;border-radius:50%;background:rgba(248,252,255,0.92);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:15px;font-weight:800;color:var(--t)}
+.bf-ring-mini.rose{background:linear-gradient(135deg,#ff3d57,#ff6b81)}
+.bf-ring-mini.amber{background:linear-gradient(135deg,#ffab00,#ff8f00)}
+.bf-ring-mini.green{background:linear-gradient(135deg,#00e676,#00c853)}
+.bf-ring-mini.cyan{background:linear-gradient(135deg,var(--cyan),#0096c7)}
+.bf-ncard-cost{font-family:var(--fd);font-size:22px;font-weight:800}
+.bf-ncard-cost.rose{color:var(--r)}
+.bf-ncard-cost.amber{color:var(--am)}
+.bf-ncard-cost.green{color:var(--g)}
+.bf-ncard-cost.cyan{color:var(--cyan)}
+.bf-ncard-costlbl{font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--t4);margin-top:2px}
+.bf-ncard-bars{margin-top:14px;display:flex;flex-direction:column;gap:8px}
+.bf-bar-row .bf-bar-meta{display:flex;justify-content:space-between;margin-bottom:3px;font-family:var(--fm);font-size:8px;letter-spacing:1.5px;color:var(--t4)}
+.bf-bar-row .bf-bar-val{color:var(--t3);font-weight:600}
+.bf-bar-track{height:5px;border-radius:99px;background:rgba(var(--cyan-rgb),0.06);overflow:hidden}
+.bf-bar-fill{height:100%;border-radius:99px}
+.bf-bar-fill.rose{background:linear-gradient(90deg,#ff3d57,#ff6b81)}
+.bf-bar-fill.amber{background:linear-gradient(90deg,#ffab00,#ff8f00)}
+.bf-bar-fill.green{background:linear-gradient(90deg,#00e676,#00c853)}
+.bf-bar-fill.cyan{background:linear-gradient(90deg,var(--cyan),#0096c7)}
+/* Group header in node grid */
+.bf-group-hdr{grid-column:1/-1;display:flex;align-items:center;gap:12px;padding:4px 0}
+.bf-group-name{font-family:var(--fr);font-size:12px;letter-spacing:2.5px;color:var(--t);font-weight:700}
+.bf-group-line{flex:1;height:1px;background:linear-gradient(90deg,rgba(var(--cyan-rgb),0.25),transparent)}
+.bf-group-stat{font-family:var(--fm);font-size:9px;letter-spacing:1.5px;color:var(--t3)}
+.bf-group-cost{font-family:var(--fm);font-size:11px;font-weight:700;color:var(--cyan);margin-left:auto}
+/* Expiry Radar */
+.bf-radar-card{text-align:center;padding:28px}
+.bf-radar-ring-wrap{position:relative;height:200px;margin:20px auto;display:flex;align-items:center;justify-content:center}
+.bf-radar-ring{position:relative;width:160px;height:160px}
+.bf-ring-o,.bf-ring-m,.bf-ring-i{position:absolute;border-radius:50%;border:1px solid rgba(var(--cyan-rgb),0.18)}
+.bf-ring-o{inset:0}
+.bf-ring-m{inset:18px}
+.bf-ring-i{inset:36px}
+.bf-ring-spin-a{position:absolute;inset:0;border-radius:50%;border:4px solid transparent;border-top:4px solid var(--cyan);animation:bf-spin 9s linear infinite}
+.bf-ring-spin-b{position:absolute;inset:22px;border-radius:50%;border:3px solid transparent;border-top:3px solid var(--g);animation:bf-spin 6s linear infinite reverse}
+@keyframes bf-spin{to{transform:rotate(360deg)}}
+.bf-radar-counts{display:flex;justify-content:center;gap:36px;margin-top:8px}
+.bf-rc-item{text-align:center}
+.bf-rc-label{display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--t4)}
+.bf-rc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.bf-rc-dot.rose{background:var(--r)}
+.bf-rc-dot.amber{background:var(--am)}
+.bf-rc-dot.green{background:var(--g)}
+.bf-rc-val{font-family:var(--fd);font-size:34px;font-weight:800;margin-top:6px}
+.bf-rc-val.rose{color:var(--r)}
+.bf-rc-val.amber{color:var(--am)}
+.bf-rc-val.green{color:var(--g)}
+/* Due Queue */
+.bf-due-list{display:flex;flex-direction:column;gap:8px}
+.bf-due-item{display:flex;align-items:center;justify-content:space-between;background:rgba(245,250,255,0.70);border:1px solid rgba(var(--cyan-rgb),0.08);border-radius:14px;padding:14px 18px;cursor:pointer;transition:all .2s}
+.bf-due-item:hover{border-color:rgba(var(--cyan-rgb),0.22);background:rgba(245,250,255,0.90)}
+.bf-due-name{font-family:var(--fd);font-size:14px;font-weight:600;color:var(--t)}
+.bf-due-days{font-family:var(--fm);font-size:9px;letter-spacing:1.5px;font-weight:700;margin-top:3px}
+.bf-due-days.urgent{color:var(--r)}
+.bf-due-days.soon{color:var(--am)}
+.bf-due-days.ok{color:var(--t3)}
+.bf-due-price{font-family:var(--fd);font-size:18px;font-weight:800;color:var(--t)}
+/* Export button */
 .bill-export-btn{background:none;border:1px solid rgba(var(--cyan-rgb),0.25);color:var(--cyan);font-size:14px;width:28px;height:28px;border-radius:6px;cursor:pointer;transition:all .3s;display:flex;align-items:center;justify-content:center;padding:0}
 .bill-export-btn:hover{background:var(--cyan);color:#0a1420;border-color:var(--cyan);box-shadow:0 2px 8px rgba(var(--cyan-rgb),0.3)}
+.fleet-cost-cell{cursor:pointer;transition:.3s}
+.fleet-cost-cell:hover{background:rgba(var(--cyan-rgb),0.04)}
+/* Responsive */
+@media(max-width:1100px){.bf-grid{grid-template-columns:1fr}.bf-overview{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:640px){.bf-overview{grid-template-columns:1fr}.bf-node-grid{grid-template-columns:1fr}.bf-radar-counts{gap:20px}}
+/* Dark mode billing */
+[data-theme="dark"] .bf-card{background:rgba(20,38,58,0.65);border-color:rgba(var(--cyan-rgb),0.12)}
+[data-theme="dark"] .bf-ov-card{background:rgba(20,38,58,0.55);border-color:rgba(var(--cyan-rgb),0.12)}
+[data-theme="dark"] .bf-ncard{background:rgba(20,38,58,0.60);border-color:rgba(var(--cyan-rgb),0.10)}
+[data-theme="dark"] .bf-due-item{background:rgba(20,38,58,0.50);border-color:rgba(var(--cyan-rgb),0.08)}
+[data-theme="dark"] .bf-flow-track,.bf-bar-track{background:rgba(var(--cyan-rgb),0.08)}
+[data-theme="dark"] .bf-ring-mini-inner{background:rgba(15,26,40,0.92)}
 .pw{position:fixed;left:-9999px;top:0;z-index:-1;pointer-events:none}
 .pp{width:1920px;height:1080px;position:relative;overflow:hidden;border-radius:28px;
   background:linear-gradient(135deg,#e4ecf7 0%,#d0ddef 25%,#c0d2ea 50%,#d4dfee 75%,#eaf0f8 100%)}
@@ -1130,8 +1187,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .boot-under{opacity:1}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(148,163,184,.25);border-radius:2px}
 @media(max-width:1100px){.hero{grid-template-columns:1fr;min-height:280px}.h-left,.h-right{display:none}}
-@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:12px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr);gap:10px}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}.bill-export-btn{background:none;border:1px solid rgba(37,99,235,0.2);color:var(--blue);font-size:14px;width:28px;height:28px;border-radius:6px;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;padding:0}
-.bill-export-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 2px 8px rgba(37,99,235,0.3)}
+@media(max-width:768px){.stab-ov{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.content-area{padding:12px}.tb-tabs{display:none}.det-info{grid-template-columns:1fr}.det-gauges{grid-template-columns:repeat(2,1fr);gap:10px}.det-panels{grid-template-columns:1fr}.hero-top{grid-template-columns:1fr;min-height:auto}.h-left,.h-right{border:none}.h-center{min-height:200px}.fleet-strip{grid-template-columns:repeat(2,1fr)}
 .fleet-cost-cell{grid-column:span 2}.fleet-cost-cell .fleet-val{font-size:28px!important}.det-strip{flex-wrap:wrap;border-radius:10px;min-height:auto}.ds-cell{min-width:auto;padding:8px 12px;font-size:90%}.det-core-echo{display:none}.det-charts-grid{grid-template-columns:1fr}.wmap-overview{grid-template-columns:repeat(2,1fr)}.wmap-node-list{grid-template-columns:1fr}
 /* Mobile detail page */
 .chart-wrap{padding:12px;border-radius:12px;border-left-width:2px}
@@ -1279,10 +1335,10 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
   .det-copy-btn{font-size:10px!important;padding:4px 10px!important}
 
   /* Billing page */
-  .bill-sum-grid{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
-  .bill-sum-val{font-size:22px!important}
-  .bill-table-wrap{overflow-x:auto!important}
-  .bill-table{min-width:700px!important}
+  .bf-overview{grid-template-columns:repeat(2,1fr)!important;gap:8px!important}
+  .bf-ov-val{font-size:24px!important}
+  .bf-node-grid{grid-template-columns:1fr!important}
+  .bf-grid{grid-template-columns:1fr!important}
   .bill-cal-grid{font-size:11px!important}
   .bill-cal-day{min-height:34px!important;padding:6px 1px!important}
 
@@ -1311,7 +1367,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
   .nc-ring{margin:0 auto 8px!important}
   .bill-cal-day{font-size:10px!important;min-height:30px!important}
   .det-gauges{grid-template-columns:1fr!important}
-  .bill-sum-grid{grid-template-columns:1fr!important}
+  .bf-overview{grid-template-columns:1fr!important}
 }
 
 /* ── Mobile bottom nav ── */
@@ -1666,10 +1722,71 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
         <button class="bill-cur-btn" data-cur="JPY" onclick="setCurrency('JPY')">¥ JPY</button>
         <button class="bill-cur-btn" data-cur="GBP" onclick="setCurrency('GBP')">£ GBP</button>
       </div>
-      <div class="bill-summary" id="billSummary"></div>
-      <div class="bill-view-toggle" id="billViewToggle"><button class="bill-view-btn a" data-view="group">BY GROUP</button><button class="bill-view-btn" data-view="flat">ALL NODES</button></div>
-    <div id="billCalendar"></div>
-      <div id="billContent"></div>
+      <div class="bf-grid">
+        <!-- Left Column -->
+        <div class="bf-left">
+          <div class="bf-sec-label">Resource Overview</div>
+          <div class="bf-overview" id="billSummary"></div>
+          <div class="bf-sec-label" style="margin-top:28px">Cost Flow</div>
+          <div class="bf-card bf-flow-card">
+            <div class="bf-flow-head">
+              <div>
+                <div class="bf-card-title">Resource Flow Distribution</div>
+                <div class="bf-card-sub">区域成本分布</div>
+              </div>
+              <div class="bf-flow-total">
+                <div class="bf-sec-label" style="margin-bottom:4px;text-align:right">Monthly Total</div>
+                <div id="bfFlowTotal" class="bf-big-cyan"></div>
+              </div>
+            </div>
+            <div id="bfFlowBars" class="bf-flow-bars"></div>
+          </div>
+          <div class="bf-sec-label" style="margin-top:28px">Node Cost Stream</div>
+          <div class="bf-card" style="padding-bottom:8px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+              <div class="bf-card-title">资源单元成本</div>
+              <div class="bf-view-toggle" id="billViewToggle">
+                <button class="bf-vbtn a" data-view="group">By Group</button>
+                <button class="bf-vbtn" data-view="flat">All Nodes</button>
+              </div>
+            </div>
+            <div id="billContent" class="bf-node-grid"></div>
+          </div>
+        </div>
+        <!-- Right Column -->
+        <div class="bf-right">
+          <div class="bf-sec-label">Expiry Radar</div>
+          <div class="bf-card bf-radar-card">
+            <div class="bf-card-title">Renewal Priority Matrix</div>
+            <div class="bf-radar-ring-wrap">
+              <div class="bf-radar-ring">
+                <div class="bf-ring-o"></div>
+                <div class="bf-ring-m"></div>
+                <div class="bf-ring-i"></div>
+                <div class="bf-ring-spin-a"></div>
+                <div class="bf-ring-spin-b"></div>
+              </div>
+            </div>
+            <div id="bfRadarCounts" class="bf-radar-counts"></div>
+          </div>
+          <div class="bf-sec-label" style="margin-top:28px">Due Queue</div>
+          <div class="bf-card">
+            <div style="display:flex;align-items:start;justify-content:space-between;margin-bottom:16px">
+              <div>
+                <div class="bf-card-title">This Month Priority</div>
+                <div class="bf-card-sub">当月待缴</div>
+              </div>
+              <div style="text-align:right">
+                <div class="bf-sec-label" style="margin-bottom:4px">Due Total</div>
+                <div id="bfDueTotal" class="bf-big-amber"></div>
+              </div>
+            </div>
+            <div id="bfDueList" class="bf-due-list"></div>
+          </div>
+          <div class="bf-sec-label" style="margin-top:28px">Expiry Calendar</div>
+          <div class="bf-card" id="billCalendar"></div>
+        </div>
+      </div>
     </div>
   </div>
   <!-- ═══ WORLD MAP PAGE ═══ -->
@@ -3041,8 +3158,8 @@ function fBilling(n){
 }
 
 S._billView=S._billView||'group';
-function setBillView(v){S._billView=v;document.querySelectorAll('.bill-view-btn').forEach(function(b){b.classList.toggle('a',b.getAttribute('data-view')===v)});rBilling()}
-document.querySelectorAll('.bill-view-btn').forEach(function(b){b.addEventListener('click',function(){setBillView(this.getAttribute('data-view'))})});
+function setBillView(v){S._billView=v;document.querySelectorAll('.bf-vbtn').forEach(function(b){b.classList.toggle('a',b.getAttribute('data-view')===v)});rBilling()}
+document.querySelectorAll('.bf-vbtn').forEach(function(b){b.addEventListener('click',function(){setBillView(this.getAttribute('data-view'))})});
 
 
 /* ═══ Currency Exchange System ═══ */
@@ -3091,7 +3208,7 @@ function setCurrency(cur){
   document.querySelectorAll('.bill-cur-btn').forEach(function(b){b.classList.toggle('a',b.getAttribute('data-cur')===cur)});
   if(cur!=='original'&&!S._ratesFetched){
     var sumEl=$('billSummary');
-    if(sumEl)sumEl.innerHTML='<div class="bill-sum-card" style="grid-column:1/-1;text-align:center"><div class="bill-sum-val" style="color:var(--t4);font-size:16px">获取汇率中...</div></div>';
+    if(sumEl)sumEl.innerHTML='<div class="bf-ov-card" style="grid-column:1/-1;text-align:center;padding:28px"><div class="bf-ov-val" style="color:var(--t4);font-size:16px">获取汇率中...</div></div>';
     fetchRates().then(function(){rBilling()}).catch(function(){rBilling()});
   }else{rBilling()}
 }
@@ -3118,17 +3235,16 @@ function rBilling(){
       totals[b.currency]+=b.monthly;
     }
     if(b.str==='免费')freeCount++;
-    /* Remaining value calc */
-    var rv=0;
+    var rv=0,rd=0;
     if(n.expired_at&&b.monthly>0&&b.currency){
       var ed=new Date(n.expired_at);var nw=new Date();
-      var rd=Math.max(0,Math.ceil((ed-nw)/(86400000)));
-      if(rd>3650)rd=0; /* Cap: ignore >10yr expiry */
+      rd=Math.max(0,Math.ceil((ed-nw)/(86400000)));
+      if(rd>3650)rd=0;
       var cdd=parseInt(n.billing_cycle)||30;
       rv=cdd>0?(rd/cdd)*n.price:0;
-      if(rv>b.monthly*120)rv=0; /* Sanity: cap at 10yr monthly */
+      if(rv>b.monthly*120)rv=0;
     }
-    var row={node:n,billing:b,online:on,group:g,remainVal:rv};
+    var row={node:n,billing:b,online:on,group:g,remainVal:rv,remainDays:rd};
     nodeRows.push(row);
     if(!groupData[g])groupData[g]={rows:[],totals:{},remainTotals:{}};
     groupData[g].rows.push(row);
@@ -3141,55 +3257,74 @@ function rBilling(){
       groupData[g].remainTotals[b.currency]+=rv;
     }
   });
-  /* Summary cards — enhanced with yearly + due this month */
-  var sh='';
-  var totalEntries=Object.entries(totals);
+
   var dc=S._displayCurrency;
+  var totalEntries=Object.entries(totals);
 
-  /* Monthly total */
-  if(totalEntries.length===0){
-    sh+='<div class="bill-sum-card highlight"><div class="bill-sum-val" style="color:var(--t4)">--</div><div class="bill-sum-lbl">MONTHLY COST</div></div>';
-    sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--t4)">--</div><div class="bill-sum-lbl">YEARLY COST</div></div>';
-  }else if(dc!=='original'&&S._rates){
-    /* Converted: sum all into one currency */
-    var mTotal=0;
-    totalEntries.forEach(function(e){var c=convertCurrency(e[1],e[0],dc);if(c)mTotal+=c.amount;else mTotal+=e[1]});
-    var sym=S._currencySymbols[dc]||dc;
-    sh+='<div class="bill-sum-card highlight"><div class="bill-sum-val" style="color:var(--blue)">'+sym+mTotal.toFixed(2)+'</div><div class="bill-sum-lbl">MONTHLY COST ('+dc+')</div></div>';
-    sh+='<div class="bill-sum-card highlight"><div class="bill-sum-val" style="color:var(--cyan)">'+sym+(mTotal*12).toFixed(2)+'</div><div class="bill-sum-lbl">YEARLY COST ('+dc+')</div></div>';
-  }else{
-    totalEntries.forEach(function(e){
-      sh+='<div class="bill-sum-card highlight"><div class="bill-sum-val" style="color:var(--blue)">'+e[0]+e[1].toFixed(2)+'</div><div class="bill-sum-lbl">MONTHLY COST ('+e[0]+')</div></div>';
-      sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--cyan)">'+e[0]+(e[1]*12).toFixed(2)+'</div><div class="bill-sum-lbl">YEARLY COST ('+e[0]+')</div></div>';
-    });
-  }
-
-  sh+='<div class="bill-sum-card"><div class="bill-sum-val">'+nodeRows.length+'</div><div class="bill-sum-lbl">TOTAL NODES</div></div>';
-  sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--g)">'+nodeRows.filter(function(r){return r.online}).length+'</div><div class="bill-sum-lbl">ONLINE</div></div>';
-  var groupCount=Object.keys(groupData).length;
-  sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--am)">'+groupCount+'</div><div class="bill-sum-lbl">GROUPS</div></div>';
-  if(freeCount>0)sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--t4)">'+freeCount+'</div><div class="bill-sum-lbl">FREE TIER</div></div>';
-
-  /* Remaining value totals */
+  /* Resource Overview (3 cards) */
+  var mTotal=0,yTotal=0,rTotal=0;
+  var sym=dc!=='original'&&S._currencySymbols[dc]?S._currencySymbols[dc]:'$';
   var remainTotals={};
   nodeRows.forEach(function(r){if(r.remainVal>0&&r.billing.currency){var c=r.billing.currency;if(!remainTotals[c])remainTotals[c]=0;remainTotals[c]+=r.remainVal;}});
-  var remainEntries=Object.entries(remainTotals);
-  if(remainEntries.length>0){
-    if(dc!=='original'&&S._rates){
-      var rTotal=0;
-      remainEntries.forEach(function(e){var c=convertCurrency(e[1],e[0],dc);if(c)rTotal+=c.amount;else rTotal+=e[1]});
-      var sym2=S._currencySymbols[dc]||dc;
-      sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--g)">'+sym2+rTotal.toFixed(2)+'</div><div class="bill-sum-lbl">REMAINING ('+dc+')</div></div>';
-    }else{
-      remainEntries.forEach(function(e){
-        sh+='<div class="bill-sum-card"><div class="bill-sum-val" style="color:var(--g)">'+e[0]+e[1].toFixed(2)+'</div><div class="bill-sum-lbl">REMAINING ('+e[0]+')</div></div>';
-      });
-    }
+  if(dc!=='original'&&S._rates){
+    totalEntries.forEach(function(e){var c=convertCurrency(e[1],e[0],dc);mTotal+=c?c.amount:e[1]});
+    Object.entries(remainTotals).forEach(function(e){var c=convertCurrency(e[1],e[0],dc);rTotal+=c?c.amount:e[1]});
+    sym=S._currencySymbols[dc]||dc;
+  }else{
+    totalEntries.forEach(function(e){mTotal+=e[1]});
+    Object.entries(remainTotals).forEach(function(e){rTotal+=e[1]});
+    if(totalEntries.length===1)sym=totalEntries[0][0];
+  }
+  yTotal=mTotal*12;
+  var sh='';
+  sh+='<div class="bf-ov-card" style="box-shadow:0 0 28px rgba(var(--cyan-rgb),0.12)"><div class="bf-ov-val cyan">'+sym+mTotal.toFixed(2)+'</div><div class="bf-ov-label">CURRENT LOAD</div><div class="bf-ov-sub">MONTHLY RESOURCE COST</div></div>';
+  sh+='<div class="bf-ov-card" style="box-shadow:0 0 28px rgba(var(--cyan-rgb),0.10)"><div class="bf-ov-val cyan">'+sym+yTotal.toFixed(2)+'</div><div class="bf-ov-label">PROJECTED</div><div class="bf-ov-sub">ANNUAL RESOURCE LOAD</div></div>';
+  sh+='<div class="bf-ov-card" style="box-shadow:0 0 28px rgba(var(--gr),0.10)"><div class="bf-ov-val green">'+sym+rTotal.toFixed(2)+'</div><div class="bf-ov-label">RESERVE</div><div class="bf-ov-sub">REMAINING BALANCE</div></div>';
+  sumEl.innerHTML=sh;
+
+  /* Cost Flow (group bars) */
+  var flowEl=$('bfFlowBars');var flowTotEl=$('bfFlowTotal');
+  if(flowEl){
+    var groupNames=Object.keys(groupData).sort(function(a,b){
+      var at=0,bt=0;Object.values(groupData[a].totals).forEach(function(v){at+=v});Object.values(groupData[b].totals).forEach(function(v){bt+=v});return bt-at;
+    });
+    var maxGroupCost=0;
+    groupNames.forEach(function(gn){var gc=0;Object.values(groupData[gn].totals).forEach(function(v){gc+=v});if(gc>maxGroupCost)maxGroupCost=gc;});
+    var colors=['cyan','blue','green','cyan','blue','green'];
+    var fh='';
+    groupNames.forEach(function(gn,idx){
+      var gc=0;Object.values(groupData[gn].totals).forEach(function(v){gc+=v});
+      if(gc<=0)return;
+      var converted=gc;
+      if(dc!=='original'&&S._rates){
+        var cc=0;Object.entries(groupData[gn].totals).forEach(function(e){var cv=convertCurrency(e[1],e[0],dc);cc+=cv?cv.amount:e[1]});converted=cc;
+      }
+      var w=maxGroupCost>0?Math.max(6,Math.round((gc/maxGroupCost)*100)):6;
+      var clr=colors[idx%colors.length];
+      fh+='<div class="bf-flow-row"><div class="bf-flow-meta"><div>'+esc(gn)+'<span class="bf-flow-note"> \u00b7 '+groupData[gn].rows.length+' NODES</span></div><span class="bf-flow-val">'+sym+converted.toFixed(2)+'</span></div><div class="bf-flow-track"><div class="bf-flow-fill '+clr+'" style="width:'+w+'%"></div></div></div>';
+    });
+    flowEl.innerHTML=fh;
+  }
+  if(flowTotEl)flowTotEl.textContent=sym+mTotal.toFixed(2);
+
+  /* Expiry Radar */
+  var radarEl=$('bfRadarCounts');
+  if(radarEl){
+    var crit=0,warn=0,safe=0;
+    nodeRows.forEach(function(r){
+      if(!r.node.expired_at||r.billing.monthly<=0)return;
+      if(r.remainDays<=7)crit++;
+      else if(r.remainDays<=30)warn++;
+      else safe++;
+    });
+    radarEl.innerHTML='<div class="bf-rc-item"><div class="bf-rc-label"><span class="bf-rc-dot rose"></span>CRITICAL</div><div class="bf-rc-val rose">'+crit+'</div></div>'
+      +'<div class="bf-rc-item"><div class="bf-rc-label"><span class="bf-rc-dot amber"></span>WARNING</div><div class="bf-rc-val amber">'+warn+'</div></div>'
+      +'<div class="bf-rc-item"><div class="bf-rc-label"><span class="bf-rc-dot green"></span>SAFE</div><div class="bf-rc-val green">'+safe+'</div></div>';
   }
 
-  /* Due this month — nodes expiring within 30 days */
-  var now=new Date();
-  var dueNodes=[];
+  /* Due Queue */
+  var dueEl=$('bfDueList');var dueTotEl=$('bfDueTotal');
+  var now=new Date();var dueNodes=[];
   nodeRows.forEach(function(r){
     if(!r.node.expired_at)return;
     var exp=new Date(r.node.expired_at);
@@ -3197,142 +3332,100 @@ function rBilling(){
     if(days>=0&&days<=30)dueNodes.push({name:r.node.name||r.node.uuid,uuid:r.node.uuid,days:days,billing:r.billing});
   });
   dueNodes.sort(function(a,b){return a.days-b.days});
-  if(dueNodes.length>0){
-    /* Calculate due total */
-    var dueTotals={};
+  if(dueEl){
+    if(dueNodes.length===0){
+      dueEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--t4);font-family:var(--fm);font-size:11px;letter-spacing:2px">NO DUE THIS MONTH</div>';
+    }else{
+      var dh='';
+      dueNodes.forEach(function(d){
+        var cls=d.days<=3?'urgent':d.days<=7?'soon':'ok';
+        var label=d.days===0?'TODAY':d.days+' DAYS';
+        var cost=d.billing.monthly>0?fmtConverted(d.billing.monthly,d.billing.currency):'--';
+        dh+='<div class="bf-due-item" onclick="openDet(\''+d.uuid+'\')"><div><div class="bf-due-name">'+esc(d.name)+'</div><div class="bf-due-days '+cls+'">'+label+'</div></div><div class="bf-due-price">'+cost+'</div></div>';
+      });
+      dueEl.innerHTML=dh;
+    }
+  }
+  if(dueTotEl){
+    var dueTot=0;
     dueNodes.forEach(function(d){
-      if(d.billing.monthly>0&&d.billing.currency){
-        var c=d.billing.currency;
-        if(!dueTotals[c])dueTotals[c]=0;
-        dueTotals[c]+=d.billing.monthly;
+      if(d.billing.monthly>0){
+        if(dc!=='original'&&S._rates){var cv=convertCurrency(d.billing.monthly,d.billing.currency,dc);dueTot+=cv?cv.amount:d.billing.monthly;}
+        else dueTot+=d.billing.monthly;
       }
     });
-    var dueSumStr='';
-    if(dc!=='original'&&S._rates){
-      var dTotal=0;
-      Object.entries(dueTotals).forEach(function(e){var cv=convertCurrency(e[1],e[0],dc);if(cv)dTotal+=cv.amount;else dTotal+=e[1]});
-      dueSumStr=(S._currencySymbols[dc]||dc)+dTotal.toFixed(2);
-    }else{
-      dueSumStr=Object.entries(dueTotals).map(function(e){return e[0]+e[1].toFixed(2)}).join(' + ');
-    }
-
-    var dueHtml='<div class="bill-due-list">';
-    dueNodes.forEach(function(d){
-      var cls=d.days<=3?'urgent':d.days<=7?'soon':'ok';
-      var label=d.days===0?'今天':d.days+'天后';
-      var cost=d.billing.monthly>0?fmtConverted(d.billing.monthly,d.billing.currency):'';
-      dueHtml+='<div class="bill-due-item"><span class="bill-due-name" onclick="openDet(\''+d.uuid+'\')">'+esc(d.name)+'</span><span style="cursor:pointer" onclick="openDet(\''+d.uuid+'\')">'+(cost?'<b>'+cost+'</b> · ':'')+'<span class="bill-due-days '+cls+'">'+label+'</span></span></div>';
-    });
-    dueHtml+='</div>';
-    sh+='<div class="bill-sum-card warn" style="grid-column:1/-1"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><div class="bill-sum-lbl">⚠ DUE THIS MONTH · 当月待缴 ('+dueNodes.length+')</div><div style="font-family:var(--fd);font-size:20px;font-weight:800;color:var(--am)">'+dueSumStr+'</div></div>'+dueHtml+'</div>';
+    dueTotEl.textContent=dueNodes.length>0?sym+dueTot.toFixed(2):'--';
   }
 
-  sumEl.innerHTML=sh;
-
-  if(S._billView==='group'){rBillGroup(groupData,totalEntries)}
-  else{rBillFlat(nodeRows,totalEntries)}
+  /* Node Cost Stream */
+  if(S._billView==='group'){rBillGroup(groupData)}
+  else{rBillFlat(nodeRows)}
 
   renderCalendar();
 }
 
-function billTableRow(r){
-  var n=r.node;var b=r.billing;
-  var priceStr=b.str||'<span style="color:var(--t4)">--</span>';
-  var monthlyStr=b.monthly>0?'<span class="bill-monthly">'+b.currency+b.monthly.toFixed(2)+'</span>':(b.str==='免费'?'<span class="bill-free">免费</span>':'<span style="color:var(--t4)">--</span>');
-  var cycleStr='';
-  if(n.billing_cycle){var cd=parseInt(n.billing_cycle);if(cd<=31)cycleStr='月付';else if(cd<=93)cycleStr='季付';else if(cd<=186)cycleStr='半年付';else if(cd<=366)cycleStr='年付';else cycleStr=Math.round(cd/365)+'年付';}
-  var expStr=n.expired_at||'--';
-  var h='<tr><td class="bill-node-name" onclick="openDet(\''+n.uuid+'\')">'+esc(n.name||n.uuid)+'</td>';
-  h+='<td><span class="bill-badge '+(r.online?'on':'off')+'">'+(r.online?'ONLINE':'OFFLINE')+'</span></td>';
-  h+='<td>'+priceStr+'</td>';
-  h+='<td class="bill-cycle">'+cycleStr+'</td>';
-  h+='<td>'+monthlyStr+'</td>';
-  var bRemain='--';var bRemClr='var(--t4)';
-  if(n.expired_at&&b.monthly>0){var ed=new Date(n.expired_at);var nw=new Date();var rd=Math.max(0,Math.ceil((ed-nw)/(1000*60*60*24)));var cdd=parseInt(n.billing_cycle)||30;var rv=(rd/cdd)*n.price;bRemain=b.currency+rv.toFixed(2)+' ('+rd+'d)';bRemClr=rd<=7?'var(--r)':rd<=30?'var(--am)':'var(--g)';}
-  h+='<td style="color:var(--t3);font-size:11px">'+esc(expStr)+'</td>';
-  h+='<td style="color:'+bRemClr+';font-size:12px;font-weight:600">'+bRemain+'</td>';
-  h+='<td><button class="bill-export-btn" data-uuid="'+n.uuid+'" title="Export Poster">⤓</button></td></tr>';
+function nodeRiskInfo(r){
+  var days=r.remainDays;var b=r.billing;
+  if(!r.node.expired_at||b.monthly<=0)return{risk:'NOMINAL',cls:'nominal',clr:'cyan'};
+  if(days<=7)return{risk:'CRITICAL',cls:'critical',clr:'rose'};
+  if(days<=30)return{risk:'WARNING',cls:'warning',clr:'amber'};
+  return{risk:'SAFE',cls:'safe',clr:'green'};
+}
+
+function nodeCardHtml(r){
+  var n=r.node;var b=r.billing;var ri=nodeRiskInfo(r);
+  var monthlyDisp=b.monthly>0?fmtConverted(b.monthly,b.currency):(b.str==='\u514d\u8d39'?'\u514d\u8d39':'--');
+  var remainDisp=r.remainVal>0?fmtConverted(r.remainVal,b.currency):'--';
+  var daysLabel=r.remainDays>0?r.remainDays+'d':'--';
+  var reserveW=10;
+  if(b.monthly>0&&r.remainVal>0){reserveW=Math.min(100,Math.max(4,Math.round((r.remainVal/(b.monthly*12))*100)));}
+  var expiryW=4;
+  if(r.node.expired_at&&b.monthly>0){
+    if(r.remainDays<=7)expiryW=92;
+    else if(r.remainDays<=30)expiryW=65;
+    else if(r.remainDays<=90)expiryW=40;
+    else if(r.remainDays<=365)expiryW=20;
+    else expiryW=8;
+  }
+  var daysNum=r.remainDays>0?String(r.remainDays):'\u221e';
+  var h='<div class="bf-ncard" onclick="openDet(\''+n.uuid+'\')">';
+  h+='<div class="bf-ncard-head"><div><div class="bf-ncard-name">'+esc(n.name||n.uuid)+'</div><div class="bf-ncard-unit">RESOURCE UNIT</div></div><span class="bf-pill '+ri.cls+'">'+ri.risk+'</span></div>';
+  h+='<div class="bf-ncard-body"><div class="bf-ring-mini '+ri.clr+'"><div class="bf-ring-mini-inner">'+daysNum+'</div></div><div><div class="bf-ncard-cost '+ri.clr+'">'+monthlyDisp+'</div><div class="bf-ncard-costlbl">MONTHLY COST</div></div></div>';
+  h+='<div class="bf-ncard-bars">';
+  h+='<div class="bf-bar-row"><div class="bf-bar-meta"><span>RESERVE</span><span class="bf-bar-val">'+remainDisp+'</span></div><div class="bf-bar-track"><div class="bf-bar-fill '+ri.clr+'" style="width:'+reserveW+'%"></div></div></div>';
+  h+='<div class="bf-bar-row"><div class="bf-bar-meta"><span>EXPIRY</span><span class="bf-bar-val">'+daysLabel+'</span></div><div class="bf-bar-track"><div class="bf-bar-fill '+ri.clr+'" style="width:'+expiryW+'%"></div></div></div>';
+  h+='</div></div>';
   return h;
 }
 
-function rBillGroup(groupData,totalEntries){
+function rBillGroup(groupData){
   var contentEl=$('billContent');
+  var dc=S._displayCurrency;var sym=S._currencySymbols[dc]||'$';
   var groupNames=Object.keys(groupData).sort(function(a,b){
-    var aTotal=0,bTotal=0;
-    Object.values(groupData[a].totals).forEach(function(v){aTotal+=v});
-    Object.values(groupData[b].totals).forEach(function(v){bTotal+=v});
-    return bTotal-aTotal;
+    var at=0,bt=0;Object.values(groupData[a].totals).forEach(function(v){at+=v});Object.values(groupData[b].totals).forEach(function(v){bt+=v});return bt-at;
   });
   var h='';
   groupNames.forEach(function(gName){
     var gd=groupData[gName];
-    var gCostParts=Object.entries(gd.totals).map(function(e){return e[0]+e[1].toFixed(2)+'/月'});
-    var gCostStr=gCostParts.length?gCostParts.join(' + '):'--';
-    var gRemParts=Object.entries(gd.remainTotals||{}).map(function(e){return e[0]+e[1].toFixed(2)});
-    var gRemStr=gRemParts.length?gRemParts.join(' + '):'';
-    h+='<div class="bill-group">';
-    h+='<div class="bill-group-hdr"><span class="bill-group-name">'+esc(gName)+'</span><span class="bill-group-line"></span><span class="bill-group-stats">'+gd.rows.length+' NODES</span>'+(gRemStr?'<span class="bill-group-stats" style="color:var(--g)">剩余 '+gRemStr+'</span>':'')+'<span class="bill-group-cost">'+gCostStr+'</span></div>';
-    h+='<div style="background:var(--glass);border:1px solid var(--gborder);border-radius:12px;overflow:hidden">';
-    h+='<table class="bill-table"><thead><tr><th>NODE</th><th>STATUS</th><th>PRICE</th><th>CYCLE</th><th>MONTHLY</th><th>EXPIRES</th><th>REMAINING</th><th></th></tr></thead><tbody>';
-    gd.rows.sort(function(a,b){return b.billing.monthly-a.billing.monthly});
-    gd.rows.forEach(function(r){h+=billTableRow(r)});
-    /* Group subtotal */
-    var gRemSub={};gd.rows.forEach(function(r){if(r.remainVal>0&&r.billing.currency){var c=r.billing.currency;if(!gRemSub[c])gRemSub[c]=0;gRemSub[c]+=r.remainVal;}});
-    Object.entries(gd.totals).forEach(function(e){
-      var remStr=gRemSub[e[0]]?'<span style="color:var(--g)">'+e[0]+gRemSub[e[0]].toFixed(2)+'</span>':'--';
-      h+='<tr class="bill-total-row"><td colspan="5" style="text-align:right;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)">'+esc(gName)+' SUBTOTAL ('+e[0]+')</td><td class="bill-monthly" style="font-size:14px">'+e[0]+e[1].toFixed(2)+'/月</td><td></td><td style="font-size:12px;font-weight:600">'+remStr+'</td></tr>';
-    });
-    h+='</tbody></table></div></div>';
-  });
-  /* Grand total */
-  if(totalEntries.length>0){
-    h+='<div style="margin-top:8px;padding:16px 24px;background:rgba(37,99,235,0.04);border:1px solid rgba(37,99,235,0.12);border-radius:10px;display:flex;justify-content:flex-end;align-items:center;gap:24px">';
-    h+='<span style="font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--t3);font-weight:600">GRAND TOTAL</span>';
-    totalEntries.forEach(function(e){
-      h+='<span style="font-family:var(--fd);font-size:22px;font-weight:800;color:var(--blue)">'+e[0]+e[1].toFixed(2)+'<span style="font-size:12px;opacity:.5;margin-left:2px">/月</span></span>';
-    });
-    /* Remaining grand total */
-    var allRem={};groupNames.forEach(function(gn){groupData[gn].rows.forEach(function(r){if(r.remainVal>0&&r.billing.currency){var c=r.billing.currency;if(!allRem[c])allRem[c]=0;allRem[c]+=r.remainVal;}})});
-    var allRemEntries=Object.entries(allRem);
-    if(allRemEntries.length>0){
-      h+='<span style="opacity:.3;margin:0 8px">|</span><span style="font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--t3);font-weight:600">REMAINING</span>';
-      allRemEntries.forEach(function(e){
-        h+='<span style="font-family:var(--fd);font-size:22px;font-weight:800;color:var(--g)">'+e[0]+e[1].toFixed(2)+'</span>';
-      });
+    var gCost=0;
+    if(dc!=='original'&&S._rates){
+      Object.entries(gd.totals).forEach(function(e){var cv=convertCurrency(e[1],e[0],dc);gCost+=cv?cv.amount:e[1]});
+    }else{
+      Object.values(gd.totals).forEach(function(v){gCost+=v});
     }
-    h+='</div>';
-  }
+    var gCostStr=gCost>0?sym+gCost.toFixed(2)+'/mo':'--';
+    h+='<div class="bf-group-hdr"><span class="bf-group-name">'+esc(gName)+'</span><span class="bf-group-line"></span><span class="bf-group-stat">'+gd.rows.length+' NODES</span><span class="bf-group-cost">'+gCostStr+'</span></div>';
+    gd.rows.sort(function(a,b){return b.billing.monthly-a.billing.monthly});
+    gd.rows.forEach(function(r){h+=nodeCardHtml(r)});
+  });
   contentEl.innerHTML=h;
 }
 
-function rBillFlat(nodeRows,totalEntries){
+function rBillFlat(nodeRows){
   var contentEl=$('billContent');
   nodeRows.sort(function(a,b){return b.billing.monthly-a.billing.monthly});
-  var h='<div style="background:var(--glass);border:1px solid var(--gborder);border-radius:12px;overflow:hidden">';
-  h+='<table class="bill-table"><thead><tr><th>NODE</th><th>STATUS</th><th>GROUP</th><th>PRICE</th><th>CYCLE</th><th>MONTHLY</th><th>EXPIRES</th><th>REMAINING</th><th></th></tr></thead><tbody>';
-  nodeRows.forEach(function(r){
-    var n=r.node;var b=r.billing;
-    var priceStr=b.str||'<span style="color:var(--t4)">--</span>';
-    var monthlyStr=b.monthly>0?'<span class="bill-monthly">'+b.currency+b.monthly.toFixed(2)+'</span>':(b.str==='免费'?'<span class="bill-free">免费</span>':'<span style="color:var(--t4)">--</span>');
-    var cycleStr='';
-    if(n.billing_cycle){var cd=parseInt(n.billing_cycle);if(cd<=31)cycleStr='月付';else if(cd<=93)cycleStr='季付';else if(cd<=186)cycleStr='半年付';else if(cd<=366)cycleStr='年付';else cycleStr=Math.round(cd/365)+'年付';}
-    var expStr=n.expired_at||'--';
-    h+='<tr><td class="bill-node-name" onclick="openDet(\''+n.uuid+'\')">'+esc(n.name||n.uuid)+'</td>';
-    h+='<td><span class="bill-badge '+(r.online?'on':'off')+'">'+(r.online?'ONLINE':'OFFLINE')+'</span></td>';
-    h+='<td style="color:var(--t3)">'+esc(n.group||'--')+'</td>';
-    h+='<td>'+priceStr+'</td>';
-    h+='<td class="bill-cycle">'+cycleStr+'</td>';
-    h+='<td>'+monthlyStr+'</td>';
-    var bRem2='--';var bRc2='var(--t4)';
-    if(n.expired_at&&b.monthly>0){var ed2=new Date(n.expired_at);var nw2=new Date();var rd2=Math.max(0,Math.ceil((ed2-nw2)/(1000*60*60*24)));var cdd2=parseInt(n.billing_cycle)||30;var rv2=(rd2/cdd2)*n.price;bRem2=b.currency+rv2.toFixed(2)+' ('+rd2+'d)';bRc2=rd2<=7?'var(--r)':rd2<=30?'var(--am)':'var(--g)';}
-    h+='<td style="color:var(--t3);font-size:11px">'+esc(expStr)+'</td>';
-    h+='<td style="color:'+bRc2+';font-size:12px;font-weight:600">'+bRem2+'</td>';
-    h+='<td><button class="bill-export-btn" data-uuid="'+n.uuid+'" title="Export Poster">⤓</button></td></tr>';
-  });
-  totalEntries.forEach(function(e){
-    h+='<tr class="bill-total-row"><td colspan="7" style="text-align:right;font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t3)">TOTAL ('+e[0]+')</td><td class="bill-monthly" style="font-size:15px">'+e[0]+e[1].toFixed(2)+'/月</td><td></td></tr>';
-  });
-  h+='</tbody></table></div>';
+  var h='';
+  nodeRows.forEach(function(r){h+=nodeCardHtml(r)});
   contentEl.innerHTML=h;
 }
 
