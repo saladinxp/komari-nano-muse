@@ -102,13 +102,10 @@ komari-nano-muse/
 
 ## Sibling Themes
 
-Komari Monitor 现有三套主题：
-
-| 主题 | 风格 | 版本 |
-|------|------|------|
-| **PRTS Industrial** | 工业结构美 — 暗色极简 | v2.5.4 |
-| **TechVision** | 赛博朋克科技风 | v1.8.3 |
-| **NanoMuse** (本项目) | 电子二次元 — 明亮冷白 | v0.9.2 |
+| Theme | Style | Repo |
+|-------|-------|------|
+| **NanoMuse** (this) | Anime HUD — Light sci-fi white porcelain | — |
+| **PRTS Industrial** | Industrial HUD — Endfield structural beauty | [PRTS-Industrial-Monitor](https://github.com/saladinxp/PRTS-Industrial-Monitor) |
 
 ## License
 
@@ -116,5 +113,5 @@ MIT
 
 ## Credits
 
-- Theme: Miuler (https://lol.moe)
+- Theme: [Miuler](https://github.com/saladinxp)
 - Komari Monitor: Miuler
