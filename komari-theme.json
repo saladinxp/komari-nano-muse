@@ -88,6 +88,17 @@
         "type": "string",
         "default": "90",
         "help": "磁盘使用率超过此值时卡片高亮警告（0-100）"
+      },
+      {
+        "name": "◇ IP DETECTION // 访客识别",
+        "type": "title"
+      },
+      {
+        "key": "proxycheck_key",
+        "name": "[ PROXYCHECK ] API Key",
+        "type": "string",
+        "default": "",
+        "help": "proxycheck.io API Key — 用于检测访客 VPN/代理/风险等级。免费注册：https://proxycheck.io （每日1000次免费额度）。注册后在 Dashboard 页面复制 API Key 填入此处，并在 CORS 标签页添加你的域名。留空则跳过风险检测，仅显示基础地理信息。"
       }
     ]
   }

@@ -3806,32 +3806,39 @@ async function fetchTermLink(){
     const asnE=$('tlASN');if(asnE)asnE.textContent=d.asn+', '+d.isp;
     const brE=$('tlBrowser');if(brE)brE.textContent=d.browser;
     const osE=$('tlOS');if(osE)osE.textContent=d.os;
-    /* proxycheck.io risk detection (CORS client-side, no IP needed) */
-    try{
-      const qr=await fetch('https://proxycheck.io/v2/?key=public-77j8w6-n1t639-8dnh61&vpn=1&asn=1&risk=1');
-      const q=await qr.json();
-      var rip=q.ip||d.ip;
-      if(q&&(q.status==='ok'||q.status==='warning')&&q[rip]){
-        var r=q[rip];
-        const typeEl=$('tlType');
-        if(typeEl){
-          var tags=[];
-          var ct=r.type||'';
-          if(ct)tags.push('<span class="tl-tag tl-tag-info">'+ct+'</span>');
-          if(r.proxy==='yes')tags.push('<span class="tl-tag tl-tag-warn">Proxy</span>');
-          if(r.vpn==='yes')tags.push('<span class="tl-tag tl-tag-warn">VPN</span>');
-          if(r.proxy!=='yes'&&r.vpn!=='yes')tags.push('<span class="tl-tag tl-tag-safe">Clean</span>');
-          typeEl.innerHTML=tags.join(' ');
+    /* proxycheck.io risk detection — requires key from theme_settings */
+    var pcKey=(S.themeSettings&&S.themeSettings.proxycheck_key)?S.themeSettings.proxycheck_key.trim():'';
+    if(pcKey){
+      try{
+        const qr=await fetch('https://proxycheck.io/v2/?key='+encodeURIComponent(pcKey)+'&vpn=1&asn=1&risk=1');
+        const q=await qr.json();
+        var rip=q.ip||d.ip;
+        if(q&&(q.status==='ok'||q.status==='warning')&&q[rip]){
+          var r=q[rip];
+          const typeEl=$('tlType');
+          if(typeEl){
+            var tags=[];
+            var ct=r.type||'';
+            if(ct)tags.push('<span class="tl-tag tl-tag-info">'+ct+'</span>');
+            if(r.proxy==='yes')tags.push('<span class="tl-tag tl-tag-warn">Proxy</span>');
+            if(r.vpn==='yes')tags.push('<span class="tl-tag tl-tag-warn">VPN</span>');
+            if(r.proxy!=='yes'&&r.vpn!=='yes')tags.push('<span class="tl-tag tl-tag-safe">Clean</span>');
+            typeEl.innerHTML=tags.join(' ');
+          }
+          const riskEl=$('tlRisk');
+          if(riskEl){
+            var score=parseInt(r.risk)||0;
+            var cls=score<=33?'tl-tag-safe':score<=66?'tl-tag-warn':'tl-tag-danger';
+            var label=score<=33?'Low':score<=66?'Medium':'High';
+            riskEl.innerHTML='<span class="tl-tag '+cls+'">'+score+'/100 '+label+'</span>';
+          }
         }
-        const riskEl=$('tlRisk');
-        if(riskEl){
-          var score=parseInt(r.risk)||0;
-          var cls=score<=33?'tl-tag-safe':score<=66?'tl-tag-warn':'tl-tag-danger';
-          var label=score<=33?'Low':score<=66?'Medium':'High';
-          riskEl.innerHTML='<span class="tl-tag '+cls+'">'+score+'/100 '+label+'</span>';
-        }
-      }
-    }catch(eq){console.log('[NM] proxycheck failed',eq)}
+      }catch(eq){console.log('[NM] proxycheck failed',eq)}
+    }else{
+      /* No key — hide TYPE and RISK rows */
+      var typeEl=$('tlType');if(typeEl)typeEl.closest('.tl-row').style.display='none';
+      var riskEl=$('tlRisk');if(riskEl)riskEl.closest('.tl-row').style.display='none';
+    }
   }catch(e){console.log('[NM] Terminal link failed',e)}
 }
 function parseUA(ua){
