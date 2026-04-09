@@ -505,8 +505,9 @@ body{
 .node-scan-line{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,216,255,0.15),transparent);margin:8px 0 16px;position:relative;overflow:hidden}
 .node-scan-line::after{content:'';position:absolute;top:0;left:-30%;width:30%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,216,255,0.4),rgba(255,255,255,0.3),rgba(0,216,255,0.4),transparent);animation:node-scan 8s ease-in-out infinite}
 @keyframes node-scan{0%{left:-30%}100%{left:100%}}
-.pills{display:flex;gap:5px}
-.pill{font-family:var(--fr);font-size:11px;letter-spacing:1.5px;padding:5px 14px;border:1px solid var(--border);background:var(--card-bg);color:var(--t3);cursor:pointer;transition:all .3s;font-weight:600;border-radius:6px}
+.pills{display:flex;gap:5px;overflow-x:auto;flex-wrap:nowrap;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:2px}
+.pills::-webkit-scrollbar{display:none}
+.pill{font-family:var(--fr);font-size:11px;letter-spacing:1.5px;padding:5px 14px;border:1px solid var(--border);background:var(--card-bg);color:var(--t3);cursor:pointer;transition:all .3s;font-weight:600;border-radius:6px;white-space:nowrap;flex-shrink:0}
 .pill:hover{border-color:var(--cyan);color:var(--cyan)}.pill.a{background:var(--cyan);color:#0a1420;border-color:var(--cyan);box-shadow:0 2px 10px rgba(var(--cyan-rgb),0.25)}
 
 /* ═══ NODE CARD ═══ */
@@ -1217,7 +1218,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .sync-sub{font-size:8px}
 /* ── Mobile: pills overflow ── */
 .sec-head{flex-wrap:wrap;gap:8px}
-.pills{flex-wrap:wrap}
+.pills{flex-wrap:nowrap}
 .pill{font-size:10px;padding:4px 10px}
 /* ── Mobile: Fleet strip ── */
 .fleet-strip .fleet-val{font-size:28px}
@@ -1321,7 +1322,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
   /* Section headers */
   .sec-head{flex-wrap:wrap!important;gap:6px!important}
-  .pills{flex-wrap:wrap!important}
+  .pills{flex-wrap:nowrap!important}
   .pill{font-size:10px!important;padding:4px 10px!important}
 
   /* Detail page */
