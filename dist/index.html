@@ -3393,7 +3393,7 @@ function nodeCardHtml(r){
   }
   var daysNum=r.remainDays>0?String(r.remainDays):'\u221e';
   var h='<div class="bf-ncard" onclick="openDet(\''+n.uuid+'\')">';
-  h+='<div class="bf-ncard-head"><div><div class="bf-ncard-name">'+esc(n.name||n.uuid)+'</div><div class="bf-ncard-unit">RESOURCE UNIT</div></div><span class="bf-pill '+ri.cls+'">'+ri.risk+'</span></div>';
+  h+='<div class="bf-ncard-head"><div><div class="bf-ncard-name">'+esc(n.name||n.uuid)+'</div><div class="bf-ncard-unit">RESOURCE UNIT</div></div><div style="display:flex;align-items:center;gap:6px"><button class="bill-export-btn" data-uuid="'+n.uuid+'" onclick="event.stopPropagation()" title="导出海报">⤓</button><span class="bf-pill '+ri.cls+'">'+ri.risk+'</span></div></div>';
   h+='<div class="bf-ncard-body"><div class="bf-ring-mini '+ri.clr+'"><div class="bf-ring-mini-inner">'+daysNum+'</div></div><div><div class="bf-ncard-cost '+ri.clr+'">'+monthlyDisp+'</div><div class="bf-ncard-costlbl">MONTHLY COST</div></div></div>';
   h+='<div class="bf-ncard-bars">';
   h+='<div class="bf-bar-row"><div class="bf-bar-meta"><span>RESERVE</span><span class="bf-bar-val">'+remainDisp+'</span></div><div class="bf-bar-track"><div class="bf-bar-fill '+ri.clr+'" style="width:'+reserveW+'%"></div></div></div>';
