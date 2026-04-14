@@ -2060,14 +2060,55 @@ function gF(){
 
 /* ── Character Eyes: awake when all online, asleep when any offline ── */
 function uCharEyes(){
-  var ci=document.getElementById('charImg');if(!ci)return;
   var total=S.nodes.filter(function(n){return !n.hidden}).length;
   var allOn=total>0&&S.onlineSet.size>=total;
-  var awakeUrl='./char-awake.png';
-  var sleepUrl='./char.png';
-  if(S.themeSettings&&S.themeSettings.char_url)sleepUrl=S.themeSettings.char_url;
-  var target=allOn?awakeUrl:sleepUrl;
-  if(ci.getAttribute('data-eyes')!==target){ci.src=target;ci.setAttribute('data-eyes',target)}
+  var ts=S.themeSettings||{};
+  var state=allOn?'awake':'sleep';
+  if(S._charState===state)return;
+  S._charState=state;
+
+  var ci=document.getElementById('charImg');
+  var vb=document.getElementById('videoBg');
+  var v=document.getElementById('bgVideo');
+  var ab=document.getElementById('animeBg');
+
+  if(allOn&&ts.bg_video_awake){
+    /* All online + awake video configured → show awake video */
+    if(v&&vb){
+      v.src=ts.bg_video_awake;
+      v.load();
+      var vop=parseFloat(ts.bg_video_opacity)||0.7;
+      function showAwakeVideo(){vb.style.opacity=vop;if(ab){ab.style.cssText+='transition:opacity 0.8s;opacity:0 !important'}}
+      if(v.readyState>=3){showAwakeVideo()}else{v.oncanplay=showAwakeVideo}
+    }
+  }else if(allOn){
+    /* All online + no awake video → show awake image */
+    if(ci){
+      var awakeUrl=ts.char_awake_url||'./char-awake.png';
+      ci.src=awakeUrl;
+    }
+    /* Hide video if it was playing, show character */
+    if(vb)vb.style.opacity='0';
+    if(ab){ab.style.cssText='';ab.removeAttribute('data-video-hidden')}
+  }else{
+    /* Has offline → show default sleep state */
+    if(ts.bg_video&&v&&vb){
+      /* Restore default video */
+      v.src=ts.bg_video;
+      v.load();
+      var vop2=parseFloat(ts.bg_video_opacity)||0.7;
+      function showSleepVideo(){vb.style.opacity=vop2;if(ab){ab.style.cssText+='transition:opacity 0.8s;opacity:0 !important'}}
+      if(v.readyState>=3){showSleepVideo()}else{v.oncanplay=showSleepVideo}
+    }else{
+      /* No video → show sleep image */
+      if(ci){
+        var sleepUrl=ts.char_url||'./char.png';
+        ci.src=sleepUrl;
+      }
+      if(vb)vb.style.opacity='0';
+      if(ab){ab.style.cssText='';ab.removeAttribute('data-video-hidden')}
+    }
+  }
 }
 
 /* ── Render Summary (Hero panels) ── */

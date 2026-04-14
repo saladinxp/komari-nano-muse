@@ -51,7 +51,21 @@
         "name": "[ CHAR ] 角色图片链接",
         "type": "string",
         "default": "",
-        "help": "Hero区域角色图 — 留空使用默认 char.png"
+        "help": "Hero区域角色图（离线/默认状态） — 留空使用默认 char.png"
+      },
+      {
+        "key": "char_awake_url",
+        "name": "[ CHAR.AWAKE ] 全在线角色图",
+        "type": "string",
+        "default": "",
+        "help": "全部节点在线时的角色图 — 留空使用默认 char-awake.png"
+      },
+      {
+        "key": "bg_video_awake",
+        "name": "[ VIDEO.AWAKE ] 全在线背景视频",
+        "type": "string",
+        "default": "",
+        "help": "全部节点在线时切换的背景视频 — 留空则显示睁眼角色图"
       },
       {
         "name": "◇ ANNOUNCE // 公告系统",
