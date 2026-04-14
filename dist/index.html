@@ -2032,7 +2032,7 @@ function conWS(){
         if(payload.data&&typeof payload.data==='object'){
           for(const[k,v]of Object.entries(payload.data))S.liveData[k]=flatLive(v);
         }
-        uCards();rSum();
+        uCards();rSum();uCharEyes();
         /* Cleanup stale liveData for removed nodes */
         if(S.nodes.length>0){const validUuids=new Set(S.nodes.map(n=>n.uuid));for(const k in S.liveData){if(!validUuids.has(k))delete S.liveData[k]}}
         if(S.detailUUID)uDetLive();
@@ -2056,6 +2056,18 @@ function gF(){
     if(S.searchTerm){const t=S.searchTerm.toLowerCase();if(!((n.name||'').toLowerCase().includes(t)||(n.region||'').toLowerCase().includes(t)))return false}
     return true;
   });
+}
+
+/* ── Character Eyes: awake when all online, asleep when any offline ── */
+function uCharEyes(){
+  var ci=document.getElementById('charImg');if(!ci)return;
+  var total=S.nodes.filter(function(n){return !n.hidden}).length;
+  var allOn=total>0&&S.onlineSet.size>=total;
+  var awakeUrl='./char-awake.png';
+  var sleepUrl='./char.png';
+  if(S.themeSettings&&S.themeSettings.char_url)sleepUrl=S.themeSettings.char_url;
+  var target=allOn?awakeUrl:sleepUrl;
+  if(ci.getAttribute('data-eyes')!==target){ci.src=target;ci.setAttribute('data-eyes',target)}
 }
 
 /* ── Render Summary (Hero panels) ── */
