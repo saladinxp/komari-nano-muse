@@ -15,9 +15,9 @@
 <meta name="twitter:description" content="Real-time server fleet monitoring dashboard">
 <meta name="twitter:image" content="https://obsr.net/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<!-- NanoMuse v1.1.0 — Komari Monitor Theme -->
+<!-- NanoMuse v1.2.0 — Komari Monitor Theme -->
 <style>
-/* ═══ NanoMuse v1.1.0 — CSS with Theme Support ═══ */
+/* ═══ NanoMuse v1.2.0 — CSS with Theme Support ═══ */
 :root{
   /* Clean Light Theme — brightened */
   --bg:#eaeff6;
@@ -550,7 +550,7 @@ body{
 /* ═══ NODE CARD ═══ (legacy, superseded by v1.1.0 block below) */
 .nc-data{flex:1;min-width:0}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-/* ═══════════ v1.1.0 · 博客风节点卡 (v1.1.0) ═══════════ */
+/* ═══════════ v1.2.0 · 博客风节点卡 (v1.2.0) ═══════════ */
 .nc{
   position:relative;background:var(--nc-bg);
   border:1px solid var(--border);
@@ -632,14 +632,19 @@ body{
 /* Body: 圆环 + Meters */
 .nc-body{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;margin-top:2px}
 
-/* 圆环 */
+/* 圆环 — v1.2.0 · ⑤ 单圆 + 强光晕 */
 .nc-ring{position:relative;width:72px;height:72px;flex-shrink:0}
 .nc-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
 .nc-ring-bg{fill:none;stroke:var(--border);stroke-width:3}
-.nc-ring-fg{fill:none;stroke-width:3;stroke-linecap:butt;transition:stroke-dashoffset .5s}
-.nc-ring-fg.g{stroke:var(--g);filter:drop-shadow(0 0 4px rgba(var(--gr),0.4))}
-.nc-ring-fg.am{stroke:var(--am);filter:drop-shadow(0 0 4px rgba(var(--amr),0.4))}
-.nc-ring-fg.r{stroke:var(--r);filter:drop-shadow(0 0 4px rgba(var(--rr),0.4))}
+.nc-ring-fg{fill:none;stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .5s}
+.nc-ring-fg.g{stroke:var(--g);filter:drop-shadow(0 0 8px rgba(var(--gr),0.7))}
+.nc-ring-fg.am{stroke:var(--am);filter:drop-shadow(0 0 8px rgba(var(--amr),0.7))}
+.nc-ring-fg.r{stroke:var(--r);filter:drop-shadow(0 0 8px rgba(var(--rr),0.7))}
+/* 外层柔光环(⑤ 光晕精华) */
+.nc-ring-halo{fill:none;stroke-width:10;stroke-opacity:0.12}
+.nc-ring-halo.g{stroke:var(--g)}
+.nc-ring-halo.am{stroke:var(--am)}
+.nc-ring-halo.r{stroke:var(--r)}
 .nc-ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;line-height:1;font-family:var(--fd);font-size:20px;font-weight:700;color:var(--t);padding-bottom:8px}
 .nc-ring-lbl{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-family:var(--fm);font-size:7px;letter-spacing:2px;color:var(--t3);pointer-events:none}
 
@@ -648,10 +653,17 @@ body{
 .nc-m{display:flex;align-items:center;gap:8px}
 .nc-ml{width:30px;font-family:var(--fm);font-size:9px;letter-spacing:1.5px;color:var(--t3);flex-shrink:0}
 .nc-mt{flex:1;height:5px;background:var(--border);position:relative;overflow:hidden;border-radius:0}
-.nc-mf{position:absolute;left:0;top:0;bottom:0;height:100%;transition:width .5s,background .3s;border-radius:0}
+.nc-mf{position:absolute;left:0;top:0;bottom:0;height:100%;transition:width .5s,background .3s;border-radius:0;overflow:hidden}
 .nc-mf.blue,.nc-mf.green{background:linear-gradient(90deg,var(--g),rgba(var(--gr),0.65))}
 .nc-mf.amber{background:linear-gradient(90deg,var(--am),rgba(var(--amr),0.6))}
 .nc-mf.red{background:linear-gradient(90deg,var(--r),rgba(var(--rr),0.6))}
+/* v1.2.0 光点扫过特效(你选的 ①) */
+.nc-mf::after{
+  content:'';position:absolute;top:0;left:-40%;width:40%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.55),transparent);
+  animation:ncMSweep 2.2s linear infinite;pointer-events:none;
+}
+@keyframes ncMSweep{0%{left:-40%}100%{left:100%}}
 .nc-mv{font-family:var(--fm);font-size:10px;font-weight:600;color:var(--t);min-width:34px;text-align:right;flex-shrink:0}
 .nc-hw{font-family:var(--fm);font-size:8px;color:var(--t4);letter-spacing:.8px;min-width:54px;text-align:right;flex-shrink:0;white-space:nowrap}
 
@@ -661,11 +673,63 @@ body{
 .au{color:var(--g);font-weight:700}
 .ad{color:var(--cyan);font-weight:700}
 
-/* HP 20 小方块 */
+/* HP 20 小方块 — v1.2.0: 最后 4 格为警戒区 */
 .nc-hbar{display:flex;align-items:center;gap:6px;margin-top:8px;padding:0;border-top:none}
 .nc-hbar-lbl{font-family:var(--fm);font-size:8px;letter-spacing:2px;color:var(--t3);flex-shrink:0;margin:0}
 .nc-hblk{flex:1;height:8px;background:var(--border);border-radius:0;transition:background .3s}
-.nc-hblk.g{background:var(--g)}.nc-hblk.a{background:var(--am)}.nc-hblk.r{background:var(--r)}
+.nc-hblk.g{background:linear-gradient(180deg,rgba(var(--gr),0.85),var(--g))}
+.nc-hblk.a{background:linear-gradient(180deg,rgba(var(--amr),0.85),var(--am))}
+.nc-hblk.r{background:linear-gradient(180deg,rgba(var(--rr),0.85),var(--r))}
+.nc-hblk.warn{background:linear-gradient(180deg,rgba(255,200,100,0.95),var(--am))}
+.nc-hbar-up{font-family:var(--fm);font-size:9px;color:var(--g);letter-spacing:.5px;font-weight:600;margin-left:4px;white-space:nowrap}
+
+/* v1.2.0 · 套餐信息条(V4/带宽/流量/价格/剩余天数) */
+.nc-pkg{display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--cyan-soft);border-top:1px solid var(--cyan-border);border-bottom:1px solid var(--cyan-border);margin:6px 0 8px;font-family:var(--fm);font-size:10px;flex-wrap:wrap}
+.nc-pkg-chip{font-family:var(--fm);font-size:9px;letter-spacing:1px;padding:1px 6px;border:1px solid var(--border);font-weight:600;color:var(--t2);white-space:nowrap}
+.nc-pkg-chip.bw{color:var(--g);border-color:rgba(var(--gr),0.4);background:rgba(var(--gr),0.08)}
+.nc-pkg-chip.tr{color:var(--t2);border-color:var(--border)}
+.nc-pkg-price{margin-left:auto;display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+.nc-pkg-price .price{font-family:var(--fd);font-size:12px;font-weight:700;color:var(--t);letter-spacing:.3px}
+.nc-pkg-price .cycle{color:var(--t3);font-size:9px}
+.nc-pkg-price .left{color:var(--cyan);font-size:10px;letter-spacing:1px;font-weight:600}
+.nc-pkg-price .left.warn{color:var(--am)}
+.nc-pkg-price .left.danger{color:var(--r)}
+.nc.off.atk .nc-pkg,.nc.off.ovl .nc-pkg{background:rgba(var(--rr),0.04);border-top-color:rgba(var(--rr),0.25);border-bottom-color:rgba(var(--rr),0.25)}
+.nc.off.ovl .nc-pkg{background:rgba(var(--amr),0.04);border-top-color:rgba(var(--amr),0.25);border-bottom-color:rgba(var(--amr),0.25)}
+
+/* v1.2.0 · UUID 左右渐变分隔线 */
+.nc-uuid-line{display:flex;align-items:center;gap:8px;margin:4px 0 6px;font-family:var(--fm);font-size:9px;letter-spacing:1.5px;color:var(--t4)}
+.nc-uuid-line .line{flex:1;height:1px}
+.nc-uuid-line .line.l{background:linear-gradient(90deg,transparent,var(--border) 30%,var(--border))}
+.nc-uuid-line .line.r{background:linear-gradient(90deg,var(--border),var(--border) 70%,transparent)}
+.nc-uuid-line b{color:var(--cyan);font-weight:500;margin:0 3px}
+
+/* v1.2.0 · SYSTEM INFO 分隔块 */
+.nc-sys{border:1px solid var(--border);background:rgba(var(--cyan-rgb),0.02);padding:7px 10px;margin-top:8px}
+.nc-sys-h{display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:8px;letter-spacing:2.5px;color:var(--t4);margin-bottom:4px}
+.nc-sys-h .sl{flex:1;height:1px;background:var(--border)}
+.nc-sys-g{font-family:var(--fm);font-size:10px}
+.nc-sys-r{display:flex;padding:1px 0;gap:8px}
+.nc-sys-r .k{width:42px;color:var(--t3);letter-spacing:1.5px;font-size:9px;flex-shrink:0}
+.nc-sys-r .v{color:var(--t);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* v1.2.0 · Net + Conn 合并行 */
+.nc-nc{display:flex;align-items:center;gap:10px;padding:5px 0 6px;font-family:var(--fm);font-size:10px;letter-spacing:.5px;color:var(--t2);border-top:1px dashed var(--border);border-bottom:1px dashed var(--border);margin-top:8px}
+.nc-nc .up{color:var(--g);font-weight:700}
+.nc-nc .dn{color:var(--cyan);font-weight:700}
+.nc-nc .conn{display:flex;gap:8px;margin-left:auto;font-family:var(--fm);font-size:9px;color:var(--t3)}
+.nc-nc .conn b{color:var(--t);font-weight:600;margin-left:2px}
+
+/* v1.2.0 · 右上 HUD(3 信号灯 + NODE.xx | SEC-y) */
+.nc-hud{position:absolute;top:11px;right:14px;display:flex;align-items:center;gap:6px;pointer-events:none;z-index:2;text-align:right;line-height:1.3}
+.nc-hud-sig{display:flex;gap:2px}
+.nc-hud-sig span{width:5px;height:5px;background:var(--cyan)}
+.nc-hud-sig span:nth-child(2){opacity:.6}
+.nc-hud-sig span:nth-child(3){opacity:.3}
+.nc-hud-text{font-family:var(--fm);font-size:8px;letter-spacing:1.5px;color:var(--t4)}
+.nc-hud-text b{color:var(--t3);font-weight:400}
+.nc.off.atk .nc-hud-sig span{background:var(--r)}
+.nc.off.ovl .nc-hud-sig span{background:var(--am)}
 
 /* Core pulse blocks (原有) */
 .nc-cpb{display:flex;gap:3px;align-items:center;margin-left:auto;margin-right:6px}
@@ -691,9 +755,6 @@ body{
 .nc-f-off::after{display:none}
 .nc.off.ovl .nc-f-off{background:rgba(var(--amr),0.06);border-color:rgba(var(--amr),0.35);color:var(--am);animation:none}
 @keyframes ncOffPulse{0%,100%{background:rgba(var(--rr),0.06)}50%{background:rgba(var(--rr),0.14)}}
-
-/* 右上 HUD 编号 */
-.nc-hud{position:absolute;top:12px;right:80px;font-family:var(--fm);font-size:7.5px;letter-spacing:2px;color:var(--t4);text-align:right;line-height:1.4;pointer-events:none;opacity:.7}
 
 /* 离线/告警基础态 */
 .nc.off{opacity:.92}
@@ -1679,7 +1740,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     <span id="themeLabel">LIGHT</span>
   </button>
-  <button class="tb-badge" id="verBadge">v1.1.0</button>
+  <button class="tb-badge" id="verBadge">v1.2.0</button>
   <button class="tb-btn" id="searchBtn">⌕</button>
 </div>
   </div>
@@ -2005,7 +2066,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
 </div><!-- /mainContent -->
 <script>
-  /* ═══ NanoMuse v1.1.0 — JS ═══ */
+  /* ═══ NanoMuse v1.2.0 — JS ═══ */
   ;(function(){
   'use strict';
   window._pageStart = performance.now();
@@ -2052,7 +2113,7 @@ const S={
   ws:null,_wsI:null,wsRetries:0,
   _lastF:[],
   detailUUID:null,detailNode:null,detailHours:6,detailTab:'load',detailPingHours:6,detailWsData:[],
-  VER:'v1.1.0',
+  VER:'v1.2.0',
   fleetLoadHist:[]
 };
 const STAB={hours:6,sort:'name',data:null,tasks:[],taskId:null,loading:false,_tasksFromApi:false};
@@ -2419,15 +2480,67 @@ function rCards(fl){
     const totalDn=on?fB(d.network_total_down||0,1):'--';
     const uptime=on&&d.uptime?fUs(d.uptime):'--';
 
+    /* Hardware info (meter 末尾) */
     const hwCpu=on?(n.cpu_cores||'?')+' Cores':(fake?(fake.cpuModel?fake.cpuModel.split(' ')[0]+'+':'? Cores'):'');
-    const hwRam=on?fB(d.memory_total||n.mem_total||0,0):'';
-    const hwDisk=on?fB(d.disk_total||n.disk_total||0,0):'';
-    const osStr=on?(d.os||n.os||''):(fake?fake.os:'');
+    const hwRam=on?fB(d.memory_total||n.mem_total||0,0):(fake?fB(fake.mem||0,0):'');
+    const hwDisk=on?fB(d.disk_total||n.disk_total||0,0):(fake?fB(fake.dsk||0,0):'');
+
+    /* SYS / CPU 型号 / MEM / DISK 精确值 / TOTAL */
+    const osStr=on?(d.os||n.os||'--'):(fake?fake.os:'--');
+    const cpuModel=on?(d.cpu_model||n.cpu_name||n.cpu_model||'--'):(fake?fake.cpuModel||'--':'--');
+    const memStr=on&&d.memory_used&&d.memory_total?(fB(d.memory_used,1)+' / '+fB(d.memory_total,1)):'-- / --';
+    const diskStr=on&&d.disk_used&&d.disk_total?(fB(d.disk_used,1)+' / '+fB(d.disk_total,1)):'-- / --';
+
+    /* 连接数 + 进程数 */
+    const tcpN=on?(d.tcp_conn_count||d.tcp||0):'--';
+    const udpN=on?(d.udp_conn_count||d.udp||0):'--';
+    const procN=on?(d.process||d.proc_count||0):'--';
+    const fmtK=v=>{if(typeof v!=='number')return v;if(v>=10000)return(v/1000).toFixed(1)+'k';return v.toString()};
+
+    /* 区域 chips */
     const region=n.region||'';const group=n.group||'';
-    const chips=['region','group','os'].map(k=>{const v=k==='region'?region:k==='group'?group:osStr;return v?`<span class="nc-chip">${esc(v)}</span>`:''}).join('');
+    const chips=[];
+    if(region)chips.push('<span class="nc-chip" style="color:var(--cyan);border-color:var(--cyan-border);background:var(--cyan-soft)">'+esc(region)+'</span>');
+    if(group)chips.push('<span class="nc-chip">'+esc(group)+'</span>');
+
+    /* 套餐信息(parseLabels + fBilling) */
+    const labels=parseLabels(n);
+    const bandwidth=labels.bandwidth||'';
+    const traffic=labels.traffic||'';
+    const ipVer=n.ipv6==false?'V4':(n.ipv4==false?'V6':'V4');
+    const bill=(typeof fBilling==='function')?fBilling(n):{str:'',monthly:0,currency:''};
+    /* 剩余天数 */
+    let daysLeft='';let daysLeftCls='';
+    if(n.expired_at){
+      const ed=new Date(n.expired_at);const nw=new Date();
+      const days=Math.ceil((ed-nw)/(1000*60*60*24));
+      if(days>0){
+        daysLeft='余 '+days+' 天';
+        daysLeftCls=days<=7?' danger':days<=30?' warn':'';
+      }else if(days===0){
+        daysLeft='今日到期';daysLeftCls=' danger';
+      }else{
+        daysLeft='已过期 '+(-days)+' 天';daysLeftCls=' danger';
+      }
+    }
+
+    /* 套餐条:有任何一项才显示 */
+    const hasPkg=bandwidth||traffic||bill.str||daysLeft;
+    let pkgHtml='';
+    if(hasPkg){
+      pkgHtml='<div class="nc-pkg">';
+      pkgHtml+='<span class="nc-pkg-chip">'+ipVer+'</span>';
+      if(bandwidth)pkgHtml+='<span class="nc-pkg-chip bw">'+esc(bandwidth)+'</span>';
+      if(traffic)pkgHtml+='<span class="nc-pkg-chip tr">'+esc(traffic)+'</span>';
+      pkgHtml+='<div class="nc-pkg-price">';
+      if(bill.str)pkgHtml+='<span><span class="price">'+esc(bill.str.split('/')[0])+'</span><span class="cycle"> / '+esc(bill.str.split('/')[1]||'')+'</span></span>';
+      if(daysLeft)pkgHtml+='<span class="left'+daysLeftCls+'">'+daysLeft+'</span>';
+      pkgHtml+='</div></div>';
+    }
+
+    /* 状态标签 / HUD */
     const offCls=on?'':(fake&&fake.atk?'off atk':'off ovl');
     const dly=Math.min(9,Math.floor(i/2)+4);
-    /* 博客风: 状态标签 / UUID / HUD 编号 / 专属告警 footer */
     const secTag='SEC-'+String.fromCharCode(65+Math.floor(i/4));
     const nodeNum=String(i+1).padStart(2,'0');
     const statusTag=on?'ONLINE · LINK OK':(fake&&fake.atk?'OFFLINE · UNDER ATTACK':'OFFLINE · OVERLOAD');
@@ -2436,39 +2549,63 @@ function rCards(fl){
     const dotCls=on?'on':(fake&&fake.atk?'off':'warn');
     const uuidShort=(n.uuid||'').slice(0,8).toUpperCase();
     const offMsg=fake&&fake.atk?'UNDER ATTACK':'OVERLOAD';
+
     html+=`<div class="nc ${offCls} an d${dly}" data-uuid="${n.uuid}" onclick="openDet('${n.uuid}')">
       <div class="nc-c tl"></div><div class="nc-c tr"></div><div class="nc-c bl"></div><div class="nc-c br"></div>
       <div class="nc-scan"></div>
-      <div class="nc-hud">NODE.${nodeNum}<br>${secTag}</div>
+      <div class="nc-hud">
+        <div class="nc-hud-sig"><span></span><span></span><span></span></div>
+        <div class="nc-hud-text">NODE.${nodeNum}<br><b>${secTag}</b></div>
+      </div>
       <div class="nc-h">
         <div class="nc-h-l">
           <div class="nc-tag"><span class="nc-dot ${dotCls}"></span>${statusTag}</div>
           <div class="nc-n">${esc(n.name||n.uuid)}</div>
-          <div class="nc-uuid">UUID · ${uuidShort}</div>
         </div>
         <div class="nc-badge ${badgeCls}">${badgeText}</div>
       </div>
-      <div class="nc-meta">${chips}</div>
+      <div class="nc-uuid-line"><span class="line l"></span><span>UUID · <b>${uuidShort}</b></span><span class="line r"></span></div>
+      ${chips.length?`<div class="nc-meta">${chips.join('')}</div>`:''}
+      ${pkgHtml}
       <div class="nc-body">
         <div class="nc-ring">
-          <svg viewBox="0 0 52 52"><circle class="nc-ring-bg" cx="26" cy="26" r="21"/><circle class="nc-ring-fg ${hc}" cx="26" cy="26" r="21" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/></svg>
+          <svg viewBox="0 0 52 52">
+            <circle class="nc-ring-halo ${hc}" cx="26" cy="26" r="21"/>
+            <circle class="nc-ring-bg" cx="26" cy="26" r="21"/>
+            <circle class="nc-ring-fg ${hc}" cx="26" cy="26" r="21" stroke-dasharray="${circ.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"/>
+          </svg>
           <div class="nc-ring-val" style="color:var(--${hc})">${on?health:'--'}</div>
           <div class="nc-ring-lbl">HEALTH</div>
         </div>
         <div class="nc-meters">${mH('CPU',cpu,!on,hwCpu)}${mH('RAM',ram,!on,hwRam)}${mH('DISK',disk,!on,hwDisk)}</div>
       </div>
-      <div class="nc-net">
-        <span${on?'':' style="opacity:.4"'}><span class="au">↑</span>${netUp}</span>
-        <span${on?'':' style="opacity:.4"'}><span class="ad">↓</span>${netDn}</span>
+      <div class="nc-sys">
+        <div class="nc-sys-h"><span class="sl"></span>SYSTEM INFO<span class="sl"></span></div>
+        <div class="nc-sys-g">
+          <div class="nc-sys-r"><span class="k">SYS</span><span class="v" data-sys="os">${esc(osStr)}</span></div>
+          <div class="nc-sys-r"><span class="k">CPU</span><span class="v" data-sys="cpu">${esc(cpuModel)}</span></div>
+          <div class="nc-sys-r"><span class="k">MEM</span><span class="v" data-sys="mem">${memStr}</span></div>
+          <div class="nc-sys-r"><span class="k">DISK</span><span class="v" data-sys="disk">${diskStr}</span></div>
+          ${on?`<div class="nc-sys-r"><span class="k">TOTAL</span><span class="v" data-sys="total"><span class="au">↑</span> ${totalUp} <span style="color:var(--t4);margin:0 6px">|</span> <span class="ad">↓</span> ${totalDn}</span></div>`:''}
+        </div>
       </div>
-      <div class="nc-hbar"><span class="nc-hbar-lbl">HP</span>${(function(){let b='';for(let i=0;i<20;i++){const filled=i<(on?Math.ceil(health/5):0);b+='<div class="nc-hblk'+(filled?(health>=90?' g':health>=70?' a':' r'):'')+'"></div>'}return b})()}</div>
-      ${on?`<div class="nc-fd"><div class="nc-fd-cell"><span class="nc-fd-lbl">UPTIME</span><span class="nc-fd-val" style="color:var(--g)" data-fd="up">${uptime}</span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">TX</span><span class="nc-fd-val" data-fd="tx"><span class="au">↑</span><span>${totalUp}</span></span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">RX</span><span class="nc-fd-val" data-fd="rx"><span class="ad">↓</span><span>${totalDn}</span></span></div></div>`:`<div class="nc-f-off"><span>⚠ &nbsp;${offMsg}</span><span>LINK LOST</span></div>`}
+      <div class="nc-nc">
+        <span class="up"${on?'':' style="opacity:.4"'}>↑ ${netUp}</span>
+        <span class="dn"${on?'':' style="opacity:.4"'}>↓ ${netDn}</span>
+        <div class="conn">
+          <span>TCP<b data-conn="tcp">${fmtK(tcpN)}</b></span>
+          <span>UDP<b data-conn="udp">${fmtK(udpN)}</b></span>
+          <span>PROC<b data-conn="proc">${fmtK(procN)}</b></span>
+        </div>
+      </div>
+      <div class="nc-hbar"><span class="nc-hbar-lbl">HP</span>${(function(){let b='';for(let i=0;i<20;i++){const filled=i<(on?Math.ceil(health/5):0);const isWarn=i>=16;let cls='';if(filled){cls=isWarn?' warn':(health>=90?' g':health>=70?' a':' r')}b+='<div class="nc-hblk'+cls+'"></div>'}return b})()}${on&&uptime!=='--'?`<span class="nc-hbar-up" data-fd="up">UP ${uptime}</span>`:''}</div>
+      ${on?'':`<div class="nc-f-off"><span>⚠ &nbsp;${offMsg}</span><span>LINK LOST</span></div>`}
     </div>`;
   });
   c.innerHTML=html;
 }
 
-/* ── Update Cards (WS incremental) ── */
+/* ── Update Cards (WS incremental) — v1.2.0 ── */
 function uCards(){
   const fl=gF();const newUuids=fl.map(n=>n.uuid);
   const same=newUuids.length===S._lastF?.length&&newUuids.every(u=>S._lastF.includes(u));
@@ -2478,132 +2615,144 @@ function uCards(){
     const on=S.onlineSet.has(n.uuid);
     const d=S.liveData[n.uuid]||{};
     let cpu,ram,disk;
+    const fakeN=!on?genFake(n.uuid):null;
     if(on){
       cpu=d.cpu||0;ram=d.memory_used&&d.memory_total?pc(d.memory_used,d.memory_total):0;
       disk=d.disk_used&&d.disk_total?pc(d.disk_used,d.disk_total):0;
     }else{
-      const fake=genFake(n.uuid);cpu=fake.cpu;ram=fake.ram;disk=fake.disk;
+      cpu=fakeN.cpu;ram=fakeN.ram;disk=fakeN.disk;
     }
     uMt(card,'CPU',cpu);uMt(card,'RAM',ram);uMt(card,'DISK',disk);
-    /* Update health ring */
+
+    /* Health ring — halo + main */
     const health=on?Math.max(0,Math.round(100-(cpu+ram+disk)/3)):0;
     const hc=health>60?'g':health>30?'am':'r';
-    const circ=2*Math.PI*21;const off=circ-(circ*health/100);
+    const circ=2*Math.PI*21;const offDash=circ-(circ*health/100);
+    const halo=card.querySelector('.nc-ring-halo');
+    if(halo)halo.setAttribute('class','nc-ring-halo '+hc);
     const ring=card.querySelector('.nc-ring-fg');
-    if(ring){ring.setAttribute('class','nc-ring-fg '+hc);ring.setAttribute('stroke-dashoffset',off.toFixed(1))}
+    if(ring){ring.setAttribute('class','nc-ring-fg '+hc);ring.setAttribute('stroke-dashoffset',offDash.toFixed(1))}
     const rv=card.querySelector('.nc-ring-val');
-    if(rv){rv.textContent=health;rv.style.color='var(--'+hc+')'}
-    /* Update health blocks */
+    if(rv){rv.textContent=on?health:'--';rv.style.color='var(--'+hc+')'}
+
+    /* HP 条 — v1.2.0 最后 4 格警戒色 */
     const hblks=card.querySelectorAll('.nc-hblk');
-    if(hblks.length===20){for(let i=0;i<20;i++){const filled=i<(on?Math.ceil(health/5):0);hblks[i].className='nc-hblk'+(filled?(health>=90?' g':health>=70?' a':' r'):'')}}
-    /* Update core pulse blocks */
-    const cbs=card.querySelectorAll('.nc-cb');
-    if(cbs.length===3){const cbC=v=>v>=80?'r':v>=60?'am':'g';if(on){cbs[0].className='nc-cb '+cbC(cpu);cbs[1].className='nc-cb '+cbC(ram);cbs[2].className='nc-cb '+cbC(disk)}else{cbs.forEach(c=>c.className='nc-cb dead')}}
-    /* Update net — incremental, no innerHTML */
-    const netEl=card.querySelector('.nc-net');
-    if(netEl&&on){
-      const spans=netEl.querySelectorAll(':scope > span');
-      if(spans.length>=2){
-        spans[0].lastChild.textContent=fS(d.network_tx||0);
-        spans[1].lastChild.textContent=fS(d.network_rx||0);
+    if(hblks.length===20){
+      for(let i=0;i<20;i++){
+        const filled=i<(on?Math.ceil(health/5):0);
+        const isWarn=i>=16;
+        let cls='nc-hblk';
+        if(filled){cls+=isWarn?' warn':(health>=90?' g':health>=70?' a':' r')}
+        hblks[i].className=cls;
       }
     }
-    /* Update three-column footer */
-    let fdEl=card.querySelector('.nc-fd');
-    let fOffEl=card.querySelector('.nc-f-off');
-    if(on){
-      if(fOffEl){fOffEl.remove()}
-      const uptime=d.uptime?fUs(d.uptime):'--';
+
+    /* UPTIME in HP bar */
+    let upEl=card.querySelector('.nc-hbar-up');
+    if(on&&d.uptime){
+      const upStr=fUs(d.uptime);
+      if(!upEl){
+        upEl=document.createElement('span');upEl.className='nc-hbar-up';upEl.setAttribute('data-fd','up');
+        card.querySelector('.nc-hbar')?.appendChild(upEl);
+      }
+      upEl.textContent='UP '+upStr;
+    }else if(upEl){upEl.remove()}
+
+    /* Net + TCP/UDP/PROC (合并行) */
+    const ncEl=card.querySelector('.nc-nc');
+    if(ncEl){
+      const spans=ncEl.querySelectorAll(':scope > span.up, :scope > span.dn');
+      if(spans.length>=2){
+        spans[0].textContent='↑ '+(on?fS(d.network_tx||0):'--');
+        spans[1].textContent='↓ '+(on?fS(d.network_rx||0):'--');
+        if(on){spans[0].style.opacity='';spans[1].style.opacity=''}
+        else{spans[0].style.opacity='.4';spans[1].style.opacity='.4'}
+      }
+      const fmtK=v=>{if(typeof v!=='number')return v;if(v>=10000)return(v/1000).toFixed(1)+'k';return v.toString()};
+      const tcpB=ncEl.querySelector('[data-conn="tcp"]');
+      const udpB=ncEl.querySelector('[data-conn="udp"]');
+      const procB=ncEl.querySelector('[data-conn="proc"]');
+      if(tcpB)tcpB.textContent=on?fmtK(d.tcp_conn_count||d.tcp||0):'--';
+      if(udpB)udpB.textContent=on?fmtK(d.udp_conn_count||d.udp||0):'--';
+      if(procB)procB.textContent=on?fmtK(d.process||d.proc_count||0):'--';
+    }
+
+    /* SYSTEM INFO 块更新(SYS/CPU/MEM/DISK/TOTAL) */
+    const sysOs=card.querySelector('[data-sys="os"]');
+    if(sysOs)sysOs.textContent=on?(d.os||n.os||'--'):(fakeN?fakeN.os:'--');
+    const sysCpu=card.querySelector('[data-sys="cpu"]');
+    if(sysCpu)sysCpu.textContent=on?(d.cpu_model||n.cpu_name||n.cpu_model||'--'):(fakeN?fakeN.cpuModel||'--':'--');
+    const sysMem=card.querySelector('[data-sys="mem"]');
+    if(sysMem){
+      if(on&&d.memory_used&&d.memory_total)sysMem.textContent=fB(d.memory_used,1)+' / '+fB(d.memory_total,1);
+      else sysMem.textContent='-- / --';
+    }
+    const sysDisk=card.querySelector('[data-sys="disk"]');
+    if(sysDisk){
+      if(on&&d.disk_used&&d.disk_total)sysDisk.textContent=fB(d.disk_used,1)+' / '+fB(d.disk_total,1);
+      else sysDisk.textContent='-- / --';
+    }
+    const sysTotal=card.querySelector('[data-sys="total"]');
+    if(on&&sysTotal){
       const tUp=fB(d.network_total_up||0,1);
       const tDn=fB(d.network_total_down||0,1);
-      if(!fdEl){
-        fdEl=document.createElement('div');fdEl.className='nc-fd';
-        fdEl.innerHTML='<div class="nc-fd-cell"><span class="nc-fd-lbl">UPTIME</span><span class="nc-fd-val" style="color:var(--g)" data-fd="up"></span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">TX TOTAL</span><span class="nc-fd-val" data-fd="tx"><span class="au">↑</span><span></span></span></div><div class="nc-fd-cell"><span class="nc-fd-lbl">RX TOTAL</span><span class="nc-fd-val" data-fd="rx"><span class="ad">↓</span><span></span></span></div>';
-        card.appendChild(fdEl);
-      }
-      const fdUp=fdEl.querySelector('[data-fd="up"]');if(fdUp)fdUp.textContent=uptime;
-      const fdTx=fdEl.querySelector('[data-fd="tx"] span:last-child');if(fdTx)fdTx.textContent=tUp;
-      const fdRx=fdEl.querySelector('[data-fd="rx"] span:last-child');if(fdRx)fdRx.textContent=tDn;
-    }else{
-      if(fdEl){fdEl.remove()}
+      sysTotal.innerHTML='<span class="au">↑</span> '+tUp+' <span style="color:var(--t4);margin:0 6px">|</span> <span class="ad">↓</span> '+tDn;
+    }else if(!on){
+      const sysTotalRow=card.querySelector('.nc-sys-r:last-child [data-sys="total"]');
+      if(sysTotalRow)sysTotalRow.closest('.nc-sys-r').style.display='none';
     }
-    /* Update hw specs in meter rows (博客风放在末尾) */
-    if(on){
-      const hwSpecs=[(n.cpu_cores||'?')+' Cores',fB(d.memory_total||n.mem_total||0,0),fB(d.disk_total||n.disk_total||0,0)];
-      card.querySelectorAll('.nc-m').forEach((mrow,idx)=>{
-        /* 清掉所有旧 hw */
-        mrow.querySelectorAll('.nc-hw').forEach(e=>e.remove());
-        /* 末尾加新 hw */
-        const hw=document.createElement('span');hw.className='nc-hw';
-        hw.textContent=hwSpecs[idx]||'';
-        mrow.appendChild(hw);
-      });
-    }else{
-      /* Offline 也显示硬件信息(从 fake 数据拿) */
-      const fakeN=genFake(n.uuid);
-      const hwSpecs=[(n.cpu_cores||'?')+' Cores',fakeN.mem?fB(fakeN.mem,0):'',fakeN.dsk?fB(fakeN.dsk,0):''];
-      card.querySelectorAll('.nc-m').forEach((mrow,idx)=>{
-        mrow.querySelectorAll('.nc-hw').forEach(e=>e.remove());
-        const hw=document.createElement('span');hw.className='nc-hw';
-        hw.textContent=hwSpecs[idx]||'';
-        mrow.appendChild(hw);
-      });
-    }
-    /* Update status dot */
+
+    /* Hardware info 末尾(cores/mem/disk) */
+    const hwSpecs=on
+      ?[(n.cpu_cores||'?')+' Cores',fB(d.memory_total||n.mem_total||0,0),fB(d.disk_total||n.disk_total||0,0)]
+      :[(n.cpu_cores||'?')+' Cores',fakeN&&fakeN.mem?fB(fakeN.mem,0):'',fakeN&&fakeN.dsk?fB(fakeN.dsk,0):''];
+    card.querySelectorAll('.nc-m').forEach((mrow,idx)=>{
+      mrow.querySelectorAll('.nc-hw').forEach(e=>e.remove());
+      const hw=document.createElement('span');hw.className='nc-hw';
+      hw.textContent=hwSpecs[idx]||'';
+      mrow.appendChild(hw);
+    });
+
+    /* 状态 dot / badge / tag */
+    const dotCls=on?'on':(fakeN&&fakeN.atk?'off':'warn');
     const dot=card.querySelector('.nc-dot');
-    if(dot){dot.setAttribute('class','nc-dot '+(on?'on':(S._fakeCache&&S._fakeCache[n.uuid]&&S._fakeCache[n.uuid].atk?'off':'warn')))}
+    if(dot)dot.setAttribute('class','nc-dot '+dotCls);
     const badge=card.querySelector('.nc-badge');
     if(badge){
-      const fake0=!on?genFake(n.uuid):null;
-      const bcls=on?'on':(fake0&&fake0.atk?'off':'alert');
-      const btext=on?'ONLINE':(fake0&&fake0.atk?'OFFLINE':'ALERT');
+      const bcls=on?'on':(fakeN&&fakeN.atk?'off':'alert');
+      const btext=on?'ONLINE':(fakeN&&fakeN.atk?'OFFLINE':'ALERT');
       badge.setAttribute('class','nc-badge '+bcls);badge.textContent=btext;
     }
-    /* Update status tag (博客风顶部标签) */
     const tag=card.querySelector('.nc-tag');
     if(tag){
-      const fake1=!on?genFake(n.uuid):null;
-      const statusTxt=on?'ONLINE · LINK OK':(fake1&&fake1.atk?'OFFLINE · UNDER ATTACK':'OFFLINE · OVERLOAD');
-      const dotCls=on?'on':(fake1&&fake1.atk?'off':'warn');
+      const statusTxt=on?'ONLINE · LINK OK':(fakeN&&fakeN.atk?'OFFLINE · UNDER ATTACK':'OFFLINE · OVERLOAD');
       tag.innerHTML='<span class="nc-dot '+dotCls+'"></span>'+statusTxt;
     }
-    /* Update card root class (off / ovl) */
-    const fake2=!on?genFake(n.uuid):null;
-    card.classList.toggle('off',!on);
-    card.classList.toggle('ovl',!on&&fake2&&!fake2.atk);
-    card.classList.toggle('atk',!on&&fake2&&fake2.atk);
-    /* Update off footer message */
-    const offFooter=card.querySelector('.nc-f-off');
-    if(offFooter){
-      const offMsg=fake2&&fake2.atk?'UNDER ATTACK':'OVERLOAD';
-      offFooter.innerHTML='<span>⚠ &nbsp;'+offMsg+'</span><span>LINK LOST</span>';
-    }else if(!on){
-      /* Create off footer if missing */
-      const offMsg=fake2&&fake2.atk?'UNDER ATTACK':'OVERLOAD';
-      const newOff=document.createElement('div');
-      newOff.className='nc-f-off';
-      newOff.innerHTML='<span>⚠ &nbsp;'+offMsg+'</span><span>LINK LOST</span>';
-      card.appendChild(newOff);
+
+    /* Card root class */
+    if(on){card.classList.remove('off','atk','ovl')}else{
+      card.classList.add('off');
+      card.classList.toggle('atk',!!(fakeN&&fakeN.atk));
+      card.classList.toggle('ovl',!(fakeN&&fakeN.atk));
     }
+
+    /* Off footer */
+    let offFooter=card.querySelector('.nc-f-off');
+    if(!on){
+      const offMsg=fakeN&&fakeN.atk?'UNDER ATTACK':'OVERLOAD';
+      if(!offFooter){
+        offFooter=document.createElement('div');offFooter.className='nc-f-off';
+        card.appendChild(offFooter);
+      }
+      offFooter.innerHTML='<span>⚠ &nbsp;'+offMsg+'</span><span>LINK LOST</span>';
+    }else if(offFooter){offFooter.remove()}
+
     /* Alert threshold highlights */
     if(on){
       card.classList.toggle('alert-cpu',cpu>=(S._alertCPU||80));
       card.classList.toggle('alert-ram',ram>=(S._alertRAM||80));
       card.classList.toggle('alert-disk',disk>=(S._alertDISK||90));
     }else{card.classList.remove('alert-cpu','alert-ram','alert-disk')}
-    if(on){card.classList.remove('off','atk','ovl')}else{
-      card.classList.add('off');
-      const fake=genFake(n.uuid);
-      if(fake&&fake.atk)card.classList.add('atk');else card.classList.add('ovl');
-    }
-    /* Update meta chips (region/group/os) — fix fake OS persisting after node comes online */
-    const metaEl=card.querySelector('.nc-meta');
-    if(metaEl){
-      const osStr=on?(d.os||n.os||''):(genFake(n.uuid).os);
-      const region=n.region||'';const group=n.group||'';
-      const newMeta=['region','group','os'].map(k=>{const v=k==='region'?region:k==='group'?group:osStr;return v?`<span class="nc-chip">${esc(v)}</span>`:''}).join('');
-      if(metaEl.innerHTML!==newMeta)metaEl.innerHTML=newMeta;
-    }
   });
 }
 
