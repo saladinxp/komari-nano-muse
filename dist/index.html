@@ -919,10 +919,12 @@ body{
 .det-time button{font-family:var(--fm);font-size:9px;letter-spacing:1.5px;padding:4px 12px;border:1px solid var(--border);background:transparent;color:var(--t3);cursor:pointer;border-radius:0;font-weight:500;transition:border-color .2s,color .2s}
 .det-time button:hover{border-color:var(--cyan);color:var(--cyan)}
 .det-time button.a{border-color:var(--cyan-border);background:var(--cyan-soft);color:var(--cyan)}
+/* Charts grid — 2 cols for compact detail page */
+.det-charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
 .chart-wrap{position:relative;background:var(--nc-bg);border:1px solid var(--border);border-radius:0;padding:14px 16px;transition:border-color .25s}
 .chart-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),rgba(var(--cyan-rgb),0.3),transparent);opacity:.85;pointer-events:none}
 .chart-wrap:hover{border-color:var(--cyan)}
-.chart-wrap canvas{width:100%;height:180px}
+.chart-wrap canvas{width:100%;height:130px}
 .chart-label{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--t3);margin-bottom:8px;font-weight:500;display:flex;align-items:center;gap:8px}
 .chart-label::before{content:'';width:3px;height:9px;border-radius:0;background:var(--cyan);opacity:.8}
 .chart-cur{position:absolute;top:12px;right:14px;font-family:var(--fd);font-size:15px;font-weight:700;color:var(--t);letter-spacing:.3px}
@@ -1405,7 +1407,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .fleet-cost-cell{grid-column:span 2}.fleet-cost-cell .fleet-val{font-size:28px!important}.det-strip{flex-wrap:wrap;border-radius:10px;min-height:auto}.ds-cell{min-width:auto;padding:8px 12px;font-size:90%}.det-core-echo{display:none}.det-charts-grid{grid-template-columns:1fr}.wmap-overview{grid-template-columns:repeat(2,1fr)}.wmap-node-list{grid-template-columns:1fr}
 /* Mobile detail page */
 .chart-wrap{padding:12px;border-radius:12px;border-left-width:2px}
-.chart-wrap canvas{height:150px}
+.chart-wrap canvas{height:110px}
 .chart-cur{font-size:12px;right:12px;top:10px}
 .chart-cur span{font-size:8px}
 .det-gauge{padding:12px 10px 10px}
@@ -1453,7 +1455,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 .pill{font-size:9px;padding:3px 8px}
 /* 480px detail page */
 .chart-wrap{padding:10px}
-.chart-wrap canvas{height:130px}
+.chart-wrap canvas{height:100px}
 .chart-cur{font-size:11px;right:10px;top:8px}
 .det-gauges{gap:8px}
 .det-gauge{padding:10px 6px 8px}
