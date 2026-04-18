@@ -209,6 +209,18 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 /* ext-row (ping history row at bottom) */
 .ext-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(240px,22vw,320px),1fr));gap:clamp(5px,0.5vw,10px);margin-top:clamp(5px,0.5vh,10px)}
 .ext-full{grid-column:1/-1}
+.ext-sec{padding:clamp(10px,1vw,16px)}
+
+/* Node Metadata + Location split */
+.meta-split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(5px,0.5vw,10px);align-items:stretch;margin-top:clamp(5px,0.5vh,10px)}
+.meta-left .tbl td:first-child{font-weight:600;color:var(--t3);white-space:nowrap;width:70px}
+.meta-right{display:flex;flex-direction:column}
+.mini-map{flex:1;min-height:260px;border-radius:0;overflow:hidden;background:rgba(var(--cyr),0.02);border:1px solid var(--bdr)}
+.tbl{width:100%;border-collapse:collapse;margin-top:6px}
+.tbl th{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;color:var(--t4);text-transform:uppercase;text-align:left;padding:5px 8px;border-bottom:1px dashed var(--bdr);font-weight:600}
+.tbl td{font-family:var(--fm);font-size:11px;color:var(--t2);padding:4px 8px;border-bottom:1px dashed var(--bdr);letter-spacing:.3px}
+.tbl tr:last-child td{border-bottom:none}
+.tbl .mono{color:var(--t);font-weight:500}
 
 /* Footer — SYSTEM MONITORING ACTIVE strip */
 .nx-footer{display:flex;align-items:center;justify-content:center;gap:12px;padding:10px;font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--t4)}
@@ -223,6 +235,7 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
   .col-right{order:2}
   .charts4{grid-template-columns:1fr 1fr}
   .cbot{grid-template-columns:1fr 1fr 1fr}
+  .meta-split{grid-template-columns:1fr}
 }
 @media(max-width:768px){
   .charts4{grid-template-columns:1fr}
