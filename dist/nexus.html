@@ -196,15 +196,32 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 .inst-fill{position:absolute;top:0;left:0;bottom:0;border-radius:0;box-shadow:0 0 4px currentColor}
 .inst-v{font-family:var(--fm);font-size:9px;color:var(--t2);min-width:34px;text-align:right;font-weight:600}
 
-/* Event Stream */
-.ev{display:flex;gap:6px;padding:4px 0;border-bottom:1px dashed var(--bdr);align-items:center;font-family:var(--fm);font-size:9px}
+/* Event Stream (event row inside col-right) */
+.ev{display:flex;gap:8px;padding:5px 0;border-bottom:1px dashed var(--bdr);align-items:flex-start;font-family:var(--fm);font-size:9px}
 .ev:last-child{border-bottom:none}
-.ev-time{color:var(--t4);font-size:8px;letter-spacing:1px;flex-shrink:0;min-width:52px}
-.ev-dot{font-size:10px;flex-shrink:0}
+.ev-time{color:var(--t4);font-size:8px;letter-spacing:1px;flex-shrink:0;min-width:52px;margin-top:2px}
+.ev-dot{font-size:10px;flex-shrink:0;margin-top:1px}
 .ev-dot.ok,.ev-dot.info{color:var(--g)}
 .ev-dot.warn{color:var(--am)}
 .ev-dot.err{color:var(--r)}
-.ev-msg{color:var(--t2);font-weight:500;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ev-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.ev-msg{font-family:var(--fm);font-size:10px;color:var(--t2);line-height:1.3;font-weight:500}
+.ev-body .ev-time{font-size:8px;color:var(--t4);letter-spacing:.5px;margin-top:0;min-width:auto}
+
+/* Ping Tasks rows (pb2 = ping bar v2, inside right col Ping Tasks panel) */
+.pb2{display:flex;align-items:center;gap:8px;padding:clamp(3px,0.3vh,5px) 0;border-bottom:1px dashed var(--bdr)}
+.pb2:last-child{border-bottom:none}
+.pb2-loc{font-family:var(--fm);font-size:10px;letter-spacing:.3px;color:var(--t2);min-width:80px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pb2-bar{flex:1;height:4px;background:rgba(var(--cyr),0.06);border:1px solid rgba(var(--cyr),0.08);position:relative;overflow:hidden;border-radius:0}
+.pb2-fill{position:absolute;top:0;left:0;bottom:0;border-radius:0;box-shadow:0 0 4px currentColor}
+.pb2-ms{font-family:var(--fm);font-size:10px;font-weight:600;min-width:50px;text-align:right;letter-spacing:.3px}
+
+/* Ping Tasks footer summary rows (Avg Latency / Loss) */
+.sig{display:flex;align-items:center;justify-content:space-between;padding:clamp(4px,0.4vh,6px) 0;border-top:1px dashed var(--bdr);margin-top:4px}
+.sig:not(:last-child){border-bottom:none}
+.sig+.sig{border-top:none;margin-top:0;padding-top:2px}
+.sig-k{font-family:var(--fm);font-size:9px;letter-spacing:1.5px;color:var(--t4);text-transform:uppercase;font-weight:500}
+.sig-v{font-family:var(--fr);font-size:clamp(12px,1vw,15px);font-weight:700;letter-spacing:.3px;text-shadow:0 0 8px rgba(var(--cyr),0.15)}
 
 /* ext-row (ping history row at bottom) */
 .ext-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(clamp(240px,22vw,320px),1fr));gap:clamp(5px,0.5vw,10px);margin-top:clamp(5px,0.5vh,10px)}
@@ -304,7 +321,6 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 <div class="bg-glow"></div>
 <div class="scan-line"></div>
 <img class="bg-char" src="/char.png" alt="" loading="lazy">
-<div class="scan"></div>
 <div class="ck" id="app">
   <div class="loading" id="initLoad">CONNECTING TO KOMARI API ...</div>
 </div>
