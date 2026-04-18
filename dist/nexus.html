@@ -211,6 +211,14 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 .ext-full{grid-column:1/-1}
 .ext-sec{padding:clamp(10px,1vw,16px)}
 
+/* Data range time bar (between charts and ping history) */
+.time-bar{display:flex;align-items:center;gap:6px;padding:clamp(8px,0.8vh,12px) 0 clamp(5px,0.5vh,8px);flex-wrap:wrap}
+.time-label{font-family:var(--fm);font-size:10px;letter-spacing:2.5px;color:var(--label-color);font-weight:600;margin-right:10px;display:flex;align-items:center;gap:8px;text-transform:uppercase}
+.time-label::before{content:'';width:4px;height:4px;background:var(--cyan);transform:rotate(45deg);opacity:.9}
+.time-btn{font-family:var(--fm);font-size:10px;letter-spacing:1.5px;padding:4px 12px;border:1px solid var(--bdr);background:transparent;color:var(--t3);cursor:pointer;border-radius:0;transition:.2s;font-weight:500}
+.time-btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.time-btn.a{background:var(--cyan-soft);color:var(--cyan);border-color:var(--cyan-border);box-shadow:0 0 8px rgba(var(--cyr),0.15)}
+
 /* Node Metadata + Location split */
 .meta-split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(5px,0.5vw,10px);align-items:stretch;margin-top:clamp(5px,0.5vh,10px)}
 .meta-left .tbl td:first-child{font-weight:600;color:var(--t3);white-space:nowrap;width:70px}
