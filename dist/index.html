@@ -547,17 +547,7 @@ body{
 .pill{font-family:var(--fr);font-size:11px;letter-spacing:1.5px;padding:5px 14px;border:1px solid var(--border);background:var(--card-bg);color:var(--t3);cursor:pointer;transition:all .3s;font-weight:600;border-radius:6px;white-space:nowrap;flex-shrink:0}
 .pill:hover{border-color:var(--cyan);color:var(--cyan)}.pill.a{background:var(--cyan);color:#0a1420;border-color:var(--cyan);box-shadow:0 2px 10px rgba(var(--cyan-rgb),0.25)}
 
-/* ═══ NODE CARD ═══ */
-.nc-body{padding:2px 14px 14px;display:flex;gap:12px;align-items:center}
-.nc-ring{flex-shrink:0;position:relative;width:52px;height:66px}
-.nc-ring svg{width:52px;height:52px;transform:rotate(-90deg)}
-.nc-ring-bg{fill:none;stroke:rgba(148,163,184,0.1);stroke-width:3}
-.nc-ring-fg{fill:none;stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
-.nc-ring-fg.g{stroke:var(--g)}
-.nc-ring-fg.am{stroke:var(--am)}
-.nc-ring-fg.r{stroke:var(--r)}
-.nc-ring-val{position:absolute;top:0;left:0;width:52px;height:52px;display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:700;font-size:14px;line-height:1}
-.nc-ring-lbl{position:absolute;bottom:0;left:50%;transform:translateX(-50%);font-family:var(--fm);font-size:7px;letter-spacing:1.5px;color:var(--t4);white-space:nowrap}
+/* ═══ NODE CARD ═══ (legacy, superseded by v1.1.0 block below) */
 .nc-data{flex:1;min-width:0}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
 /* ═══════════ v1.1.0 · 博客风节点卡 (v1.1.0) ═══════════ */
@@ -650,8 +640,8 @@ body{
 .nc-ring-fg.g{stroke:var(--g);filter:drop-shadow(0 0 4px rgba(var(--gr),0.4))}
 .nc-ring-fg.am{stroke:var(--am);filter:drop-shadow(0 0 4px rgba(var(--amr),0.4))}
 .nc-ring-fg.r{stroke:var(--r);filter:drop-shadow(0 0 4px rgba(var(--rr),0.4))}
-.nc-ring-val{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;font-family:var(--fd);font-size:22px;font-weight:700;color:var(--t)}
-.nc-ring-lbl{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-family:var(--fm);font-size:7px;letter-spacing:2px;color:var(--t3)}
+.nc-ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;line-height:1;font-family:var(--fd);font-size:20px;font-weight:700;color:var(--t);padding-bottom:8px}
+.nc-ring-lbl{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-family:var(--fm);font-size:7px;letter-spacing:2px;color:var(--t3);pointer-events:none}
 
 /* Meters */
 .nc-meters{display:flex;flex-direction:column;gap:6px;min-width:0}
