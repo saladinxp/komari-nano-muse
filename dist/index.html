@@ -555,12 +555,12 @@ body{
   position:relative;background:var(--nc-bg);
   border:1px solid var(--border);
   border-radius:0;
-  padding:16px 18px 12px;
+  padding:16px 18px 54px;
   cursor:pointer;transition:border-color .25s,box-shadow .25s,background .25s;
   font-family:var(--fm);
   display:flex;flex-direction:column;
-  min-height:320px;
-  overflow:visible;
+  height:430px;
+  overflow:hidden;
 }
 .nc:hover{
   border-color:var(--cyan);
@@ -617,7 +617,7 @@ body{
 @keyframes ncDotBlink{0%,100%{opacity:1}50%{opacity:.3}}
 .nc-n{font-family:var(--fd);font-size:16px;font-weight:700;color:var(--t);line-height:1.1;letter-spacing:.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nc-uuid{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--t4);margin-top:2px}
-.nc-badge{font-family:var(--fm);font-size:9px;letter-spacing:2px;padding:3px 8px;border-radius:0;border:1px solid var(--cyan);color:var(--cyan);background:rgba(var(--cyan-rgb),0.05);align-self:flex-start;flex-shrink:0;font-weight:600}
+.nc-badge{font-family:var(--fm);font-size:9px;letter-spacing:2px;padding:3px 8px;border-radius:0;border:1px solid var(--cyan);color:var(--cyan);background:rgba(var(--cyan-rgb),0.05);align-self:flex-start;flex-shrink:0;font-weight:600;margin-top:24px}
 .nc-badge.on{border-color:var(--cyan);color:var(--cyan);background:rgba(var(--cyan-rgb),0.05)}
 .nc-badge.off{border-color:var(--r);color:var(--r);background:rgba(var(--rr),0.08)}
 .nc-badge.alert{border-color:var(--am);color:var(--am);background:rgba(var(--amr),0.08)}
@@ -628,6 +628,8 @@ body{
 .nc-chip{font-family:var(--fm);font-size:9px;letter-spacing:1.5px;padding:2px 7px;border-radius:0;color:var(--t2);
   border:1px solid var(--border);background:transparent}
 .nc-chip:first-child{color:var(--cyan);border-color:var(--cyan-border);background:var(--cyan-soft)}
+.nc-chip.ph{color:var(--t4);opacity:.4;border-color:var(--border);background:transparent}
+.nc-chip.ph:first-child{color:var(--t4);border-color:var(--border);background:transparent}
 
 /* Body: 圆环 + Meters */
 .nc-body{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center;margin-top:2px}
@@ -682,6 +684,7 @@ body{
 .nc-hblk.r{background:linear-gradient(180deg,rgba(var(--rr),0.85),var(--r))}
 .nc-hblk.warn{background:linear-gradient(180deg,rgba(255,200,100,0.95),var(--am))}
 .nc-hbar-up{font-family:var(--fm);font-size:9px;color:var(--g);letter-spacing:.5px;font-weight:600;margin-left:4px;white-space:nowrap}
+.nc-hbar-up.ph{color:var(--t4);opacity:.4;font-weight:400}
 
 /* v1.2.0 · 套餐信息条(V4/带宽/流量/价格/剩余天数) */
 .nc-pkg{display:flex;align-items:center;gap:6px;padding:5px 10px;background:var(--cyan-soft);border-top:1px solid var(--cyan-border);border-bottom:1px solid var(--cyan-border);margin:6px 0 8px;font-family:var(--fm);font-size:10px;flex-wrap:wrap}
@@ -694,6 +697,9 @@ body{
 .nc-pkg-price .left{color:var(--cyan);font-size:10px;letter-spacing:1px;font-weight:600}
 .nc-pkg-price .left.warn{color:var(--am)}
 .nc-pkg-price .left.danger{color:var(--r)}
+.nc-pkg-chip.ph{color:var(--t4);border-color:var(--border);opacity:.5;font-weight:400}
+.nc-pkg-price .ph-price{font-family:var(--fd);font-size:12px;color:var(--t4);opacity:.4;letter-spacing:.3px}
+.nc-pkg-price .left.ph-left{color:var(--t4);opacity:.4}
 .nc.off.atk .nc-pkg,.nc.off.ovl .nc-pkg{background:rgba(var(--rr),0.04);border-top-color:rgba(var(--rr),0.25);border-bottom-color:rgba(var(--rr),0.25)}
 .nc.off.ovl .nc-pkg{background:rgba(var(--amr),0.04);border-top-color:rgba(var(--amr),0.25);border-bottom-color:rgba(var(--amr),0.25)}
 
@@ -720,14 +726,14 @@ body{
 .nc-nc .conn{display:flex;gap:8px;margin-left:auto;font-family:var(--fm);font-size:9px;color:var(--t3)}
 .nc-nc .conn b{color:var(--t);font-weight:600;margin-left:2px}
 
-/* v1.2.0 · 右上 HUD(3 信号灯 + NODE.xx | SEC-y) */
-.nc-hud{position:absolute;top:11px;right:14px;display:flex;align-items:center;gap:6px;pointer-events:none;z-index:2;text-align:right;line-height:1.3}
-.nc-hud-sig{display:flex;gap:2px}
+/* v1.2.0 · 右上 HUD(NODE.xx | SEC-y + 3 信号灯) — fix: 文字在左、信号灯在右,避免与 badge 重叠 */
+.nc-hud{position:absolute;top:8px;right:12px;display:flex;align-items:center;gap:6px;pointer-events:none;z-index:4;line-height:1.15}
+.nc-hud-text{font-family:var(--fm);font-size:8px;letter-spacing:1.5px;color:var(--t4);text-align:right;white-space:nowrap}
+.nc-hud-text b{color:var(--t3);font-weight:400}
+.nc-hud-sig{display:flex;gap:2px;flex-shrink:0}
 .nc-hud-sig span{width:5px;height:5px;background:var(--cyan)}
 .nc-hud-sig span:nth-child(2){opacity:.6}
 .nc-hud-sig span:nth-child(3){opacity:.3}
-.nc-hud-text{font-family:var(--fm);font-size:8px;letter-spacing:1.5px;color:var(--t4)}
-.nc-hud-text b{color:var(--t3);font-weight:400}
 .nc.off.atk .nc-hud-sig span{background:var(--r)}
 .nc.off.ovl .nc-hud-sig span{background:var(--am)}
 
@@ -751,7 +757,7 @@ body{
 .nc-fd-val{font-size:11px;font-weight:600;color:var(--t);letter-spacing:.5px}
 
 /* 告警/离线专属 footer(虚线框 + 状态文字) */
-.nc-f-off{margin-top:10px;padding:9px 12px;border-radius:0;background:rgba(var(--rr),0.06);border:1px dashed rgba(var(--rr),0.35);display:flex;align-items:center;justify-content:space-between;font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--r);position:relative;animation:ncOffPulse 2.4s ease-in-out infinite}
+.nc-f-off{position:absolute;left:14px;right:14px;bottom:12px;padding:9px 12px;border-radius:0;background:rgba(var(--rr),0.06);border:1px dashed rgba(var(--rr),0.35);display:flex;align-items:center;justify-content:space-between;font-family:var(--fm);font-size:10px;letter-spacing:2px;color:var(--r);animation:ncOffPulse 2.4s ease-in-out infinite;pointer-events:none}
 .nc-f-off::after{display:none}
 .nc.off.ovl .nc-f-off{background:rgba(var(--amr),0.06);border-color:rgba(var(--amr),0.35);color:var(--am);animation:none}
 @keyframes ncOffPulse{0%,100%{background:rgba(var(--rr),0.06)}50%{background:rgba(var(--rr),0.14)}}
@@ -1487,7 +1493,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
   /* Cards: single column */
   .cards{grid-template-columns:1fr!important;gap:10px!important}
-  .nc{padding:12px!important}
+  .nc{padding:12px 12px 54px!important;height:auto!important;min-height:420px!important}
   .nc-ring{width:48px!important;height:48px!important}
   .nc-ring svg{width:48px!important;height:48px!important}
   .nc-ring-val{font-size:16px!important}
@@ -2524,19 +2530,23 @@ function rCards(fl){
       }
     }
 
-    /* 套餐条:有任何一项才显示 */
-    const hasPkg=bandwidth||traffic||bill.str||daysLeft;
-    let pkgHtml='';
-    if(hasPkg){
-      pkgHtml='<div class="nc-pkg">';
-      pkgHtml+='<span class="nc-pkg-chip">'+ipVer+'</span>';
-      if(bandwidth)pkgHtml+='<span class="nc-pkg-chip bw">'+esc(bandwidth)+'</span>';
-      if(traffic)pkgHtml+='<span class="nc-pkg-chip tr">'+esc(traffic)+'</span>';
-      pkgHtml+='<div class="nc-pkg-price">';
-      if(bill.str)pkgHtml+='<span><span class="price">'+esc(bill.str.split('/')[0])+'</span><span class="cycle"> / '+esc(bill.str.split('/')[1]||'')+'</span></span>';
-      if(daysLeft)pkgHtml+='<span class="left'+daysLeftCls+'">'+daysLeft+'</span>';
-      pkgHtml+='</div></div>';
+    /* 套餐条:永远渲染,缺字段用占位(保证卡片高度一致) */
+    let pkgHtml='<div class="nc-pkg">';
+    pkgHtml+='<span class="nc-pkg-chip">'+ipVer+'</span>';
+    pkgHtml+=bandwidth?'<span class="nc-pkg-chip bw">'+esc(bandwidth)+'</span>':'<span class="nc-pkg-chip ph">—</span>';
+    pkgHtml+=traffic?'<span class="nc-pkg-chip tr">'+esc(traffic)+'</span>':'<span class="nc-pkg-chip ph">—</span>';
+    pkgHtml+='<div class="nc-pkg-price">';
+    if(bill.str){
+      pkgHtml+='<span><span class="price">'+esc(bill.str.split('/')[0])+'</span><span class="cycle"> / '+esc(bill.str.split('/')[1]||'')+'</span></span>';
+    }else{
+      pkgHtml+='<span class="ph-price">—</span>';
     }
+    if(daysLeft){
+      pkgHtml+='<span class="left'+daysLeftCls+'">'+daysLeft+'</span>';
+    }else{
+      pkgHtml+='<span class="left ph-left">—</span>';
+    }
+    pkgHtml+='</div></div>';
 
     /* 状态标签 / HUD */
     const offCls=on?'':(fake&&fake.atk?'off atk':'off ovl');
@@ -2554,8 +2564,8 @@ function rCards(fl){
       <div class="nc-c tl"></div><div class="nc-c tr"></div><div class="nc-c bl"></div><div class="nc-c br"></div>
       <div class="nc-scan"></div>
       <div class="nc-hud">
-        <div class="nc-hud-sig"><span></span><span></span><span></span></div>
         <div class="nc-hud-text">NODE.${nodeNum}<br><b>${secTag}</b></div>
+        <div class="nc-hud-sig"><span></span><span></span><span></span></div>
       </div>
       <div class="nc-h">
         <div class="nc-h-l">
@@ -2565,7 +2575,7 @@ function rCards(fl){
         <div class="nc-badge ${badgeCls}">${badgeText}</div>
       </div>
       <div class="nc-uuid-line"><span class="line l"></span><span>UUID · <b>${uuidShort}</b></span><span class="line r"></span></div>
-      ${chips.length?`<div class="nc-meta">${chips.join('')}</div>`:''}
+      <div class="nc-meta">${chips.length?chips.join(''):'<span class="nc-chip ph">—</span>'}</div>
       ${pkgHtml}
       <div class="nc-body">
         <div class="nc-ring">
@@ -2586,7 +2596,7 @@ function rCards(fl){
           <div class="nc-sys-r"><span class="k">CPU</span><span class="v" data-sys="cpu">${esc(cpuModel)}</span></div>
           <div class="nc-sys-r"><span class="k">MEM</span><span class="v" data-sys="mem">${memStr}</span></div>
           <div class="nc-sys-r"><span class="k">DISK</span><span class="v" data-sys="disk">${diskStr}</span></div>
-          ${on?`<div class="nc-sys-r"><span class="k">TOTAL</span><span class="v" data-sys="total"><span class="au">↑</span> ${totalUp} <span style="color:var(--t4);margin:0 6px">|</span> <span class="ad">↓</span> ${totalDn}</span></div>`:''}
+          <div class="nc-sys-r"><span class="k">TOTAL</span><span class="v" data-sys="total">${on?`<span class="au">↑</span> ${totalUp} <span style="color:var(--t4);margin:0 6px">|</span> <span class="ad">↓</span> ${totalDn}`:'<span style="opacity:.4">↑ -- | ↓ --</span>'}</span></div>
         </div>
       </div>
       <div class="nc-nc">
@@ -2598,7 +2608,7 @@ function rCards(fl){
           <span>PROC<b data-conn="proc">${fmtK(procN)}</b></span>
         </div>
       </div>
-      <div class="nc-hbar"><span class="nc-hbar-lbl">HP</span>${(function(){let b='';for(let i=0;i<20;i++){const filled=i<(on?Math.ceil(health/5):0);const isWarn=i>=16;let cls='';if(filled){cls=isWarn?' warn':(health>=90?' g':health>=70?' a':' r')}b+='<div class="nc-hblk'+cls+'"></div>'}return b})()}${on&&uptime!=='--'?`<span class="nc-hbar-up" data-fd="up">UP ${uptime}</span>`:''}</div>
+      <div class="nc-hbar"><span class="nc-hbar-lbl">HP</span>${(function(){let b='';for(let i=0;i<20;i++){const filled=i<(on?Math.ceil(health/5):0);const isWarn=i>=16;let cls='';if(filled){cls=isWarn?' warn':(health>=90?' g':health>=70?' a':' r')}b+='<div class="nc-hblk'+cls+'"></div>'}return b})()}<span class="nc-hbar-up${on&&uptime!=='--'?'':' ph'}" data-fd="up">${on&&uptime!=='--'?`UP ${uptime}`:'UP --'}</span></div>
       ${on?'':`<div class="nc-f-off"><span>⚠ &nbsp;${offMsg}</span><span>LINK LOST</span></div>`}
     </div>`;
   });
