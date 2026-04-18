@@ -85,7 +85,7 @@ html,body{height:100%;background:var(--bg);color:var(--t);font-family:var(--fd);
 .ptag{font-family:var(--fm);font-size:8px;letter-spacing:1.5px;color:var(--cyan);border:1px solid var(--cyan-border);background:var(--cyan-soft);padding:2px 6px;border-radius:0;margin-left:auto;font-weight:500}
 
 /* Header 条 */
-.hd{display:flex;align-items:center;flex-wrap:wrap;gap:clamp(4px,0.5vw,12px);border-radius:0;background:var(--header-bg);border:1px solid var(--pb);padding:clamp(8px,1vh,14px) clamp(12px,1.2vw,20px);position:relative;z-index:50;overflow:hidden}
+.hd{display:flex;align-items:center;flex-wrap:wrap;gap:clamp(4px,0.5vw,12px);border-radius:0;background:var(--header-bg);border:1px solid var(--pb);padding:clamp(8px,1vh,14px) clamp(12px,1.2vw,20px);position:relative;z-index:50;overflow:visible}
 .hd::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),rgba(var(--cyr),0.3),transparent);opacity:.9}
 .hd::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(var(--cyr),0.3),transparent)}
 .hc{padding:4px clamp(8px,1vw,16px);border-right:1px solid var(--bdr);display:flex;flex-direction:column;gap:2px}.hc:last-child{border-right:none}
