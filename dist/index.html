@@ -15,9 +15,9 @@
 <meta name="twitter:description" content="Real-time server fleet monitoring dashboard">
 <meta name="twitter:image" content="https://obsr.net/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<!-- NanoMuse v1.2.1 — Komari Monitor Theme -->
+<!-- NanoMuse v1.3.0 — Komari Monitor Theme -->
 <style>
-/* ═══ NanoMuse v1.2.1 — CSS with Theme Support ═══ */
+/* ═══ NanoMuse v1.3.0 — CSS with Theme Support ═══ */
 :root{
   /* Clean Light Theme — brightened */
   --bg:#eaeff6;
@@ -631,7 +631,7 @@ body{
 
 /* 圆环 — v1.2.0 · ⑤ 单圆 + 强光晕 */
 .nc-ring{position:relative;width:72px;height:72px;flex-shrink:0}
-.nc-ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.nc-ring svg{width:100%;height:100%;transform:rotate(-90deg);overflow:visible}
 .nc-ring-bg{fill:none;stroke:var(--border);stroke-width:3}
 .nc-ring-fg{fill:none;stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .5s}
 .nc-ring-fg.g{stroke:var(--g);filter:drop-shadow(0 0 8px rgba(var(--gr),0.7))}
@@ -1768,7 +1768,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     <span id="themeLabel">LIGHT</span>
   </button>
-  <button class="tb-badge" id="verBadge">v1.2.1</button>
+  <button class="tb-badge" id="verBadge">v1.3.0</button>
   <button class="tb-btn" id="searchBtn">⌕</button>
 </div>
   </div>
@@ -2094,7 +2094,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
 </div><!-- /mainContent -->
 <script>
-  /* ═══ NanoMuse v1.2.1 — JS ═══ */
+  /* ═══ NanoMuse v1.3.0 — JS ═══ */
   ;(function(){
   'use strict';
   window._pageStart = performance.now();
@@ -2141,7 +2141,7 @@ const S={
   ws:null,_wsI:null,wsRetries:0,
   _lastF:[],
   detailUUID:null,detailNode:null,detailHours:6,detailTab:'load',detailPingHours:6,detailWsData:[],
-  VER:'v1.2.1',
+  VER:'v1.3.0',
   fleetLoadHist:[]
 };
 const STAB={hours:6,sort:'name',data:null,tasks:[],taskId:null,loading:false,_tasksFromApi:false};
