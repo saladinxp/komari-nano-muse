@@ -15,9 +15,9 @@
 <meta name="twitter:description" content="Real-time server fleet monitoring dashboard">
 <meta name="twitter:image" content="https://obsr.net/og-image.png">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-<!-- NanoMuse v1.3.0 — Komari Monitor Theme -->
+<!-- NanoMuse v1.3.1 — Komari Monitor Theme -->
 <style>
-/* ═══ NanoMuse v1.3.0 — CSS with Theme Support ═══ */
+/* ═══ NanoMuse v1.3.1 — CSS with Theme Support ═══ */
 :root{
   /* Clean Light Theme — brightened */
   --bg:#eaeff6;
@@ -801,9 +801,10 @@ body{
 .det-nexus-btn:hover{border-color:var(--cyan);background:rgba(var(--cyan-rgb),0.12)}
 
 /* ── Detail: 通用 panel 基底(和节点卡同构) ── */
-.det-pnl{position:relative;background:var(--nc-bg);border:1px solid var(--border);border-radius:0;padding:14px 18px;margin-bottom:12px;transition:border-color .25s}
-.det-pnl::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),rgba(var(--cyan-rgb),0.3),transparent);opacity:.85;pointer-events:none}
-.det-pnl .dc{position:absolute;width:10px;height:10px;pointer-events:none}
+.det-pnl{position:relative;background:var(--nc-bg);border:1px solid var(--border);border-radius:0;padding:14px 18px;margin-bottom:12px;transition:border-color .25s;overflow:hidden}
+.det-pnl::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),rgba(var(--cyan-rgb),0.3),transparent);opacity:.85;pointer-events:none;z-index:1}
+.det-pnl::after{content:'';position:absolute;top:0;left:-30%;width:30%;height:2px;background:linear-gradient(90deg,transparent,rgba(var(--cyan-rgb),0.85),transparent);animation:detPSweep 5s linear infinite;pointer-events:none;z-index:2}
+.det-pnl .dc{position:absolute;width:10px;height:10px;pointer-events:none;z-index:2}
 .det-pnl .dc.tl{top:5px;left:5px;border-top:1.5px solid var(--cyan);border-left:1.5px solid var(--cyan)}
 .det-pnl .dc.tr{top:5px;right:5px;border-top:1.5px solid var(--cyan);border-right:1.5px solid var(--cyan)}
 .det-pnl .dc.bl{bottom:5px;left:5px;border-bottom:1.5px solid var(--cyan);border-left:1.5px solid var(--cyan)}
@@ -812,9 +813,10 @@ body{
 .det-pnl-hud-t{font-family:var(--fm);font-size:8px;letter-spacing:1.5px;color:var(--t4);text-align:right;white-space:nowrap}
 .det-pnl-hud-t b{color:var(--t3);font-weight:400}
 .det-pnl-hud-sig{display:flex;gap:2px}
-.det-pnl-hud-sig span{width:5px;height:5px;background:var(--cyan)}
-.det-pnl-hud-sig span:nth-child(2){opacity:.6}
-.det-pnl-hud-sig span:nth-child(3){opacity:.3}
+.det-pnl-hud-sig span{width:5px;height:5px;background:var(--cyan);animation:detSigBlink 2s ease-in-out infinite}
+.det-pnl-hud-sig span:nth-child(2){opacity:.6;animation-delay:.25s}
+.det-pnl-hud-sig span:nth-child(3){opacity:.3;animation-delay:.5s}
+@keyframes detSigBlink{0%,100%{transform:scaleY(1)}50%{transform:scaleY(0.35)}}
 .det-sep{display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:8px;letter-spacing:2.5px;color:var(--t4);margin-bottom:10px}
 .det-sep .sl{flex:1;height:1px;background:var(--border)}
 
@@ -834,13 +836,13 @@ body{
 .ds-cell{padding:0;display:flex;flex-direction:column;gap:3px}
 .ds-cell+.ds-cell{border-left:none;box-shadow:none;padding-left:0}
 .ds-cell.ds-name{flex:1;min-width:220px}
-.ds-name-v{font-family:var(--fd);font-weight:700;font-size:22px;color:var(--t);letter-spacing:0.5px;display:flex;align-items:center;gap:8px}
+.ds-name-v{font-family:var(--fr);font-weight:800;font-size:22px;color:var(--t);letter-spacing:.8px;display:flex;align-items:center;gap:8px;text-shadow:0 0 12px rgba(var(--cyan-rgb),0.15)}
 .ds-name-uuid{font-family:var(--fm);font-size:9px;letter-spacing:2px;color:var(--t4);margin-top:2px;display:flex;align-items:center;gap:8px}
 .ds-name-uuid::before{content:'';flex:0 0 24px;height:1px;background:linear-gradient(90deg,transparent,var(--border))}
 .ds-name-uuid::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
 .ds-name-uuid b{color:var(--cyan);font-weight:500;margin:0 3px}
-.ds-k{font-family:var(--fm);font-size:8px;letter-spacing:2.5px;color:var(--t4);font-weight:500;margin-bottom:2px}
-.ds-v{font-family:var(--fd);font-weight:700;font-size:16px;color:var(--t);letter-spacing:.3px}
+.ds-k{font-family:var(--fm);font-size:8px;letter-spacing:2.5px;color:var(--t4);font-weight:500;margin-bottom:2px;text-transform:uppercase}
+.ds-v{font-family:var(--fr);font-weight:800;font-size:17px;color:var(--t);letter-spacing:.5px;text-shadow:0 0 10px rgba(var(--cyan-rgb),0.15)}
 .ds-v.online{color:var(--g)}
 .ds-v.offline{color:var(--r)}
 .ds-v.st-active{color:var(--g)}.ds-v.st-stable{color:var(--cyan)}.ds-v.st-warning{color:var(--am)}.ds-v.st-critical{color:var(--r)}
@@ -848,16 +850,16 @@ body{
 .ds-dot.on{background:var(--g);box-shadow:0 0 8px var(--g);animation:ds-breathe 2.2s ease-in-out infinite}
 .ds-dot.off{background:var(--r);box-shadow:0 0 8px var(--r);animation:ds-breathe 1.4s ease-in-out infinite}
 @keyframes ds-breathe{0%,100%{opacity:1}50%{opacity:.45}}
-.ds-v.ds-health{font-size:17px;font-weight:700}
+.ds-v.ds-health{font-size:18px;font-weight:800}
 
 /* Strip 右上 HUD */
 .det-strip-hud{position:absolute;top:8px;right:14px;display:flex;align-items:center;gap:6px;z-index:3;line-height:1.15;pointer-events:none}
 .det-strip-hud-t{font-family:var(--fm);font-size:8px;letter-spacing:1.5px;color:var(--t4);text-align:right;white-space:nowrap}
 .det-strip-hud-t b{color:var(--cyan);font-weight:500}
 .det-strip-hud-sig{display:flex;gap:2px}
-.det-strip-hud-sig span{width:5px;height:5px;background:var(--cyan)}
-.det-strip-hud-sig span:nth-child(2){opacity:.6}
-.det-strip-hud-sig span:nth-child(3){opacity:.3}
+.det-strip-hud-sig span{width:5px;height:5px;background:var(--cyan);animation:detSigBlink 2s ease-in-out infinite}
+.det-strip-hud-sig span:nth-child(2){opacity:.6;animation-delay:.25s}
+.det-strip-hud-sig span:nth-child(3){opacity:.3;animation-delay:.5s}
 .det-core-echo{position:absolute;right:18px;bottom:10px;width:28px;height:28px;opacity:.3;pointer-events:none}
 .det-core-echo svg{width:100%;height:100%}
 .dce-ring{fill:none;stroke:var(--cyan);stroke-width:1;stroke-dasharray:6 4;animation:ring-spin 12s linear infinite;transform-origin:center}
@@ -881,29 +883,34 @@ body{
 .det-gauge.warning{border-color:rgba(var(--amr),0.35)}
 .det-gauge.warning .det-gauge-lbl{color:var(--am)}
 .det-gauge-arc{position:relative;width:108px;height:108px;margin:6px auto 4px}
-.det-gauge-arc svg{width:108px;height:108px;transform:rotate(-90deg)}
+.det-gauge-arc svg{width:108px;height:108px;transform:rotate(-90deg);overflow:visible}
+/* 2 层旋转虚线环(SMIL 驱动,overlay 在主 arc 之下) */
+.det-gauge-arc .det-ga-ring-out{fill:none;stroke:rgba(var(--cyan-rgb),0.15);stroke-width:0.5;stroke-dasharray:3 5}
+.det-gauge-arc .det-ga-ring-in{fill:none;stroke:rgba(var(--cyan-rgb),0.22);stroke-width:0.5;stroke-dasharray:2 4}
 .det-ga-halo{fill:none;stroke-width:10;stroke-opacity:0.14}
 .det-ga-bg{fill:none;stroke:var(--border);stroke-width:3}
 .det-ga-fill{fill:none;stroke-width:3.5;stroke-linecap:round;transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)}
 .det-ga-tick,.det-ga-dot{display:none}
-.det-gauge-val{position:absolute;top:50%;left:0;right:0;transform:translateY(-55%);font-family:var(--fd);font-size:26px;font-weight:700;color:var(--t);line-height:1;letter-spacing:.5px;text-align:center}
-.det-gauge-unit{font-family:var(--fm);font-size:9px;letter-spacing:1px;color:var(--t4);margin-left:1px;font-weight:500}
+.det-gauge-val{position:absolute;top:50%;left:0;right:0;transform:translateY(-55%);font-family:var(--fr);font-size:28px;font-weight:800;color:var(--t);line-height:1;letter-spacing:1px;text-align:center;text-shadow:0 0 16px rgba(var(--cyan-rgb),0.25),0 0 4px rgba(var(--cyan-rgb),0.15)}
+.det-gauge-unit{font-family:var(--fm);font-size:9px;letter-spacing:1px;color:var(--t4);margin-left:1px;font-weight:500;text-shadow:none}
 .det-gauge-lbl{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--t3);font-weight:500;margin-top:2px}
 .det-gauge-range{display:flex;justify-content:space-between;padding:0 6px;margin-top:3px}
 .det-gauge-range span{font-family:var(--fm);font-size:7px;color:var(--t4);letter-spacing:.5px}
 
 /* ── Info panels — 复用节点卡 nc-sys 语言 ── */
 .det-panels{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 16px}
-.det-panel{position:relative;background:var(--nc-bg);border:1px solid var(--border);border-radius:0;padding:14px 16px}
-.det-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),rgba(var(--cyan-rgb),0.3),transparent);opacity:.85;pointer-events:none}
-.det-panel .dc{position:absolute;width:9px;height:9px;pointer-events:none}
+.det-panel{position:relative;background:var(--nc-bg);border:1px solid var(--border);border-radius:0;padding:14px 16px;overflow:hidden}
+.det-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),rgba(var(--cyan-rgb),0.3),transparent);opacity:.85;pointer-events:none;z-index:1}
+.det-panel::after{content:'';position:absolute;top:0;left:-30%;width:30%;height:2px;background:linear-gradient(90deg,transparent,rgba(var(--cyan-rgb),0.85),transparent);animation:detPSweep 5s linear infinite;pointer-events:none;z-index:2}
+@keyframes detPSweep{0%{left:-30%;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:100%;opacity:0}}
+.det-panel .dc{position:absolute;width:9px;height:9px;pointer-events:none;z-index:2}
 .det-panel .dc.tl{top:4px;left:4px;border-top:1.5px solid var(--cyan);border-left:1.5px solid var(--cyan)}
 .det-panel .dc.tr{top:4px;right:4px;border-top:1.5px solid var(--cyan);border-right:1.5px solid var(--cyan)}
 .det-panel .dc.bl{bottom:4px;left:4px;border-bottom:1.5px solid var(--cyan);border-left:1.5px solid var(--cyan)}
 .det-panel .dc.br{bottom:4px;right:4px;border-bottom:1.5px solid var(--cyan);border-right:1.5px solid var(--cyan)}
-.det-panel-title{display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:8px;letter-spacing:2.5px;color:var(--t4);font-weight:500;margin-bottom:8px;padding-bottom:0;border-bottom:none}
-.det-panel-title::before{content:'';flex:1;height:1px;background:var(--border);border-radius:0;width:auto;opacity:1;display:block}
-.det-panel-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.det-panel-title{display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:8px;letter-spacing:2.5px;color:var(--t4);font-weight:500;margin-bottom:8px;padding-bottom:0;border-bottom:none;text-transform:uppercase}
+.det-panel-title::before{content:'';flex:0 0 4px;width:4px;height:4px;background:var(--cyan);transform:rotate(45deg);opacity:.9;border-radius:0;display:block}
+.det-panel-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
 .det-row{display:flex;gap:8px;padding:2px 0;font-family:var(--fm);font-size:10px;border-bottom:none}
 .det-row:last-child{border-bottom:none}
 .det-row-k{font-family:var(--fm);font-size:9px;letter-spacing:1.5px;color:var(--t3);width:90px;flex-shrink:0;font-weight:500}
@@ -927,8 +934,8 @@ body{
 .chart-wrap canvas{width:100%;height:130px}
 .chart-label{font-family:var(--fm);font-size:9px;letter-spacing:2.5px;color:var(--t3);margin-bottom:8px;font-weight:500;display:flex;align-items:center;gap:8px}
 .chart-label::before{content:'';width:3px;height:9px;border-radius:0;background:var(--cyan);opacity:.8}
-.chart-cur{position:absolute;top:12px;right:14px;font-family:var(--fd);font-size:15px;font-weight:700;color:var(--t);letter-spacing:.3px}
-.chart-cur span{font-family:var(--fm);font-size:9px;color:var(--t4);margin-left:3px;letter-spacing:1px}
+.chart-cur{position:absolute;top:12px;right:14px;font-family:var(--fr);font-size:16px;font-weight:800;color:var(--t);letter-spacing:.5px;text-shadow:0 0 10px rgba(var(--cyan-rgb),0.15)}
+.chart-cur span{font-family:var(--fm);font-size:9px;color:var(--t4);margin-left:3px;letter-spacing:1px;font-weight:500;text-shadow:none}
 .chart-pulse{position:absolute;width:14px;height:14px;border-radius:50%;border:1.5px solid var(--cyan);transform:translate(-50%,-50%);pointer-events:none;animation:chart-pulse-ring 2.5s ease-in-out infinite;z-index:2}
 @keyframes chart-pulse-ring{0%,100%{opacity:.3;transform:translate(-50%,-50%) scale(1)}50%{opacity:.7;transform:translate(-50%,-50%) scale(1.6)}}
 
@@ -1768,7 +1775,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
     <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     <span id="themeLabel">LIGHT</span>
   </button>
-  <button class="tb-badge" id="verBadge">v1.3.0</button>
+  <button class="tb-badge" id="verBadge">v1.3.1</button>
   <button class="tb-btn" id="searchBtn">⌕</button>
 </div>
   </div>
@@ -2094,7 +2101,7 @@ body.boot-skip .stab-ov,body.boot-skip .hero-stats{opacity:1;visibility:visible}
 
 </div><!-- /mainContent -->
 <script>
-  /* ═══ NanoMuse v1.3.0 — JS ═══ */
+  /* ═══ NanoMuse v1.3.1 — JS ═══ */
   ;(function(){
   'use strict';
   window._pageStart = performance.now();
@@ -2141,7 +2148,7 @@ const S={
   ws:null,_wsI:null,wsRetries:0,
   _lastF:[],
   detailUUID:null,detailNode:null,detailHours:6,detailTab:'load',detailPingHours:6,detailWsData:[],
-  VER:'v1.3.0',
+  VER:'v1.3.1',
   fleetLoadHist:[]
 };
 const STAB={hours:6,sort:'name',data:null,tasks:[],taskId:null,loading:false,_tasksFromApi:false};
@@ -2842,6 +2849,8 @@ function rDetInfo(node,uuid){
       <div class="dc tl"></div><div class="dc tr"></div><div class="dc bl"></div><div class="dc br"></div>
       <div class="det-gauge-arc"><svg viewBox="0 0 108 108">
         <circle class="det-ga-halo" cx="${cx}" cy="${cy}" r="${r}" style="stroke:${haloColor}"/>
+        <circle class="det-ga-ring-out" cx="${cx}" cy="${cy}" r="${r+8}"><animateTransform attributeName="transform" type="rotate" from="0 ${cx} ${cy}" to="360 ${cx} ${cy}" dur="18s" repeatCount="indefinite"/></circle>
+        <circle class="det-ga-ring-in" cx="${cx}" cy="${cy}" r="${r-10}"><animateTransform attributeName="transform" type="rotate" from="360 ${cx} ${cy}" to="0 ${cx} ${cy}" dur="12s" repeatCount="indefinite"/></circle>
         <circle class="det-ga-bg" cx="${cx}" cy="${cy}" r="${r}"/>
         <circle class="det-ga-fill" cx="${cx}" cy="${cy}" r="${r}" style="stroke:${fillColor};stroke-dasharray:${circ.toFixed(1)};stroke-dashoffset:${on?off.toFixed(1):circ.toFixed(1)};filter:drop-shadow(0 0 6px ${glowColor})"/>
       </svg>
