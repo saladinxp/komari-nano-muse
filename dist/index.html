@@ -3105,16 +3105,24 @@ function uDetLive(){
     if(cells[1]){cells[1].className='ds-v '+grade.cls;cells[1].textContent=grade.text}
     if(cells[2]){cells[2].textContent=on?health+'%':'--';cells[2].style.color=on?(health>=80?'var(--g)':health>=60?'var(--cyan)':health>=40?'var(--am)':'var(--r)'):'var(--t4)'}
   }
-  /* Update panel rows */
+  /* Update panel rows
+     Index map (SYSTEM INFO 0-8 + RESOURCES 9-17):
+       0 REGION / 1 GROUP / 2 OS / 3 UPTIME / 4 CPU MODEL / 5 CORES
+       6 BANDWIDTH / 7 TRAFFIC / 8 MONTHLY
+       9 CPU / 10 RAM / 11 SWAP / 12 DISK / 13 NET UP / 14 NET DOWN
+       15 TOTAL UP / 16 TOTAL DOWN / 17 TCP/UDP */
   const rows=document.querySelectorAll('#pg-detail .det-row-v');
-  if(rows.length>=12){
+  if(rows.length>=18){
     rows[3].textContent=on?fUs(d.uptime):'--';
-    rows[6].textContent=on?cpu+'%':'--';rows[6].style.color=on&&cpu>=80?'var(--r)':'';
-    rows[7].textContent=on?fB(d.memory_used||0)+' / '+fB(d.memory_total||0):'--';rows[7].style.color=on&&ram>=80?'var(--r)':'';
-    rows[8].textContent=on?fB(d.swap_used||0)+' / '+fB(d.swap_total||0):'--';
-    rows[9].textContent=on?fB(d.disk_used||0)+' / '+fB(d.disk_total||0):'--';rows[9].style.color=on&&disk>=80?'var(--r)':'';
-    rows[10].textContent=on?fS(d.network_tx||0):'--';
-    rows[11].textContent=on?fS(d.network_rx||0):'--';
+    rows[9].textContent=on?cpu+'%':'--';rows[9].style.color=on&&cpu>=80?'var(--r)':'';
+    rows[10].textContent=on?fB(d.memory_used||0)+' / '+fB(d.memory_total||0):'--';rows[10].style.color=on&&ram>=80?'var(--r)':'';
+    rows[11].textContent=on?fB(d.swap_used||0)+' / '+fB(d.swap_total||0):'--';
+    rows[12].textContent=on?fB(d.disk_used||0)+' / '+fB(d.disk_total||0):'--';rows[12].style.color=on&&disk>=80?'var(--r)':'';
+    rows[13].textContent=on?fS(d.network_tx||0):'--';
+    rows[14].textContent=on?fS(d.network_rx||0):'--';
+    rows[15].textContent=on?fB(d.network_total_up||0,1):'--';
+    rows[16].textContent=on?fB(d.network_total_down||0,1):'--';
+    rows[17].textContent=on?(d.tcp_conn_count||d.tcp||0)+' / '+(d.udp_conn_count||d.udp||0):'--';
   }
 }
 
