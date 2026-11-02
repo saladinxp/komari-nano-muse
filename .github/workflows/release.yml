@@ -1,0 +1,52 @@
+# Build the theme package and publish a GitHub Release.
+# Run it from the Actions tab (Run workflow) with the version in komari-theme.json, e.g. 2.1.0.
+# Release notes come from .github/release-notes/v<version>.md.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (must match komari-theme.json), e.g. 2.1.0'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ inputs.version }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Check version
+        run: |
+          test "$(node -p "require('./komari-theme.json').version")" = "$VERSION"
+          test "$(node -p "require('./package.json').version")" = "$VERSION"
+          test -f ".github/release-notes/v$VERSION.md"
+          if gh release view "v$VERSION" >/dev/null 2>&1; then echo "v$VERSION already released"; exit 1; fi
+
+      - name: Build and package
+        run: |
+          npm ci
+          npm run package
+          # the committed dist/ must be exactly what the source builds
+          git diff --exit-code -- dist/index.html
+          sha256sum dist/index.html "release/nanomuse-$VERSION.zip"
+          cp preview/NanoMuse-preview.html "NanoMuse-$VERSION-preview.html"
+
+      - name: Publish release
+        run: |
+          gh release create "v$VERSION" \
+            --target "$GITHUB_SHA" \
+            --title "纳米缪斯 $VERSION" \
+            --notes-file ".github/release-notes/v$VERSION.md" \
+            "release/nanomuse-$VERSION.zip" \
+            "NanoMuse-$VERSION-preview.html"
