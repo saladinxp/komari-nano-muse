@@ -1,0 +1,761 @@
+/* Fluid canvas: use the screen instead of a narrow fixed-width poster. */
+:root {
+  --pad: clamp(20px, 3vw, 96px);
+  --fleet-gap: clamp(14px, 1.1vw, 24px);
+}
+main,
+footer {
+  width: 100%;
+  max-width: none;
+}
+main {
+  padding-top: clamp(24px, 1.8vw, 48px);
+}
+.top {
+  height: clamp(76px, 4.8vw, 100px);
+}
+.nav {
+  height: 100%;
+  gap: clamp(24px, 2.3vw, 60px);
+  align-items: center;
+}
+.nav a {
+  padding: 0 2px;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  font-size: clamp(12px, 0.7vw, 16px);
+}
+.brand b {
+  font-size: clamp(16px, 1vw, 23px);
+}
+.brand small {
+  font-size: clamp(8px, 0.48vw, 12px);
+}
+.brand-mark {
+  width: clamp(34px, 2.3vw, 50px);
+  height: clamp(34px, 2.3vw, 50px);
+}
+.live {
+  font-size: clamp(10px, 0.58vw, 13px);
+}
+.mode,
+.motion {
+  font-size: clamp(11px, 0.63vw, 14px);
+  height: clamp(36px, 2.3vw, 46px);
+  padding-inline: clamp(10px, 0.8vw, 20px);
+}
+.mode {
+  min-width: 76px;
+}
+.top-r {
+  gap: clamp(10px, 0.8vw, 22px);
+}
+.hero {
+  grid-template-columns: minmax(0, 1.06fr) minmax(260px, 0.88fr) minmax(0, 1.06fr);
+  min-height: clamp(430px, 24vw, 610px);
+  align-items: stretch;
+}
+.hero-copy {
+  grid-column: 1;
+  grid-row: 1;
+  padding: clamp(28px, 2.3vw, 58px) clamp(20px, 1.8vw, 44px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+.hero h1 {
+  font-size: clamp(48px, 3.8vw, 110px);
+  margin-top: clamp(20px, 1.5vw, 38px);
+}
+.hero-sub {
+  font-size: clamp(17px, 1.15vw, 28px);
+  letter-spacing: 0.06em;
+}
+.hero-quote {
+  font-size: clamp(12px, 0.72vw, 17px);
+  max-width: 30em;
+  line-height: 1.9;
+}
+.eyebrow {
+  font-size: clamp(9px, 0.55vw, 13px);
+}
+.hero-actions {
+  font-size: clamp(12px, 0.7vw, 16px);
+  gap: clamp(18px, 1.5vw, 36px);
+  margin-top: clamp(22px, 1.7vw, 40px);
+}
+.hero-actions button {
+  padding: 12px 18px;
+  gap: clamp(18px, 2vw, 42px);
+}
+.telemetry {
+  width: 100%;
+  max-width: none;
+  margin-top: clamp(28px, 2vw, 46px);
+}
+.telemetry svg {
+  height: clamp(52px, 4.2vw, 90px);
+}
+.telemetry-head {
+  font-size: clamp(9px, 0.53vw, 12px);
+}
+.telemetry-axis {
+  font-size: clamp(8px, 0.48vw, 11px);
+}
+.orbit {
+  grid-column: 3;
+  grid-row: 1;
+  min-width: 0;
+}
+.portrait img,
+.portrait video {
+  object-position: 70% 25%;
+}
+.phase {
+  font-size: clamp(9px, 0.53vw, 12px);
+  left: 18%;
+  bottom: 24px;
+  padding: 10px 14px;
+}
+.phase .zh {
+  font-size: inherit;
+}
+.art-index {
+  font-size: clamp(9px, 0.53vw, 12px);
+}
+.art-index span {
+  font-size: clamp(8px, 0.48vw, 11px);
+}
+.hero-console {
+  position: relative;
+  z-index: 3;
+  grid-column: 2;
+  grid-row: 1;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  padding: clamp(24px, 1.9vw, 44px) clamp(20px, 1.6vw, 38px);
+  background: color-mix(in srgb, var(--paper) 60%, transparent);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(26px, 1.8vw, 40px);
+  min-width: 0;
+}
+.console-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.console-heading h2 {
+  font: 500 clamp(13px, 0.8vw, 19px) var(--fc);
+  letter-spacing: 0.04em;
+}
+.console-heading > span {
+  font: clamp(9px, 0.5vw, 12px) var(--fm);
+  letter-spacing: 0.06em;
+  color: var(--cyan);
+}
+.fleet-row + .fleet-row {
+  margin-top: 17px;
+}
+.fleet-row-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.fleet-row-top > span {
+  font: clamp(10px, 0.6vw, 14px) var(--fm);
+  color: var(--ink2);
+}
+.fleet-row-top b {
+  font-size: clamp(19px, 1.25vw, 29px);
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.fleet-row-top b small {
+  font-size: 0.52em;
+  color: var(--ink3);
+  margin-left: 3px;
+}
+.fleet-row .thin {
+  height: 4px;
+  margin: 9px 0 6px;
+}
+.fleet-row:nth-child(2) .thin i {
+  background: var(--cyan);
+}
+.fleet-row:nth-child(3) .thin i {
+  background: #8c9fc6;
+}
+.fleet-row > small {
+  font: clamp(9px, 0.53vw, 12px) var(--fc);
+  color: var(--ink3);
+  letter-spacing: 0.015em;
+}
+.watch-area .console-heading {
+  margin-bottom: 10px;
+}
+.watch-list {
+  border-top: 1px solid var(--line);
+}
+.watch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line2);
+  font-size: clamp(11px, 0.65vw, 15px);
+}
+.watch-row:hover .watch-name {
+  color: var(--blue);
+}
+.watch-row > span:first-child {
+  min-width: 0;
+}
+.watch-name {
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 500;
+}
+.watch-reason {
+  display: block;
+  font-size: clamp(9px, 0.52vw, 12px);
+  color: var(--ink3);
+  margin-top: 3px;
+}
+.watch-value {
+  font: clamp(11px, 0.65vw, 15px) var(--fm);
+  color: var(--coral);
+  white-space: nowrap;
+  flex: none;
+}
+.watch-row.expiry .watch-value {
+  color: var(--amber);
+}
+.watch-all {
+  font: clamp(10px, 0.6vw, 14px) var(--fc);
+  color: var(--blue);
+  display: block;
+  padding-top: 14px;
+  text-align: left;
+}
+.watch-empty {
+  padding: 18px 0 10px;
+  color: var(--ink3);
+  font: clamp(11px, 0.6vw, 14px) var(--fc);
+  line-height: 1.8;
+}
+.readouts .ro {
+  padding: clamp(21px, 1.6vw, 38px) clamp(22px, 2vw, 48px);
+}
+.ro > span {
+  font-size: clamp(9px, 0.53vw, 12px);
+}
+.ro > span .zh {
+  font-size: clamp(12px, 0.72vw, 17px);
+}
+.ro b {
+  font-size: clamp(30px, 2.1vw, 48px);
+}
+.ro b small {
+  font-size: clamp(12px, 0.8vw, 19px);
+}
+.ro .net {
+  font-size: clamp(16px, 1.15vw, 26px);
+}
+.kicker {
+  font-size: clamp(10px, 0.58vw, 13px);
+}
+.attention-btn {
+  font-size: clamp(11px, 0.65vw, 15px);
+}
+.sec {
+  margin-top: clamp(30px, 2vw, 48px);
+}
+.sec-t h2 {
+  font-size: clamp(21px, 1.35vw, 31px);
+}
+.sec-t .en {
+  font-size: clamp(11px, 0.68vw, 15px);
+}
+.sec-t .n {
+  font-size: clamp(11px, 0.65vw, 14px);
+}
+.sec-h {
+  gap: 18px;
+}
+.sec-ctl {
+  width: auto;
+  margin-left: auto;
+  gap: 12px;
+}
+.pills button {
+  font-size: clamp(12px, 0.7vw, 16px);
+  height: clamp(30px, 2vw, 40px);
+  padding: 0 12px;
+}
+.search,
+.status-select {
+  font-size: clamp(12px, 0.7vw, 16px);
+  height: clamp(38px, 2.5vw, 48px);
+}
+.search {
+  width: clamp(180px, 12vw, 310px);
+}
+.status-select {
+  max-width: 160px;
+}
+.pills.mono button {
+  font-size: 12px;
+}
+.grid {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, clamp(296px, 19vw, 440px)), 1fr));
+  gap: var(--fleet-gap);
+}
+.nc {
+  padding: clamp(20px, 1.4vw, 32px);
+  min-width: 0;
+}
+.nc-h {
+  gap: 12px;
+}
+.flag {
+  width: clamp(32px, 2.1vw, 42px);
+  height: clamp(32px, 2.1vw, 42px);
+  font-size: clamp(10px, 0.65vw, 14px);
+}
+.nc-n {
+  font-size: clamp(15px, 0.9vw, 21px);
+}
+.nc-arrow {
+  font-size: 18px;
+}
+.nc-os {
+  font-size: clamp(11px, 0.64vw, 14px);
+  margin-top: 10px;
+  line-height: 1.7;
+}
+.nc-b {
+  margin: clamp(24px, 1.7vw, 38px) 0 24px;
+  gap: clamp(12px, 1.2vw, 22px);
+}
+.resource-label {
+  font-size: clamp(10px, 0.6vw, 13px);
+}
+.resource b {
+  font-size: clamp(25px, 1.4vw, 36px);
+  margin: 8px 0 12px;
+}
+.resource b small {
+  font-size: clamp(11px, 0.65vw, 14px);
+}
+.resource .thin {
+  height: 4px;
+}
+.nc-net {
+  font-size: clamp(11px, 0.66vw, 14px);
+  padding-top: 18px;
+  gap: 10px;
+}
+.nc-net em {
+  font-size: clamp(10px, 0.57vw, 12px);
+  margin-bottom: 7px;
+}
+.nc-foot {
+  font-size: clamp(10px, 0.57vw, 12px);
+  padding-top: 18px;
+}
+.nc-status {
+  font-size: clamp(11px, 0.62vw, 14px);
+}
+.nc-q .qh {
+  font-size: clamp(10px, 0.57vw, 12px);
+}
+.nc-model {
+  font: clamp(10px, 0.57vw, 12px) var(--fm);
+  color: var(--ink3);
+  line-height: 1.7;
+  padding-top: 14px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.demo-banner {
+  font-size: clamp(10px, 0.57vw, 13px);
+}
+@media (max-width: 1500px) {
+  .sec-ctl {
+    width: 100%;
+    margin-left: 0;
+  }
+  .hero-console {
+    padding-inline: 20px;
+  }
+  .hero-copy {
+    padding-inline: 26px;
+  }
+  .watch-row {
+    padding: 10px 0;
+  }
+  .hero-console {
+    gap: 24px;
+  }
+  .console-heading {
+    margin-bottom: 16px;
+  }
+}
+@media (max-width: 1279px) {
+  .hero {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    min-height: 0;
+  }
+  .hero-copy {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 30px;
+  }
+  .orbit {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 410px;
+  }
+  .hero-console {
+    grid-column: 1/-1;
+    grid-row: 2;
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: 34px;
+    padding: 26px 30px;
+    border: 0;
+    border-top: 1px solid var(--line);
+  }
+  .hero-console .watch-area {
+    border-left: 1px solid var(--line);
+    padding-left: 30px;
+  }
+  .hero h1 {
+    font-size: clamp(48px, 5.3vw, 68px);
+  }
+  .telemetry {
+    margin-top: 26px;
+  }
+  .hero-sub {
+    font-size: 20px;
+  }
+  .hero-quote {
+    font-size: 13px;
+  }
+  .hero .portrait {
+    min-height: 0;
+  }
+}
+@media (max-width: 980px) {
+  .top {
+    height: auto;
+    padding-top: 14px;
+    row-gap: 10px;
+  }
+  .nav {
+    grid-row: 2;
+    height: 44px;
+    gap: 36px;
+    justify-content: center;
+  }
+  .nav a {
+    font-size: 13px;
+    padding: 0 4px;
+  }
+  .top-r {
+    gap: 8px;
+  }
+  .mode,
+  .motion {
+    height: 34px;
+    font-size: 11px;
+  }
+  .hero-copy {
+    padding: 28px 24px;
+  }
+  .hero-sub {
+    font-size: 18px;
+  }
+  .hero h1 {
+    font-size: 52px;
+  }
+  .hero-console {
+    padding: 24px;
+  }
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .sec-ctl {
+    gap: 8px;
+  }
+  .pills button {
+    font-size: 12px;
+  }
+  .search {
+    flex: 1;
+    min-width: 120px;
+  }
+  .ro b {
+    font-size: 30px;
+  }
+  .ro .net {
+    font-size: 15px;
+  }
+  .readouts .ro {
+    padding: 22px 20px;
+  }
+}
+@media (max-width: 680px) {
+  .top {
+    padding-top: 12px;
+  }
+  .nav {
+    height: 42px;
+    gap: 0;
+    justify-content: space-between;
+  }
+  .nav a {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+    font-size: 12px;
+  }
+  .brand b {
+    font-size: 15px;
+    max-width: 150px;
+  }
+  .brand small {
+    font-size: 7px;
+  }
+  .brand-mark {
+    width: 32px;
+    height: 32px;
+  }
+  .mode,
+  .motion {
+    min-width: 0;
+    height: 32px;
+    padding: 0 8px;
+    font-size: 10px;
+  }
+  .mode {
+    gap: 5px;
+  }
+  .top-r {
+    gap: 6px;
+  }
+  /* Phones: the character gets its own band above the title instead of sitting
+     under the text (design.7 put it top-right, where the title covered her face). */
+  .hero {
+    display: flex;
+    flex-direction: column;
+  }
+  .hero-copy {
+    display: block;
+    padding: 4px 22px 26px;
+  }
+  .hero h1 {
+    font-size: 46px;
+    max-width: 100%;
+    margin-top: 22px;
+  }
+  .hero-sub {
+    font-size: 16px;
+    max-width: none;
+  }
+  .hero-quote {
+    font-size: 12px;
+    max-width: none;
+  }
+  .hero-actions {
+    font-size: 12px;
+    gap: 18px;
+  }
+  .hero-actions button {
+    padding: 11px 14px;
+    gap: 14px;
+  }
+  .hero-actions a {
+    font-size: 11px;
+  }
+  .telemetry {
+    margin-top: 26px;
+    max-width: none;
+  }
+  .telemetry svg {
+    height: 54px;
+  }
+  .orbit {
+    position: relative;
+    order: -1;
+    grid-column: auto;
+    grid-row: auto;
+    right: auto;
+    top: auto;
+    width: 100%;
+    height: 280px;
+    min-height: 0;
+  }
+  .orbit.no-char {
+    display: none;
+  }
+  .portrait {
+    mask-image: linear-gradient(180deg, black 70%, transparent);
+    -webkit-mask-image: linear-gradient(180deg, black 70%, transparent);
+  }
+  .portrait::after {
+    display: none;
+  }
+  .portrait img,
+  .portrait video {
+    object-position: 50% 22%;
+  }
+  .hero-console {
+    display: block;
+    padding: 24px 22px;
+    border-top: 1px solid var(--line);
+    border-left: 0;
+    border-right: 0;
+  }
+  .hero-console .watch-area {
+    padding: 22px 0 0;
+    margin-top: 22px;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .console-heading h2 {
+    font-size: 14px;
+  }
+  .console-heading > span {
+    font-size: 10px;
+  }
+  .fleet-row-top > span {
+    font-size: 11px;
+  }
+  .fleet-row-top b {
+    font-size: 22px;
+  }
+  .fleet-row > small {
+    font-size: 11px;
+  }
+  .watch-row {
+    font-size: 13px;
+  }
+  .watch-reason {
+    font-size: 11px;
+  }
+  .watch-value {
+    font-size: 12px;
+  }
+  .watch-all {
+    font-size: 12px;
+  }
+  .watch-empty {
+    font-size: 12px;
+  }
+  .readouts .ro {
+    padding: 20px 18px !important;
+  }
+  .ro > span .zh {
+    font-size: 12px;
+  }
+  .ro > span {
+    font-size: 9px;
+  }
+  .ro b {
+    font-size: 30px;
+  }
+  .ro b small {
+    font-size: 13px;
+  }
+  .ro .net {
+    font-size: 15px;
+  }
+  .station-status {
+    gap: 10px;
+  }
+  .kicker {
+    font-size: 9px;
+  }
+  .attention-btn {
+    font-size: 10px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .sec-t h2 {
+    font-size: 22px;
+  }
+  .sec-t .en {
+    font-size: 11px;
+  }
+  .sec-ctl {
+    width: 100%;
+    margin-left: 0;
+  }
+  .pills#groupTabs {
+    width: 100%;
+  }
+  .search {
+    height: 38px;
+    min-width: 80px;
+    width: 80px;
+    font-size: 12px;
+  }
+  .status-select {
+    height: 38px;
+    width: 96px;
+    font-size: 11px;
+  }
+  .pills#viewSeg button {
+    font-size: 11px;
+    padding: 0 9px;
+  }
+  .nc {
+    padding: 22px;
+  }
+  .nc-n {
+    font-size: 16px;
+  }
+  .nc-os {
+    font-size: 11px;
+  }
+  .resource-label {
+    font-size: 10px;
+  }
+  .resource b {
+    font-size: 28px;
+  }
+  .nc-net {
+    font-size: 11px;
+  }
+  .nc-net em {
+    font-size: 10px;
+  }
+  .nc-model {
+    font-size: 10px;
+  }
+  .nc-foot,
+  .nc-q .qh {
+    font-size: 10px;
+  }
+  .nc-status {
+    font-size: 11px;
+  }
+  .demo-banner {
+    font-size: 9px;
+  }
+}

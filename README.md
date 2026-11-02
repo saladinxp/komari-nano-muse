@@ -1,117 +1,142 @@
-# NanoMuse — Komari Monitor Theme
+# NanoMuse · 静默观测站
 
-**电子二次元** 风格监控面板主题 · Anime HUD Light Sci-fi Dashboard
+`v2.1.0`（正式版）：未来科技简约风的 Komari 主题。**直角界面、前景蓝紫青渐变、大屏自适应、角色身后的 24h 信号光环、浅色优先、深蓝可选**。
 
-> 明亮冷白底 + 蓝色科技 HUD + 动漫角色融合
+![浅色设计预览](preview.jpg)
 
-## 预览
+主框使用贯通介绍、资源概览、角色与统计栏的连续渐变，节点及其他前景面板统一同色系。
 
-### Dashboard
-![NanoMuse Dashboard](preview-dashboard.jpg)
-
-### 节点详情
-![NanoMuse Detail](preview-detail.jpg)
-
-## 特性
-
-- **白瓷片材质卡片** — 整洁大方，呼吸感强
-- **三栏 Hero 区域** — 左侧 Fleet Status / Load / Bandwidth，中央角色透出 + 粒子，右侧 Realtime / Network / Ping
-- **节点健康度圆环** — 每张卡片实时显示 Health 值（基于 CPU/RAM/DISK 综合）
-- **进度条内嵌硬件配置** — CPU Cores / RAM / Disk 以水印风格嵌入进度条
-- **三列底栏** — UPTIME / TX TOTAL / RX TOTAL 一目了然
-- **离线节点恶搞系统** — ATTACK / OVERLOAD 模式 + 虚构硬件参数
-- **Stability 稳定性面板** — Ping Target 切换 + 按天时间轴 + 丢包统计
-- **世界地图** — 节点地理分布可视化
-- **原生 Canvas 图表** — 真实时间轴定位，跨天自动显示日期
-- **移动端适配** — 图表/仪表盘/卡片全部响应式
-- **角色渐显动画** — 4.5s blur→清晰的 charReveal 效果
-- **电路线 SVG 背景** — 折角走线 + 渐变 + 箭头标记
-
-## 安装
-
-1. 在 Komari Monitor 后台上传主题 ZIP
-2. `char.png` 放在 `dist/index.html` 同级目录
-
-## 文件结构
-
-```
-komari-nano-muse/
-├── dist/
-│   ├── index.html          ← 主文件（HTML + CSS + JS 单文件）
-│   ├── char.png            ← 角色图
-│   ├── preview.png         ← 主题预览图（Komari用）
-│   └── og-image.png        ← OG 社交分享图
-├── preview-dashboard.jpg   ← Dashboard 预览
-├── preview-detail.jpg      ← 详情页预览
-├── komari-theme.json       ← Komari 主题配置
-└── README.md
-```
-
-## 路由
-
-| 路由 | 页面 | 说明 |
-|------|------|------|
-| `/` | Dashboard | 节点卡片 + Hero HUD 面板 |
-| `/detail/{uuid}` | 节点详情 | 负载/Ping 图表 |
-| `/stability` | 稳定性面板 | Ping target 切换 + 时间轴 |
-| `/map` | 世界地图 | 节点地理分布 |
-
-## API 依赖
-
-| 接口 | 方法 | 用途 |
-|------|------|------|
-| `/api/public` | GET | 站点配置 |
-| `/api/nodes` | GET | 节点列表 |
-| `/api/me` | GET | 登录状态 |
-| `/api/clients` | WS | 实时数据推送 |
-| `/api/recent/{uuid}` | GET | 节点近期数据 |
-| `/api/records/load?uuid=&hours=` | GET | 历史负载 |
-| `/api/records/ping?uuid=&hours=` | GET | Ping 记录 |
-| `/api/rpc2` | POST | RPC 调用 |
-
-## 技术栈
-
-- **单文件架构** — HTML / CSS / JS 全部内联
-- **零依赖** — 不依赖任何外部 JS 框架
-- **原生 Canvas 图表** — 无需 Chart.js，真实时间戳 x 轴定位
-- **WebSocket 实时更新** — 增量更新卡片
-- **CSS 动画** — charReveal / ring-spin / scanMove / fadeUp / ptFloat
-
-## 字体
-
-- `Orbitron` — 导航标签、HUD 标题
-- `JetBrains Mono` — 数据值、代码标签
-- `Outfit` — 大数字显示
-- `Noto Sans SC` — 中文内容
-
-## 色彩
-
-```
-背景: #eef2f7 (冷白)
-主蓝: #2563eb    青: #00d2ff
-绿:   #22c55e    红: #ef4444    琥珀: #eab308
-卡片: rgba(255,255,255,0.95) (白瓷片)
-配置水印: rgba(80,100,130,0.6) (冷灰蓝)
-```
+首屏由站点信息、信号光环图例、实时资源概览、待关注节点、角色与信号光环及四栏读数组成；节点使用统一横向资源条。顶栏动效按钮可暂停，后台可关闭渐变光影。节点区提供「星阵」（核心资源巡航）、「星核」（完整遥测）、「回声」（多目标拨测链路）三种模式，并记住选择。回声读取后台配置的真实拨测目标，展示最近延迟、1小时趋势、平均值和丢包率；总览三视图共用同一批拨测数据，每60秒刷新，支持手动刷新和旧接口回退。提供搜索、分组、在线/离线/需关注筛选，以及详情、拨测、地图和账本。
 
 ## 版本
 
-- **v0.9.2** — 进度条内嵌配置 + 三列底栏 + 图表时间轴根治 + 移动端适配
-- **v0.9.0** — Dashboard / Detail / Stability / Map 四页面完整版
-- **v0.1.0** — 初始版本
+**2.1.0**（正式版，2026-11）：1.3.1 之后的第二代，包含 2.0 的重做和 2.1 的全部功能。
 
-## Sibling Themes
+- **观测站首页**：日系简约字标（可切换 N 图标、纳米缪斯极简头像或隐藏）、低频渐变前景、角色身后的 24h 信号光环（每秒 4 步，省 CPU）、资源概览、待关注节点和信号日志。
+- **节点阵列三种视图**：「星阵」简约巡航、「星核」完整遥测（可开星核小值班员）、「回声」多目标拨测（固定列 + 心跳格：高度表示延迟、颜色表示稳定性）；九种排序。
+- **回声默认四线**：河北 CDN 电信 / 联通 / 移动 + Google，管理员审阅后一键建立真实 Komari 拨测任务，也可用自定义目标；旧任务不改不删。
+- **值班室**：一个分组一间房，Q 版值班员按真实数据工作、冒汗、摸鱼、串门、睡觉，低靠背椅，值班日志、小剧场图鉴、纳米缪斯巡视。
+- **节点详情「家」**：居家办公场景与精确读数并排；网络面板只显示一组线路，跟随后台「回声默认目标组」设置。延迟分「默认四线」「自定义目标」上下两个框，延迟线平滑（尖峰、低谷照原值）。
+- **流量页**：累计上传 / 下载、配额已用 / 剩余、实时吞吐、1H～7D 吞吐趋势。
+- **星图「回声星图」**：自动缩放，弧线连到三网目标并按稳定性上色，地区卡片。
+- **账本「续费日历」**：按 Komari 续费规则推算未来 12 个月，各币种分开，自动续费与每核月均。
+- **兼容性**：适配 Komari 最新指标存储，WebSocket 被反代拦住时自动改用 HTTP 轮询，拨测延迟按丢包率纠偏；主题名「纳米缪斯」，从 1.3.x 升级保留已保存的设置。
 
-| Theme | Style | Repo |
-|-------|-------|------|
-| **NanoMuse** (this) | Anime HUD — Light sci-fi white porcelain | — |
-| **PRTS Industrial** | Industrial HUD — Endfield structural beauty | [PRTS-Industrial-Monitor](https://github.com/saladinxp/PRTS-Industrial-Monitor) |
+## 值班室
 
-## License
+顶栏「值班室」：所有节点在一层楼里上班，**一个 Komari 分组一间房**（节点不多于 16 台且有多个分组时，另有一间「全员」）。房型按该房节点数自动选 3 / 8 / 16 工位，超过 16 台自动分页；空工位无人、熄屏，离线节点保留工位、值班员趴桌睡觉。
 
-MIT
+- 值班员表现只看真实数据：在岗时坐在低靠背椅上背对我们打字；CPU 达阈值 75% 冒汗、挠头；达告警阈值「来活了」，持续一分钟领导来电（电话响）；离线趴着睡。CPU 低于 5% 超过 10 分钟就转过身来面向你：在工位旁喝咖啡、溜达、去同事那儿串门、去洗手间（走出房间），工位留空椅、屏幕标「暂离」；同一间房同时离开的人有上限，一来活就跑回来（屏幕标「返回中」）。
+- 每台电脑屏幕实时绘制节点名、CPU、内存和近 30 分钟 CPU 曲线（绝对 0–100%），屏幕左边的颜色条就是状态。
+- 「值班日志」记录真实事件：掉线、恢复、重启、冲高、领导来电、摸鱼、拨测丢包、流量用掉 90%、7 天内到期、运行满 100 天；第一次见到的会点亮「小剧场图鉴」（保存在访客浏览器）。
+- 点值班员看节点读数、跳转详情，或「换个搭档」——角色只是外观，按节点 UUID 记在访客浏览器，不影响任何数据。戳一下会有台词，这些互动都是装饰，不会影响服务器。
+- 美术暂用「摸鱼机房」的房间与八位角色（已压缩到约 1.8 MB，放在 `dist/scene-art/`），**在值班室、节点的家或开启星核值班员时按需加载**；页面切走或不可见时动画暂停，关闭动效或系统减少动态时人物不再晃动。
+- **串门聊天**：空闲的人走到同事工位旁，两人轮流冒气泡说话（一次只有一个气泡，说话的人朝对方微微侧身，但仍面向你）。对方也闲着，就端着咖啡走过来一起聊；对方在岗，就背对着继续打字、隔着肩膀回一句；对方正忙会直接打断，聊到一半来活了会说「来活了，回头聊！」，客人随即离开。话题会用到对方节点的真实数据（CPU 很低、运行了多少天）。
+- **纳米缪斯巡视**：打开值班室 15 秒后、之后每 4 分钟，她从门口走进来，按严重程度依次去离线、CPU 告警、内存 / 磁盘超阈值、7 天内到期、吃紧的工位（每轮最多 4 处），拿平板记一句；没有异常就说「全员在岗」挥手离开。点她回到首页并筛出需要关注的节点。
+- **服务器名称**：每台电脑屏幕第一行是服务器名（加粗）；鼠标停在值班员或电脑上会提示服务器名、角色和状态。
+- 领导来电时，工位桌面左侧出现一台正在响铃的座机。坐在工位上的人说话时，气泡在头部旁边，不挡屏幕读数。
 
-## Credits
+## 居家办公
 
-- Theme: [Miuler](https://github.com/saladinxp)
-- Komari Monitor: Miuler
+节点详情页顶部是这台服务器的「家」，四个精确读数（处理器、内存、磁盘、网络）就放在画面右边，规格表、负载与延迟曲线仍在下方。家里每样东西都对应真实数据，画面下方逐条写明，鼠标悬停也会提示：
+
+| 物件 | 对应 |
+|---|---|
+| 三台显示器 | CPU 与近 30 分钟曲线 · 内存 / 磁盘 · 上下行网速 |
+| 网络面板 6 盏灯 | 后台配置的拨测线路：青 < 100 ms、琥珀 < 200 ms、珊瑚为慢 / 丢包 ≥ 5% / 超时（闪烁） |
+| 座机 | CPU 持续超过告警阈值一分钟：领导来电，响个不停 |
+| 电视 | 只在空闲时开：打游戏或看节目 |
+| 盆栽 | 运行时长：< 7 天发芽、< 30 天小苗、< 100 天长大、≥ 100 天开花；重启后重新发芽 |
+| 零食柜 | 流量配额：已用 < 40% 满、< 70% 半、< 90% 少、其余空；未设配额时常满 |
+| 挂历 | 到期日；7 天内红圈「房租快到期」 |
+| 窗外 | 按访客本地时间切换白天 / 夜晚 |
+
+值班员在家：在岗时坐在书桌前背对我们打字（两帧交替，偶尔伸懒腰），忙时挠头冒汗，领导来电时转过身拿着电话一脸不耐烦；空闲超过 10 分钟就转过来面向你，去沙发上吃零食、打游戏或看电视，偶尔出门去洗手间或转转（书桌前留空凳），同组也闲着的邻居会来串门一起打游戏（谁那边来活了就立刻回去）；离线时家里断电变暗，人在沙发上睡着，纳米缪斯会来家访。点值班员戳一下，点串门的邻居去 TA 家，点纳米缪斯回首页。美术由 ChatGPT 绘制，压缩后放在 `dist/scene-art/`，只在打开详情页时加载。
+
+家里左边那台显示器第一行写着服务器名，卡片标题是「服务器名 · 角色的家」。坐在书桌前说话时，气泡在头部旁边，不压住显示器。
+
+## 首页信号日志
+
+观测站下方列出最近 5 条真实事件（离线、恢复、重启、高负载、丢包、流量、到期、运行里程碑），用观测口吻、按严重程度着色，点一条进入该节点；与值班日志是同一套事件。手机宽度下，角色单独占标题上方的一块区域，标题不会压住她。
+
+## 与 Komari 的兼容
+
+- 适配 Komari 最新版（2026-10）的指标存储：只请求服务器公布的指标名，内存 / 磁盘百分比用节点自身的总量计算（新版没有 `memory.total` / `disk.total`，旧接口记录的总量为 0）；旧版 Komari 自动退回 `/api/records/*`。
+- 拨测：已分配但最近 1 小时没有样本的节点写「最近 1 小时没有拨测样本」，没分配的才写「未配置拨测」。
+- 拨测延迟纠偏：Komari 降采样时把超时（记为 -1）和正常延迟一起求平均，丢包的时段延迟会读低，本机这类亚毫秒线路甚至变成负数、被当成超时。主题按同一时段的丢包率还原真实均值（回声、家里网络灯、链路页、详情页曲线和 AVG 都用还原后的值）。
+- **实时连接的后备**：实时数据走 `/api/clients` WebSocket。Komari 只接受 `Origin` 与 `Host` 一致的 WebSocket，反向代理没转发 `Host` 或没开 `Upgrade` 时会一直连不上。主题发现 WebSocket 打不开，就改用 HTTP 每 3 秒拉一次 `common:getNodesLatestStatus`（访客可读），右上角显示「轮询更新」；之后每 2 分钟再试一次 WebSocket，连上就切回「实时连接」。
+- 在开发环境里编译运行了 Komari 最新版和 komari-agent，用后台正式上传接口安装验收：一个真实 agent 加几个按固定负载上报的节点，各页面无报错，十种小剧场全部出现，主题设置保存后生效。步骤见 `qa/komari/README.md`。
+
+### 反向代理建议
+
+能用 WebSocket 时更省流量、更及时。nginx 示例（`location /` 里）：
+
+```nginx
+proxy_pass http://127.0.0.1:25774;
+proxy_http_version 1.1;
+proxy_set_header Host $host;
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_set_header X-Forwarded-Proto $scheme;
+```
+
+不改也能用：右上角显示「轮询更新」即表示已经走了 HTTP 后备，数据照常刷新；浏览器控制台每 2 分钟会有一条 WebSocket 连接失败的提示，属正常。
+
+## 直接比较外观
+
+下载 `preview/NanoMuse-preview.html` 后双击打开。它内嵌角色与模拟数据，不连接真实服务器；顶部可切换全部在线、全部离线、空节点、无历史、旧接口、断连和「WebSocket 被拦（轮询）」场景。
+
+## 安装
+
+在 [Releases](https://github.com/saladinxp/komari-nano-muse/releases) 下载 `nanomuse-2.1.0.zip`，在 Komari 后台主题管理上传（会覆盖原主题，已保存的设置保留）。安装包已含构建好的 `dist/`，无需运行 Python、Node 或构建命令。可先备份当前主题选择，再切换。
+
+升级后若回声默认四线显示「待管理员更新目标」，登录后在回声视图「设置默认四线」里审阅并确认一次；旧的拨测任务不会自动删除，按面板列出的编号到后台手工清理。后台主题设置「回声默认目标组」决定节点详情「家」的网络面板显示默认四线还是自定义目标。
+
+## 开发
+
+和「岚」一样是 TypeScript 源码工程，用 Vite 打包成 Komari 需要的单文件 `dist/index.html`（Komari 主题只能是这一种形式，「岚」的产物也是单文件）。
+
+```
+index.html              外壳：head、配色预载脚本、入口 <script>
+src/
+  main.ts               启动：挂载视图 → 绑定事件 → 拉数据 → 连接实时推送
+  state.ts              共享状态、内置图片路径、版本号
+  types/                komari.ts 接口数据类型 · state.ts 应用状态类型
+  views/                页面结构（header、dashboard、duty、detail、stability、worldmap、billing、footer）与 mount.ts
+  api/                  client.ts 接口与指标存储 · live.ts WebSocket 实时数据
+  router.ts             路由（/、/duty、/detail/:uuid、/stability、/worldmap、/billing）
+  hero/                 首屏：settings 文案与角色 · halo 信号光环 · summary 读数 · console 资源概览与待关注
+  nodes/                节点阵列：list 星阵 / 星核 · echo 回声（拨测）
+  pages/                detail 节点详情 · stability 链路 · worldmap 星图 · billing 账本
+  cast/                 两个场景共用：roster 角色 · behavior 状态→心情 · routine 作息（坐姿帧、空闲去处） · desk 背面坐姿图集 · events 小剧场 · history 历史补齐 · art 按需加载 · draw 画布工具
+  pages/duty/           值班室：layout 房型与工位 · patrol 巡视路线 · scene 绘制 · index 页面
+  pages/home/           居家办公：layout 物件坐标 · atlas 图集 · facts 物件↔数据 · scene 绘制 · index 页面
+  charts/chart.ts       Canvas 折线图
+  ui/                   配色与动效偏好、装饰
+  utils/                格式化、指标换算
+  data/geo.ts           世界地图轮廓与地区坐标
+  styles/               按层叠顺序拆分的样式（00-tokens … 11-home）
+  preview*.ts           仅离线预览使用的入口
+public/                 角色图等静态资源，构建时复制到 dist/；public/scene-art/ 是值班室与居家办公美术
+qa/                     模拟数据 fixtures.js、test-echo.mjs、test-duty.mjs、test-live.mjs（实时后备与拨测纠偏）、scene-check.mjs（浏览器检查）、screenshot.mjs、cover.mjs（主题封面）
+scripts/package.mjs     打安装包
+scripts/scene-art.py    生成压缩后的场景美术（需要原始美术素材，不在本仓库；仓库里已有压缩好的 public/scene-art/）
+```
+
+```bash
+npm install
+npm run dev        # 本地开发（需要自己提供 Komari 接口或代理）
+npm run typecheck  # TypeScript 类型检查
+npm run build      # 类型检查 + 生成 dist/index.html 和 preview/NanoMuse-preview.html
+npm test           # 回声、值班室规则、实时后备与拨测纠偏测试
+node qa/scene-check.mjs  # 在离线预览里驱动值班室与居家办公并截图（LONG=1 再等完 90 秒事件循环）
+npm run format     # Prettier 格式化
+npm run package    # 构建并打包 release/nanomuse-<版本>.zip
+```
+
+`dist/` 和 `preview/` 是构建产物，和「岚」一样提交进仓库，方便直接从仓库打包安装；改代码请改 `src/`，然后重新构建。
+
+## 接口与配置
+
+接口协议与主要配置项：实时 WebSocket `/api/clients`，历史优先 RPC2 指标存储，旧 REST 自动回退。后台自定义角色图、视频、站名、公告、阈值继续可用。

@@ -1,0 +1,57 @@
+<section class="page" id="pg-duty">
+  <div class="ph">
+    <div>
+      <span class="kicker"><i></i>DUTY ROOM</span>
+      <h1>Duty Room</h1>
+      <div class="sub">值班室 · 一个分组一间房</div>
+    </div>
+    <svg class="ph-art" viewBox="0 0 200 200" aria-hidden="true"></svg>
+  </div>
+  <div class="duty-floor" id="dutyFloor" role="tablist" aria-label="值班室房间"></div>
+  <div class="duty-main">
+    <div class="duty-stage card">
+      <div class="duty-stage-h">
+        <div><b id="dutyRoomName">值班室</b><span id="dutyRoomMeta"></span></div>
+        <span class="duty-legend" aria-hidden="true">
+          <i class="m-work"></i>工作 <i class="m-busy"></i>吃紧 <i class="m-alert"></i>告警
+          <i class="m-idle"></i>摸鱼 <i class="m-offline"></i>离线
+        </span>
+      </div>
+      <div class="duty-canvas-wrap">
+        <canvas id="dutyCanvas" role="img" aria-label="值班室"></canvas>
+        <div class="scene-tip" id="dutyTip" hidden></div>
+      </div>
+      <p class="duty-note">
+        <span class="duty-swipe">左右滑动看整间屋子。</span>点一位值班员查看节点；再点一下可以戳戳
+        TA。互动只是装饰，不会影响服务器。
+      </p>
+    </div>
+    <aside class="duty-side">
+      <div class="card duty-pick" id="dutyPick" aria-live="polite"></div>
+      <div class="card duty-panel">
+        <div class="duty-h">
+          <h3>工位表</h3>
+          <span>ROSTER</span>
+        </div>
+        <ol class="duty-roster" id="dutyRoster"></ol>
+      </div>
+    </aside>
+  </div>
+  <div class="duty-lower">
+    <div class="card duty-panel">
+      <div class="duty-h">
+        <h3>值班日志</h3>
+        <span>REAL EVENTS</span>
+      </div>
+      <ol class="duty-log" id="dutyLog"></ol>
+    </div>
+    <div class="card duty-panel">
+      <div class="duty-h">
+        <h3>小剧场图鉴</h3>
+        <span id="dutyBookCount"></span>
+      </div>
+      <div class="duty-book" id="dutyBook"></div>
+      <p class="duty-fine">图鉴只保存在这台设备的浏览器里。</p>
+    </div>
+  </div>
+</section>

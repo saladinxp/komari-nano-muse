@@ -1,0 +1,75 @@
+/* 2.1.0-beta.7. `.pills` sets display:flex, which beats the browser's [hidden] rule, so a
+   hidden pill group (Ledger currency switch with one currency, detail line switch on the
+   load tab) stayed on screen. */
+.pills[hidden] {
+  display: none;
+}
+
+.cv .tip {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 680px) {
+  /* Long probe/loss labels in the existing home legend must fit the same phone. */
+  .home-legend b [class^='hl-'] {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+/* Detail latency: 默认四线 and 自定义目标 are separate views; lines still waiting for
+   samples keep their slot (fixed colour) but read as muted. */
+.pstats .card.wait .r span {
+  font-family: var(--fc);
+  color: var(--ink3);
+}
+.lg span.wait {
+  color: var(--ink4);
+}
+.lg span.wait i {
+  opacity: 0.45;
+}
+
+/* Detail latency (beta.7): 默认四线 and 自定义目标 each get their own box, stats and scale.
+   The stat cards double as the legend; a group with nothing to show is one line tall. */
+.ping-group .pstats {
+  margin: 4px 0 12px;
+}
+.ping-group .cc-h {
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+.ping-group .cc-h h3 {
+  white-space: nowrap;
+}
+.ping-group .pstats:empty {
+  display: none;
+}
+.ping-group .pstats > .card {
+  box-shadow: none;
+}
+.cc.wide.ping-group.empty .cv {
+  height: 56px;
+}
+@media (max-width: 680px) {
+  /* Two stat cards per row on a phone so each group stays short. */
+  .ping-group .pstats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .ping-group .pstats > div {
+    padding: 10px 12px;
+  }
+  .ping-group .pstats .r {
+    flex-wrap: wrap;
+    gap: 4px 10px;
+  }
+}
+
+/* Home network panel: one group only (默认四线 or 自定义目标), named before the lamps. */
+.home-legend b small.lamp-group {
+  margin-right: 12px;
+  white-space: nowrap;
+}

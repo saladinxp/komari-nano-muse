@@ -1,0 +1,36 @@
+<section class="page" id="pg-traffic">
+  <div class="ph">
+    <div>
+      <span class="kicker"><i></i>TRAFFIC</span>
+      <h1>Traffic</h1>
+      <div class="sub">流量 · 配额 · 吞吐趋势</div>
+    </div>
+    <svg class="ph-art" viewBox="0 0 200 200" aria-hidden="true"></svg>
+  </div>
+  <div class="tiles" id="trafficTiles"></div>
+  <div class="traffic-history card traffic-panel">
+    <div class="traffic-heading">
+      <h2>吞吐趋势</h2>
+      <div class="pills mono" id="trafficHours"></div>
+    </div>
+    <div class="legend">
+      <span><i style="background: var(--blue)"></i>↑ 上传</span
+      ><span><i style="background: var(--cyan)"></i>↓ 下载</span>
+    </div>
+    <p class="traffic-history-meta" id="trafficHistoryMeta">进入页面后读取历史</p>
+    <div class="cv" id="trafficChart"></div>
+  </div>
+  <div class="traffic-toolbar">
+    <input class="search" id="trafficSearch" placeholder="搜索节点" aria-label="搜索流量节点" /><select
+      id="trafficGroup"
+      aria-label="流量节点分组"
+    ></select
+    ><select id="trafficSort" aria-label="流量排序">
+      <option value="usage">配额用量优先</option>
+      <option value="total">累计流量优先</option>
+      <option value="live">实时吞吐优先</option>
+    </select>
+  </div>
+  <p class="usage-note" id="trafficScope"></p>
+  <div class="traffic-fleet-grid" id="trafficNodes"></div>
+</section>

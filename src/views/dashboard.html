@@ -1,0 +1,225 @@
+<section class="page" id="pg-dashboard">
+  <section class="observatory" aria-label="观测站概览">
+    <div class="hero">
+      <div class="hero-copy">
+        <div class="hero-signature"><i class="signature-star" aria-hidden="true"></i>静默观测站</div>
+        <div class="hero-title-lockup">
+          <div class="hero-crest"><!-- HERO_MARK --></div>
+          <h1 id="heroTitle">NanoMuse</h1>
+        </div>
+        <div class="hero-logotype-sub">NANO MUSE · LISTEN TO THE SIGNAL</div>
+        <div class="hero-sub" id="heroSub">静默观测，信号常在。</div>
+        <p class="hero-quote" id="heroQuote"></p>
+        <div class="hero-actions">
+          <button id="exploreBtn">查看节点 <span aria-hidden="true">↘</span></button
+          ><a href="/stability" data-nav>链路稳定性 <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="telemetry" role="img" aria-label="信号光环图例" id="telemetry">
+          <div class="telemetry-head">
+            <span id="historyScope">CPU / 24H</span><b id="fleetPeak">等待历史数据</b>
+          </div>
+          <ul class="halo-key">
+            <li><i class="k-wave"></i><span>外圈频谱</span><em>过去 24 小时 CPU · 每格 15 分钟</em></li>
+            <li><i class="k-tick"></i><span>节点刻度</span><em id="keyNodes">等待连接</em></li>
+            <li><i class="k-arc"></i><span>内弧</span><em id="keyLive">实时 CPU —</em></li>
+          </ul>
+        </div>
+      </div>
+      <aside class="hero-console" aria-label="资源与待关注节点">
+        <div class="fleet-resources">
+          <div class="console-heading">
+            <h2>资源概览</h2>
+            <span id="overviewState">CONNECTING</span>
+          </div>
+          <div class="fleet-row">
+            <div class="fleet-row-top"><span>CPU</span><b id="fleetCpuLive">—</b></div>
+            <div class="thin"><i id="fleetCpuBar"></i></div>
+            <small id="fleetCpuCapacity">等待节点上报</small>
+          </div>
+          <div class="fleet-row">
+            <div class="fleet-row-top"><span>MEMORY</span><b id="fleetRamLive">—</b></div>
+            <div class="thin"><i id="fleetRamBar"></i></div>
+            <small id="fleetRamCapacity">等待节点上报</small>
+          </div>
+          <div class="fleet-row">
+            <div class="fleet-row-top"><span>DISK</span><b id="fleetDiskLive">—</b></div>
+            <div class="thin"><i id="fleetDiskBar"></i></div>
+            <small id="fleetDiskCapacity">等待节点上报</small>
+          </div>
+        </div>
+        <div class="watch-area">
+          <div class="console-heading">
+            <h2>待关注节点</h2>
+            <span id="watchCount">—</span>
+          </div>
+          <div class="watch-list" id="watchList"><div class="watch-empty">等待实时连接</div></div>
+          <button class="watch-all" id="watchAll" hidden>查看全部关注项 ↗</button>
+        </div>
+      </aside>
+      <div class="orbit" id="orbit">
+        <div class="signal-scene" aria-hidden="true">
+          <svg class="nano-ripples" viewBox="0 0 600 420" preserveAspectRatio="none" aria-hidden="true">
+            <g>
+              <ellipse
+                cx="470"
+                cy="130"
+                rx="92"
+                ry="37"
+                transform="rotate(-22 470 130)"
+                fill="none"
+                stroke="currentColor"
+                stroke-width=".9"
+              />
+              <path d="M404 162 411 160m126-54 7-3" stroke="currentColor" stroke-width="3" />
+            </g>
+            <g>
+              <ellipse
+                cx="470"
+                cy="130"
+                rx="92"
+                ry="37"
+                transform="rotate(-22 470 130)"
+                fill="none"
+                stroke="currentColor"
+                stroke-width=".9"
+              />
+              <path d="M404 162 411 160m126-54 7-3" stroke="currentColor" stroke-width="3" />
+            </g>
+            <g>
+              <ellipse
+                cx="470"
+                cy="130"
+                rx="92"
+                ry="37"
+                transform="rotate(-22 470 130)"
+                fill="none"
+                stroke="currentColor"
+                stroke-width=".9"
+              />
+              <path d="M404 162 411 160m126-54 7-3" stroke="currentColor" stroke-width="3" />
+            </g>
+          </svg>
+        </div>
+
+        <svg class="halo" id="haloSvg" viewBox="0 0 600 600" aria-hidden="true"></svg>
+        <div class="portrait" id="portrait"><img alt="NanoMuse 戴耳机静静聆听信号" decoding="async" /></div>
+        <div class="phase" id="phase">SIGNAL · <b>LISTENING</b></div>
+      </div>
+    </div>
+    <div class="readouts">
+      <div class="ro">
+        <span><span class="zh">在线节点</span>ONLINE</span><b class="num" id="rOn">--</b>
+      </div>
+      <div class="ro">
+        <span><span class="zh" id="cpuLabel">平均负载</span><span id="cpuPeriod">CPU · LIVE</span></span
+        ><b class="num" id="rCpu">--</b>
+      </div>
+      <div class="ro">
+        <span><span class="zh">实时吞吐</span>UP / DOWN</span><b class="num net" id="rNet">--</b>
+      </div>
+      <div class="ro">
+        <span><span class="zh">累计传输</span>TRAFFIC</span><b class="num" id="rTraffic">--</b>
+      </div>
+    </div>
+  </section>
+  <div class="station-status">
+    <span class="kicker" id="kicker"><i></i><span id="kickerTxt">等待实时连接</span></span
+    ><button class="attention-btn" id="attentionBtn" hidden></button>
+  </div>
+  <div class="signal-log card" id="signalLog" hidden>
+    <div class="sl-h">
+      <b class="zh">信号日志</b><span>SIGNAL LOG · 真实事件</span><a href="/duty" data-nav>值班室 ↗</a>
+    </div>
+    <ol id="signalList"></ol>
+  </div>
+  <div class="notice card" id="notice" hidden></div>
+
+  <div class="sec">
+    <div class="sec-h">
+      <div class="sec-t">
+        <h2>节点阵列</h2>
+        <span class="en">Node directory</span><span class="n" id="nCount"></span>
+      </div>
+      <div class="sec-ctl">
+        <div class="pills" id="groupTabs"></div>
+        <input
+          class="search"
+          id="search"
+          aria-label="搜索节点、地区或系统"
+          placeholder="搜索节点 / 地区"
+          autocomplete="off"
+        />
+        <select class="status-select" id="statusFilter" aria-label="节点状态">
+          <option value="all">全部状态</option>
+          <option value="online">在线</option>
+          <option value="offline">离线</option>
+          <option value="attention">需要关注</option>
+        </select>
+        <select class="status-select" id="nodeSort" aria-label="节点排序">
+          <option value="default">默认排序</option>
+          <option value="name">名称</option>
+          <option value="cpu">CPU 从高到低</option>
+          <option value="ram">内存从高到低</option>
+          <option value="disk">磁盘从高到低</option>
+          <option value="load">负载从高到低</option>
+          <option value="speed">网速从高到低</option>
+          <option value="traffic">累计流量从高到低</option>
+          <option value="expiry">最早到期</option>
+        </select>
+        <div class="pills view-switch" id="viewSeg" role="group" aria-label="节点视图">
+          <button data-v="medium" class="on" aria-pressed="true" title="星阵 · 核心资源巡航">星阵</button
+          ><button data-v="large" aria-pressed="false" title="星核 · 完整遥测">星核</button
+          ><button data-v="list" aria-pressed="false" title="回声 · 多目标拨测链路">回声</button>
+        </div>
+      </div>
+    </div>
+    <div class="view-caption">
+      <span id="viewCaption">STAR ARRAY / 核心资源巡航</span>
+      <div id="coreControls" hidden>
+        <button id="coreCrewToggle" type="button" aria-pressed="false">值班员：关</button>
+      </div>
+      <div id="echoControls" hidden>
+        <span id="echoSync" role="status"></span><button id="echoRefresh">刷新拨测 ↻</button>
+      </div>
+    </div>
+    <div class="echo-tools" id="echoTools" hidden>
+      <div class="echo-tool-row">
+        <div class="pills" role="group" aria-label="拨测目标组">
+          <button data-echo-group="preset">默认四线</button
+          ><button data-echo-group="custom">自定义目标</button>
+        </div>
+        <details id="echoCustomPicker">
+          <summary>选择目标</summary>
+          <div id="echoTargetOptions"></div>
+          <button id="echoAllTargets" type="button">显示全部</button>
+        </details>
+      </div>
+      <p class="usage-note" id="echoPresetHint"></p>
+      <div class="echo-trend-key" aria-label="回声趋势图图例">
+        <span>格高＝延迟</span><span><i class="key-stable"></i>稳定</span
+        ><span><i class="key-unstable"></i>波动 / 部分丢包</span><span><i class="key-lost"></i>整格丢包</span
+        ><span><i class="key-missing"></i>无数据</span><small>最近1小时 · 统一刻度</small>
+      </div>
+      <div id="echoPresetAdmin" hidden>
+        <details>
+          <summary>设置默认四线</summary>
+          <ul id="echoPresetList"></ul>
+          <p class="usage-note">
+            国内三线使用指定的河北 CDN 节点，Google 不变，可达性以你的节点实测为准。
+            使用内置值可直接审阅；改为其他地址时，请先在大陆和境外节点连续采样10分钟以上并勾选确认。这里只新建或复用，不修改或删除旧任务。
+          </p>
+          <label class="echo-verify" id="echoPresetVerification" hidden
+            ><input type="checkbox" id="echoTargetsVerified" />
+            我已在大陆、境外节点连续验证以上目标10分钟以上</label
+          >
+          <button id="echoReviewPresets" type="button">检查更新内容</button>
+          <div id="echoPresetReview" aria-live="polite"></div>
+          <button id="echoEnablePresets" type="button" hidden>确认新建 / 重新绑定</button>
+          <a href="/admin" target="_blank" rel="noopener">管理自定义目标与旧任务 ↗</a>
+          <p id="echoPresetStatus" class="usage-note" role="status" aria-live="polite"></p>
+        </details>
+      </div>
+    </div>
+    <div id="nodes"></div>
+  </div>
+</section>

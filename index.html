@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>Komari Monitor</title>
+    <meta name="description" content="NanoMuse · 静默观测站 — Komari 节点监控主题" />
+    <meta property="og:title" content="NanoMuse — Silent Observatory" />
+    <meta property="og:description" content="Future-minimal fleet monitor for Komari" />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      /* Resolve colour mode before first paint so the page never flashes. */
+      ;(function () {
+        var m = 'auto'
+        try {
+          m = localStorage.getItem('nm-mode') || 'auto'
+        } catch (e) {}
+        var d = m === 'dark' || (m === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches)
+        document.documentElement.dataset.theme = d ? 'dark' : 'light'
+        document.documentElement.dataset.mode = m
+      })()
+    </script>
+  </head>
+  <body>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

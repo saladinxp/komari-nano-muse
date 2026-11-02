@@ -1,0 +1,315 @@
+/* NanoMuse Nebula atmosphere: vector geometry, no canvas or extra requests. */
+:root {
+  --bg: #f5f5fc;
+  --bg2: #eeedfc;
+  --paper2: #f7f5ff;
+  --ink: #292a43;
+  --ink2: #515b76;
+  --ink3: #68728c;
+  --ink4: #78839a;
+  --line: #dcddeb;
+  --line2: #eeedf7;
+  --blue: #6a48f5;
+  --cyan: #0aa5c8;
+  --blue-s: rgba(106, 72, 245, 0.07);
+  --glow: rgba(106, 72, 245, 0.14);
+  --nebula-lilac: rgba(143, 118, 255, 0.15);
+  --nebula-ice: rgba(37, 207, 238, 0.11);
+  --nebula-rose: rgba(222, 166, 225, 0.09);
+  --brand-gradient: linear-gradient(120deg, #7653ef 0%, #6945e5 52%, #4669eb 100%);
+}
+[data-theme='dark'] {
+  --bg: #0d1020;
+  --bg2: #161c35;
+  --paper: #141a2d;
+  --paper2: #1a2136;
+  --ink: #e9e8fb;
+  --ink2: #bac2df;
+  --ink3: #9da9c7;
+  --ink4: #8a98b5;
+  --line: #303951;
+  --line2: #242d43;
+  --blue: #a18aff;
+  --cyan: #5bd8ee;
+  --blue-s: rgba(161, 138, 255, 0.1);
+  --glow: rgba(139, 108, 255, 0.15);
+  --nebula-lilac: rgba(133, 103, 255, 0.18);
+  --nebula-ice: rgba(43, 213, 237, 0.09);
+  --nebula-rose: rgba(181, 119, 221, 0.05);
+}
+body {
+  background:
+    radial-gradient(ellipse at 7% 16%, var(--nebula-lilac), transparent 45%),
+    radial-gradient(ellipse at 92% 8%, var(--nebula-ice), transparent 45%),
+    radial-gradient(ellipse at 64% 90%, var(--nebula-rose), transparent 45%), var(--bg);
+  background-attachment: fixed;
+}
+.ambient {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  color: var(--blue);
+}
+.ambient svg {
+  position: absolute;
+  overflow: visible;
+}
+.ambient .ambient-left {
+  width: 250px;
+  left: -95px;
+  top: 185px;
+  opacity: 0.18;
+}
+.ambient .ambient-right {
+  width: 180px;
+  right: -75px;
+  top: 55%;
+  color: var(--cyan);
+  opacity: 0.22;
+}
+.hero {
+  background: linear-gradient(
+    108deg,
+    color-mix(in srgb, var(--paper) 94%, #b3a0fb) 0%,
+    var(--paper) 40%,
+    color-mix(in srgb, var(--paper) 94%, #74d5e9) 100%
+  );
+  border-color: color-mix(in srgb, var(--blue) 16%, var(--line));
+}
+[data-theme='dark'] .hero h1 em {
+  background-image: linear-gradient(120deg, #c2b2ff, #a18aff 55%, #65b8ef);
+}
+.hero-copy {
+  z-index: 3;
+}
+.hero h1 em {
+  font-weight: 400;
+  background: var(--brand-gradient);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.hero-actions button {
+  background: var(--brand-gradient);
+  color: white;
+  box-shadow: 0 4px 12px var(--glow);
+}
+.hero-actions button:hover {
+  box-shadow: 0 6px 20px var(--glow);
+}
+.eyebrow::before {
+  background: linear-gradient(135deg, var(--blue), var(--cyan));
+}
+.brand-mark path {
+  stroke: var(--blue);
+}
+.brand-mark path:last-child {
+  stroke: var(--cyan);
+}
+.orbit {
+  background: radial-gradient(ellipse at 60% 35%, var(--nebula-ice), transparent 68%);
+  overflow: visible;
+}
+.orbit::before,
+.orbit::after {
+  display: none;
+}
+.portrait::after {
+  background: none;
+}
+.portrait {
+  z-index: 1;
+}
+.art-index {
+  z-index: 3;
+}
+.phase {
+  z-index: 3;
+}
+.signal-scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+  color: var(--blue);
+}
+.nano-saturn {
+  position: absolute;
+  left: -3%;
+  top: 1%;
+  width: 77%;
+  height: 76%;
+  opacity: 0.26;
+  animation: nano-saturn 20s ease-in-out infinite;
+  transform-origin: 52% 48%;
+}
+@keyframes nano-saturn {
+  0%,
+  100% {
+    transform: translate3d(0, 13px, 0) rotate(-7deg);
+  }
+  50% {
+    transform: translate3d(-12px, -22px, 0) rotate(6deg);
+  }
+}
+.nano-ripples {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  color: var(--cyan);
+}
+.nano-ripples g {
+  transform-origin: 470px 130px;
+  animation: nano-radio 7s ease-out infinite;
+  opacity: 0;
+}
+.nano-ripples g:nth-child(2) {
+  animation-delay: -2.33s;
+}
+.nano-ripples g:nth-child(3) {
+  animation-delay: -4.66s;
+}
+@keyframes nano-radio {
+  0% {
+    opacity: 0;
+    transform: scale(0.45);
+  }
+  18% {
+    opacity: 0.45;
+  }
+  85% {
+    opacity: 0.08;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.65);
+  }
+}
+.top::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 18%, var(--blue) 38%, var(--cyan) 57%, transparent 78%);
+  background-size: 200% 100%;
+  animation: header-signal 16s linear infinite;
+  opacity: 0.5;
+  pointer-events: none;
+}
+@keyframes header-signal {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -50% 0;
+  }
+}
+.nav a.on {
+  border-bottom-color: var(--blue);
+}
+.motion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink3);
+  font: 10px var(--fc);
+}
+.motion svg {
+  width: 13px;
+  height: 13px;
+}
+.motion[aria-pressed='true'] {
+  color: var(--blue);
+}
+[data-motion='off'] .ambient *,
+[data-motion='off'] .signal-scene *,
+[data-motion='off'] .top::after {
+  animation-play-state: paused !important;
+}
+[data-effects='off'] .ambient,
+[data-effects='off'] .signal-scene {
+  display: none;
+}
+[data-effects='off'] .top::after {
+  display: none;
+}
+@media (max-width: 980px) {
+  .top-r {
+    gap: 9px;
+  }
+  .motion {
+    font-size: 10px;
+  }
+}
+@media (max-width: 680px) {
+  .ambient .ambient-left {
+    width: 140px;
+    left: -80px;
+    opacity: 0.13;
+  }
+  .ambient .ambient-right {
+    display: none;
+  }
+  .nano-saturn {
+    width: 120%;
+    left: -38%;
+    top: 10%;
+    opacity: 0.18;
+    animation-duration: 32s;
+  }
+  .nano-ripples {
+    opacity: 0.6;
+  }
+  .motion {
+    padding: 0 8px;
+    gap: 5px;
+    font-size: 9px;
+    height: 32px;
+  }
+  .top-r {
+    gap: 6px;
+  }
+  .hero {
+    background: linear-gradient(115deg, var(--paper), color-mix(in srgb, var(--paper) 92%, #c8c0f6));
+  }
+  .orbit {
+    overflow: hidden;
+  }
+  .top-r .live {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ambient *,
+  .signal-scene *,
+  .top::after {
+    animation: none !important;
+  }
+  .nano-ripples g {
+    opacity: 0.12;
+  }
+}
+@media print {
+  .ambient,
+  .signal-scene,
+  .motion,
+  .top::after {
+    display: none;
+  }
+  body {
+    background: white;
+  }
+}

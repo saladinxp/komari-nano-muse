@@ -1,0 +1,93 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+:root {
+  --bg: #f5f7fa;
+  --bg2: #eef3f8;
+  --paper: #ffffff;
+  --paper2: #f7f9fc;
+  --ink: #202c3c;
+  --ink2: #4c5d70;
+  --ink3: #697b90;
+  --ink4: #738398;
+  --line: #e2e7ef;
+  --line2: #eef1f6;
+  --blue: #47698b;
+  --cyan: #1a919d;
+  --violet: #8a7af0;
+  --amber: #a56d19;
+  --coral: #c25269;
+  --blue-s: rgba(71, 105, 139, 0.07);
+  --coral-s: rgba(194, 82, 105, 0.08);
+  --glow: rgba(26, 145, 157, 0.12);
+  --shadow: 0 4px 20px -12px rgba(25, 45, 70, 0.08);
+  --fd: 'Sora', 'Noto Sans SC', system-ui, sans-serif;
+  --fm: 'JetBrains Mono', ui-monospace, monospace;
+  --fc: 'Noto Sans SC', 'Sora', sans-serif;
+  --r: 0px;
+  --pad: clamp(20px, 4.2vw, 68px);
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  color-scheme: light;
+}
+[data-theme='dark'] {
+  --bg: #0b1420;
+  --bg2: #111f30;
+  --paper: #111e2d;
+  --paper2: #152335;
+  --ink: #e4ecf5;
+  --ink2: #b5c5d7;
+  --ink3: #8c9db3;
+  --ink4: #8497af;
+  --line: #26374b;
+  --line2: #203044;
+  --blue: #9bb9db;
+  --cyan: #68c7cd;
+  --violet: #a497ff;
+  --amber: #e7b66e;
+  --coral: #ef91a1;
+  --blue-s: rgba(113, 148, 255, 0.12);
+  --coral-s: rgba(255, 111, 135, 0.12);
+  --glow: rgba(88, 210, 239, 0.16);
+  --shadow: 0 1px 0 rgba(255, 255, 255, 0.02) inset, 0 12px 32px -16px rgba(0, 0, 0, 0.6);
+  color-scheme: dark;
+}
+html {
+  background: var(--bg);
+}
+body {
+  min-height: 100vh;
+  background: radial-gradient(1200px 600px at 75% -10%, var(--bg2), transparent 70%), var(--bg);
+  color: var(--ink);
+  font-family: var(--fd);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+  transition:
+    background 0.4s,
+    color 0.4s;
+}
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+.mono {
+  font-family: var(--fm);
+}
+.num {
+  font-variant-numeric: tabular-nums;
+}
+.zh {
+  font-family: var(--fc);
+}

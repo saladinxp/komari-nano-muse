@@ -1,0 +1,122 @@
+/* ── signal halo: the fleet's 24h CPU drawn as a ring behind the muse ── */
+.halo {
+  position: absolute;
+  z-index: 0;
+  left: 47%;
+  top: 48%;
+  height: 86%;
+  max-width: 92%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  overflow: visible;
+  pointer-events: none;
+}
+.halo .h-ring {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.halo .h-dash {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 1;
+  stroke-dasharray: 1 7;
+  opacity: 0.45;
+}
+.halo .h-spin {
+  transform-origin: 300px 300px;
+  animation: halo-spin 140s steps(560) infinite;
+}
+.halo .h-spin.rev {
+  animation-duration: 90s;
+  animation-timing-function: steps(360);
+  animation-direction: reverse;
+}
+@keyframes halo-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.halo .h-wave line {
+  stroke-width: 2.6;
+  stroke-linecap: butt;
+}
+.halo .h-tick {
+  stroke-width: 3;
+}
+.halo .h-arc {
+  fill: none;
+  stroke-width: 2.2;
+  transition: stroke-dasharray 1.2s var(--ease);
+}
+.halo .h-sat {
+  fill: var(--cyan);
+}
+.halo .h-lbl {
+  font: 10px var(--fm);
+  letter-spacing: 0.14em;
+  fill: var(--ink3);
+}
+[data-motion='off'] .halo * {
+  animation-play-state: paused !important;
+}
+[data-aurora-visible='false'] .halo .h-spin {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .halo * {
+    animation: none !important;
+  }
+}
+@media (max-width: 680px) {
+  .halo,
+  .halo-key {
+    display: none;
+  }
+}
+.halo-key {
+  list-style: none;
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.halo-key li {
+  display: grid;
+  grid-template-columns: 18px auto 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line2);
+  font: 12px var(--fc);
+  color: var(--ink2);
+}
+.halo-key em {
+  font: 10.5px var(--fm);
+  font-style: normal;
+  color: var(--ink3);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.halo-key i {
+  display: block;
+  height: 12px;
+  justify-self: center;
+}
+.halo-key .k-wave {
+  width: 14px;
+  background: repeating-linear-gradient(90deg, var(--blue) 0 2px, transparent 2px 4px);
+  -webkit-mask: linear-gradient(0deg, #000 40%, transparent);
+  mask: linear-gradient(0deg, #000 40%, transparent);
+}
+.halo-key .k-tick {
+  width: 3px;
+  background: var(--cyan);
+}
+.halo-key .k-arc {
+  width: 14px;
+  height: 7px;
+  border: 2px solid var(--blue);
+  border-bottom: 0;
+  border-radius: 14px 14px 0 0;
+}

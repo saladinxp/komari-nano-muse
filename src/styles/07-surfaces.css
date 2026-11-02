@@ -1,0 +1,252 @@
+/* Colour belongs to the foreground panels; the page remains quiet. */
+:root {
+  --front-a: #eee7ff;
+  --front-b: #eaf0ff;
+  --front-c: #e2f7ff;
+  --node-a: #f3edff;
+  --node-mid: #eff3ff;
+  --node-b: #ebf9ff;
+  --surface-gradient: linear-gradient(115deg, var(--node-a), var(--node-mid) 50%, var(--node-b));
+}
+[data-theme='dark'] {
+  --front-a: #28213f;
+  --front-b: #1c2540;
+  --front-c: #163340;
+  --node-a: #211f38;
+  --node-mid: #1b273a;
+  --node-b: #17303b;
+}
+body {
+  background:
+    radial-gradient(ellipse at 8% 12%, color-mix(in srgb, var(--blue) 4%, transparent), transparent 48%),
+    radial-gradient(ellipse at 92% 18%, color-mix(in srgb, var(--cyan) 3%, transparent), transparent 48%),
+    var(--bg);
+}
+/* One continuous surface beneath the intro, console, portrait and readouts. */
+.observatory {
+  background: linear-gradient(110deg, var(--front-a), var(--front-b) 50%, var(--front-c));
+  border: 1px solid color-mix(in srgb, var(--blue) 26%, var(--line));
+  border-radius: 0;
+  overflow: hidden;
+}
+.observatory .hero {
+  background: transparent;
+  border: 0;
+}
+.observatory .orbit {
+  background: transparent;
+}
+.top {
+  background: var(--surface-gradient);
+}
+.card,
+.tbl-wrap,
+.spec,
+.empty {
+  background: var(--surface-gradient);
+}
+.pills,
+.mode,
+.motion,
+.status-select,
+.phase,
+.sec-t .n {
+  background: var(--surface-gradient);
+}
+.search {
+  background-color: var(--node-mid);
+}
+.hero-copy {
+  justify-content: flex-start;
+  padding-top: clamp(34px, 2.5vw, 62px);
+}
+.hero-copy .telemetry {
+  margin-top: auto;
+  padding-top: 26px;
+}
+.hero-console {
+  background: transparent;
+  gap: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  border-left-color: color-mix(in srgb, var(--line) 65%, transparent);
+  border-right-color: color-mix(in srgb, var(--line) 65%, transparent);
+}
+.console-heading {
+  margin-bottom: 14px;
+}
+.fleet-row + .fleet-row {
+  margin-top: 11px;
+}
+.fleet-row .thin {
+  height: 3px;
+  margin: 6px 0 4px;
+}
+.fleet-row-top b {
+  font-size: clamp(18px, 1.1vw, 27px);
+}
+.fleet-row > small {
+  font-size: clamp(10px, 0.53vw, 12px);
+  line-height: 1.4;
+}
+#fleetCpuBar {
+  background: var(--blue);
+}
+#fleetRamBar {
+  background: var(--cyan);
+}
+#fleetDiskBar {
+  background: #8c9fc6;
+}
+.watch-row {
+  padding: 8px 0;
+  line-height: 1.4;
+}
+.watch-name {
+  font-size: clamp(12px, 0.65vw, 15px);
+}
+.watch-reason {
+  font-size: clamp(10px, 0.52vw, 12px);
+}
+.watch-all {
+  padding-top: 12px;
+}
+.nc {
+  border: 1px solid transparent;
+  background:
+    var(--surface-gradient) padding-box,
+    linear-gradient(
+        120deg,
+        color-mix(in srgb, var(--blue) 24%, var(--line)),
+        color-mix(in srgb, var(--cyan) 18%, var(--line))
+      )
+      border-box;
+}
+.nc:hover {
+  border-color: color-mix(in srgb, var(--blue) 65%, var(--line));
+}
+.nc.alert {
+  border-color: color-mix(in srgb, var(--coral) 50%, var(--line));
+}
+.nc.off {
+  background:
+    var(--surface-gradient) padding-box,
+    var(--line) border-box;
+}
+.readouts {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+.ambient .ambient-left {
+  opacity: 0.13;
+}
+.ambient .ambient-right {
+  opacity: 0.16;
+}
+@media (max-width: 1500px) and (min-width: 1280px) {
+  .hero-copy {
+    padding-top: 36px;
+  }
+  .hero h1 {
+    font-size: 56px;
+  }
+  .hero-console {
+    padding-top: 22px;
+    padding-bottom: 22px;
+  }
+  .hero {
+    min-height: 460px;
+  }
+}
+@media (max-width: 1279px) {
+  .hero-copy .telemetry {
+    margin-top: 20px;
+    padding-top: 0;
+  }
+  .hero-console {
+    padding: 24px 28px;
+  }
+  .hero-copy {
+    justify-content: center;
+  }
+}
+@media (max-width: 680px) {
+  .hero-copy {
+    padding-top: 4px;
+  }
+  .hero-copy .telemetry {
+    padding-top: 0;
+    margin-top: 26px;
+  }
+  .hero-console {
+    padding: 24px 22px;
+  }
+  .fleet-row-top b {
+    font-size: 22px;
+  }
+  .fleet-row > small {
+    font-size: 11px;
+  }
+  .watch-row {
+    padding: 10px 0;
+  }
+  .watch-name {
+    font-size: 13px;
+  }
+  .watch-reason {
+    font-size: 11px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero {
+    min-height: clamp(460px, 20vw, 560px);
+  }
+  .hero-copy {
+    padding-top: 32px;
+    padding-bottom: 28px;
+  }
+  .hero h1 {
+    font-size: clamp(52px, 3.6vw, 100px);
+    line-height: 1.04;
+    margin-top: 18px;
+  }
+  .hero-sub {
+    font-size: clamp(17px, 1.05vw, 24px);
+    margin-top: 12px;
+    line-height: 1.4;
+  }
+  .hero-quote {
+    font-size: clamp(12px, 0.64vw, 15px);
+    line-height: 1.75;
+    margin-top: 8px;
+  }
+  .hero-actions {
+    font-size: clamp(12px, 0.6vw, 14px);
+    margin-top: 24px;
+  }
+  .hero-actions button {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .hero-copy .telemetry {
+    padding-top: 20px;
+  }
+  .telemetry svg {
+    height: clamp(50px, 2.4vw, 68px);
+  }
+}
+.readouts .ro {
+  padding-top: 22px;
+  padding-bottom: 22px;
+}
+.ro > span .zh {
+  font-size: clamp(12px, 0.67vw, 15px);
+}
+.ro b {
+  font-size: clamp(30px, 1.9vw, 44px);
+}
+.ro .net {
+  font-size: clamp(16px, 1vw, 22px);
+}

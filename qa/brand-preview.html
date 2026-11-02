@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NanoMuse 品牌与动效验收</title>
+  <style>
+    body {
+      margin: 20px;
+      background: #f6f3ff;
+      color: #292441;
+      font: 14px system-ui;
+    }
+    button {
+      padding: 10px 16px;
+      margin: 0 8px 14px 0;
+      cursor: pointer;
+    }
+    #checks {
+      line-height: 1.7;
+      white-space: pre-wrap;
+    }
+    #stage {
+      height: 720px;
+      overflow: hidden;
+    }
+    iframe {
+      border: 0;
+      transform-origin: top left;
+      background: white;
+    }
+    h1 {
+      font-size: 18px;
+    }
+  </style>
+  <h1>NanoMuse · 品牌与轻量动态渐变验收</h1>
+  <button data-width="1920">桌面 1920</button
+  ><button data-width="768">平板 768</button
+  ><button data-width="390">手机 390</button
+  ><button data-width="320">窄屏 320</button>
+  <button id="avatar">头像 / N 字标</button>
+  <button id="dark">切换浅色 / 深色</button
+  ><button id="long">长站名</button
+  ><button id="normal">纳米核心</button>
+  <div id="checks">正在打开离线预览……</div>
+  <div id="stage">
+    <iframe title="实际主题预览" id="frame" src="../preview/NanoMuse-preview.html?title=纳米核心"></iframe>
+  </div>
+  <script>
+    const frame = document.getElementById('frame'),
+      checks = document.getElementById('checks')
+    let width = 1920
+    const delay = ms => new Promise(r => setTimeout(r, ms))
+    function fit() {
+      frame.style.width = width + 'px'
+      frame.style.height = '1050px'
+      frame.style.transform = width > 1200 ? 'scale(.65)' : 'none'
+      document.getElementById('stage').style.height = width > 1200 ? '690px' : '1050px'
+    }
+    function inspect() {
+      const w = frame.contentWindow,
+        d = w.document,
+        root = d.documentElement
+      const ids = [...d.querySelectorAll('[id]')].map(e => e.id)
+      const wants =
+        root.dataset.motion === 'on' &&
+        root.dataset.effects !== 'off' &&
+        root.dataset.auroraVisible === 'true' &&
+        w.matchMedia('(min-width: 681px) and (prefers-reduced-motion: no-preference)').matches
+      const anim = d.querySelector('.surface-aurora')?.dataset.active === 'true' ? '4fps' : 'none'
+      const portrait = d.getElementById('orbit').getBoundingClientRect(),
+        title = d.getElementById('heroTitle').getBoundingClientRect()
+      checks.textContent = [
+        `视口 ${width}px · ${root.dataset.theme} · 动态渐变 ${anim}`,
+        `${d.documentElement.scrollWidth <= w.innerWidth ? 'PASS' : 'FAIL'} 无横向溢出`,
+        `${ids.length === new Set(ids).size ? 'PASS' : 'FAIL'} SVG 与页面 ID 唯一`,
+        width <= 680
+          ? `${anim === 'none' ? 'PASS' : 'FAIL'} 手机渐变静态；${title.top >= portrait.bottom ? 'PASS' : 'FAIL'} 标题位于角色下方`
+          : `${anim === (wants ? '4fps' : 'none') ? 'PASS' : 'FAIL'} ${wants ? '桌面单个 64×36 画布低频更新' : '已按静止或可见性设置停止'}`,
+      ].join('\n')
+    }
+    document.querySelectorAll('[data-width]').forEach(
+      b =>
+        (b.onclick = () => {
+          width = +b.dataset.width
+          fit()
+          inspect()
+        }),
+    )
+    document.getElementById('avatar').onclick = () => {
+      const w = frame.contentWindow
+      w.NM.ts.brand_icon = w.NM.ts.brand_icon === 'avatar' ? 'symbol' : 'avatar'
+      w.__NM_APP__.applySettings()
+      inspect()
+    }
+    document.getElementById('dark').onclick = () => {
+      frame.contentDocument.getElementById('modeBtn').click()
+      inspect()
+    }
+    document.getElementById('long').onclick = () => {
+      frame.contentWindow.NM.ts.hero_title = '纳米缪斯全球节点实时观测与信号控制中心'
+      frame.contentWindow.__NM_APP__.applySettings()
+      inspect()
+    }
+    document.getElementById('normal').onclick = () => {
+      frame.contentWindow.NM.ts.hero_title = '纳米核心'
+      frame.contentWindow.__NM_APP__.applySettings()
+      inspect()
+    }
+    frame.onload = async () => {
+      await delay(800)
+      fit()
+      await inspect()
+      const w = frame.contentWindow,
+        d = w.document
+      d.getElementById('motionBtn').click()
+      await delay(50)
+      const off = d.querySelector('.surface-aurora')?.dataset.active === 'false' ? 'none' : 'active'
+      d.getElementById('motionBtn').click()
+      checks.textContent += '\n' + (off === 'none' ? 'PASS' : 'FAIL') + ' 动效关闭后动画被移除'
+    }
+  </script>
+</html>

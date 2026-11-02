@@ -1,118 +1,224 @@
 {
-  "name": "Komari NanoMuse Panel",
+  "name": "纳米缪斯",
   "short": "NanoMuse",
-  "description": "电子二次元监控面板主题 · Anime HUD Light Sci-fi Dashboard。明亮冷白底 + 蓝色科技HUD + 动漫角色融合，内置 Stability 稳定性面板。",
-  "version": "1.3.1",
+  "description": "静默观测站 · 星阵资源巡航、星核负载仪表与 Q 版值班位、回声四线与自选拨测；独立流量页展示累计上下行、配置配额、剩余量与吞吐趋势。星图按回声默认三网画出各节点到目标的最近 1 小时链路，账本按续费日历推算未来 12 个月、各币种分开不换算。分组值班室、节点居家详情、链路、星图与账本共用真实 Komari 数据。值班室使用独立低靠背椅、去凳坐姿和按桌脚地面校准的座位。",
+  "version": "2.1.0",
   "author": "Miuler",
   "url": "https://github.com/saladinxp/komari-nano-muse",
-  "preview": "preview.png",
+  "preview": "preview.jpg",
   "configuration": {
     "type": "managed",
-    "name": "[ NANOMUSE ] 主题配置",
+    "name": "纳米缪斯 主题配置",
     "data": [
       {
-        "name": "◇ PANEL INFO // 面板标识",
+        "name": "◇ 首屏 HERO",
         "type": "title"
       },
       {
-        "key": "version_tag",
-        "name": "[ SYS.VER ] 版本标识",
-        "type": "string",
-        "default": "v1.3.1",
-        "help": "面板版本号 — 显示于导航栏、页脚及HUD面板"
-      },
-      {
-        "key": "footer_text",
-        "name": "[ FOOTER ] 状态栏文字",
-        "type": "string",
-        "default": "SYSTEM MONITORING ACTIVE",
-        "help": "底部状态栏文字"
-      },
-      {
-        "name": "◇ CHARACTER // 角色系统",
-        "type": "title"
-      },
-      {
-        "key": "bg_video",
-        "name": "[ VIDEO ] 背景视频链接",
+        "key": "hero_title",
+        "name": "主标题",
         "type": "string",
         "default": "",
-        "help": "Hero区域背景视频 — 支持MP4/WebM，留空使用静态角色图。填写后角色图自动隐藏"
+        "help": "首屏主标题，留空使用站点名称"
       },
       {
-        "key": "bg_video_opacity",
-        "name": "[ VIDEO ] 视频透明度",
+        "key": "hero_subtitle",
+        "name": "副标题",
         "type": "string",
-        "default": "0.7",
-        "help": "背景视频透明度 0.0~1.0，建议0.5~0.8"
+        "default": "静默观测，信号常在。",
+        "help": "主标题下方的一行副标题"
+      },
+      {
+        "key": "hero_quote",
+        "name": "引言",
+        "type": "string",
+        "default": "",
+        "help": "副标题下方的短句，留空使用默认文案"
+      },
+      {
+        "key": "brand_sub",
+        "name": "品牌小字",
+        "type": "string",
+        "default": "NANOMUSE · OBSERVATORY",
+        "help": "顶栏站点名下方的小字"
+      },
+      {
+        "key": "default_mode",
+        "name": "默认配色",
+        "type": "select",
+        "options": "auto,light,dark",
+        "default": "light",
+        "help": "auto = 跟随系统；访客手动切换后会记住自己的选择"
+      },
+      {
+        "name": "◇ 角色 CHARACTER",
+        "type": "title"
+      },
+      {
+        "key": "brand_icon",
+        "name": "左上角品牌图标",
+        "type": "select",
+        "options": "symbol,avatar,none",
+        "default": "symbol",
+        "help": "symbol = 简约 N 字标；avatar = 纳米缪斯极简头像；none = 只显示站名。图标自动适配大小，无需调整位置。"
+      },
+      {
+        "key": "core_crew",
+        "name": "星核值班员",
+        "type": "select",
+        "options": "on,off",
+        "default": "off",
+        "help": "星核名称旁的小头像，默认关闭；打开时与值班室共用角色绑定及真实状态。保留已有管理员设置和访客选择。"
+      },
+      {
+        "key": "show_char",
+        "name": "显示角色肖像",
+        "type": "select",
+        "options": "on,off",
+        "default": "on",
+        "help": "off 时隐藏角色，保留站点介绍与历史信号曲线"
       },
       {
         "key": "char_url",
-        "name": "[ CHAR ] 角色图片链接",
+        "name": "角色图（默认）",
         "type": "string",
         "default": "",
-        "help": "Hero区域角色图（离线/默认状态） — 留空使用默认 char.png"
+        "help": "默认角色图，留空使用内置透明闭眼角色"
       },
       {
         "key": "char_awake_url",
-        "name": "[ CHAR.AWAKE ] 全在线角色图",
+        "name": "角色图（全部在线）",
         "type": "string",
         "default": "",
-        "help": "全部节点在线时的角色图 — 留空使用默认 char-awake.png"
+        "help": "全部节点在线时显示；留空优先沿用自定义默认角色，否则使用内置透明睁眼角色"
+      },
+      {
+        "key": "bg_video",
+        "name": "肖像视频",
+        "type": "string",
+        "default": "",
+        "help": "MP4 / WebM 链接，填写后代替角色图"
       },
       {
         "key": "bg_video_awake",
-        "name": "[ VIDEO.AWAKE ] 全在线背景视频",
+        "name": "肖像视频（全部在线）",
         "type": "string",
         "default": "",
-        "help": "全部节点在线时切换的背景视频 — 留空则显示睁眼角色图"
+        "help": "全部节点在线时播放，留空沿用上面的视频"
       },
       {
-        "name": "◇ ANNOUNCE // 公告系统",
+        "key": "bg_video_opacity",
+        "name": "视频透明度",
+        "type": "string",
+        "default": "1",
+        "help": "0.0 ~ 1.0"
+      },
+      {
+        "name": "◇ 信息 INFO",
         "type": "title"
       },
       {
         "key": "announce_text",
-        "name": "[ NOTICE ] 公告内容",
+        "name": "公告",
         "type": "string",
         "default": "",
-        "help": "首页公告 — 留空隐藏公告栏"
+        "help": "首屏下方公告，留空不显示"
       },
       {
-        "name": "◇ ALERT THRESHOLD // 告警阈值",
+        "key": "footer_text",
+        "name": "页脚文字",
+        "type": "string",
+        "default": "",
+        "help": "留空显示「站点名 · 系统观测中」"
+      },
+      {
+        "key": "version_tag",
+        "name": "版本标识",
+        "type": "string",
+        "default": "",
+        "help": "留空显示主题实际版本号；填自定义文字（如 PROD）则替换版本号。填版本号格式的旧值会被忽略"
+      },
+      {
+        "name": "◇ 告警阈值 ALERT",
         "type": "title"
       },
       {
         "key": "alert_cpu",
-        "name": "[ CPU ] 告警阈值 (%)",
+        "name": "CPU 告警阈值 (%)",
         "type": "string",
         "default": "80",
-        "help": "CPU 使用率超过此值时卡片高亮警告（0-100）"
+        "help": "达到阈值时资源条和文字显示告警；达到 75% 阈值时为琥珀色"
       },
       {
         "key": "alert_ram",
-        "name": "[ RAM ] 告警阈值 (%)",
+        "name": "内存告警阈值 (%)",
         "type": "string",
         "default": "80",
-        "help": "内存使用率超过此值时卡片高亮警告（0-100）"
+        "help": "同上"
       },
       {
         "key": "alert_disk",
-        "name": "[ DISK ] 告警阈值 (%)",
+        "name": "磁盘告警阈值 (%)",
         "type": "string",
         "default": "90",
-        "help": "磁盘使用率超过此值时卡片高亮警告（0-100）"
+        "help": "同上"
       },
       {
-        "name": "◇ IP DETECTION // 访客识别",
+        "name": "◇ 星图 MAP",
         "type": "title"
       },
       {
-        "key": "proxycheck_key",
-        "name": "[ PROXYCHECK ] API Key",
+        "key": "node_coords",
+        "name": "节点坐标",
         "type": "string",
         "default": "",
-        "help": "proxycheck.io API Key — 用于检测访客 VPN/代理/风险等级。免费注册：https://proxycheck.io （每日1000次免费额度）。注册后在 Dashboard 页面复制 API Key 填入此处，并在 CORS 标签页添加你的域名。留空则跳过风险检测，仅显示基础地理信息。"
+        "help": "可选，手动指定节点位置：uuid:纬度,经度;uuid:纬度,经度。未填写时按节点名称与地区旗帜自动推断"
+      },
+      {
+        "name": "◇ 背景氛围 AMBIENT",
+        "type": "title"
+      },
+      {
+        "key": "visual_effects",
+        "name": "渐变光影",
+        "type": "select",
+        "options": "on,off",
+        "default": "on",
+        "help": "启用前景渐变光影；关闭后保留静态面板与真实数据图表"
+      },
+      {
+        "key": "background_motion",
+        "name": "默认背景动效",
+        "type": "select",
+        "options": "on,off",
+        "default": "on",
+        "help": "顶栏按钮可随时暂停；访客选择会记住，系统减少动态偏好优先"
+      },
+      {
+        "name": "◇ 回声默认四线",
+        "type": "title"
+      },
+      {
+        "key": "echo_default_group",
+        "name": "回声默认目标组",
+        "type": "select",
+        "options": "auto,preset,custom",
+        "default": "auto",
+        "help": "决定回声总览和节点详情「家」网络面板显示哪一组，两组不会混在一起：preset = 只显示默认四线，custom = 只显示自定义目标，auto = 已启用默认四线时显示四线，否则显示自定义目标。访客在回声里切换后按访客自己的选择。详情页延迟图始终分成两个框。"
+      },
+      {
+        "key": "echo_preset_tasks",
+        "name": "默认四线关联（自动保存）",
+        "type": "string",
+        "default": "",
+        "help": "请在回声页点击“设置默认四线”完成配置。这里由页面自动保存；清空只解除显示关联，不删除后台任务或历史。"
+      },
+      {
+        "key": "echo_preset_targets",
+        "name": "回声四线实际目标",
+        "type": "string",
+        "default": "{}",
+        "help": "由前台管理员审阅确认后保存。保存目标不会自动修改旧拨测任务；更换请使用前台的设置默认四线流程。"
       }
     ]
   }

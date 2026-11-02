@@ -1,0 +1,31 @@
+<section class="page" id="pg-stability">
+  <div class="ph">
+    <div>
+      <span class="kicker"><i></i>PROBE MATRIX</span>
+      <h1>Link Stability</h1>
+      <div class="sub">链路稳定性 · 延迟与丢包</div>
+      <div class="meta" id="stMeta"></div>
+    </div>
+    <svg class="ph-art" viewBox="0 0 200 200" aria-hidden="true"></svg>
+  </div>
+  <div class="sec" style="margin-top: 28px">
+    <div class="sec-h">
+      <div class="sec-t">
+        <h2 class="zh">拨测矩阵</h2>
+        <span class="en">LATENCY / LOSS</span>
+      </div>
+      <div class="sec-ctl">
+        <div class="pills" id="stTasks"></div>
+        <div class="pills mono" id="stHours"></div>
+      </div>
+    </div>
+    <div class="tbl-wrap" id="stBody"></div>
+    <div class="legend">
+      <span><i style="background: linear-gradient(var(--cyan), var(--blue))"></i>稳定</span
+      ><span><i style="background: var(--amber)"></i>抖动 / 轻微丢包</span
+      ><span><i style="background: var(--coral)"></i>丢包 ≥ 5%</span
+      ><span><i style="background: var(--line)"></i>无数据</span
+      ><span style="color: var(--ink4)">柱高 = 相对延迟</span>
+    </div>
+  </div>
+</section>

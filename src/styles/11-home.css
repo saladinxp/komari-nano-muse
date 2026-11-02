@@ -1,0 +1,159 @@
+/* 居家办公 · the home scene at the top of the node detail page. The gauges
+   move into a column beside it, so exact numbers stay next to the picture. */
+.home-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(250px, 20vw, 340px);
+  gap: 16px;
+  margin-top: 20px;
+  align-items: start;
+}
+.home-row .dg {
+  grid-template-columns: minmax(0, 1fr);
+  margin-top: 0;
+  gap: 12px;
+}
+.home-row .dg > div {
+  padding: 16px 18px;
+}
+.home {
+  padding: 14px;
+  min-width: 0;
+}
+.home-h {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 2px 2px 12px;
+}
+.home-h b {
+  font: 500 17px var(--fc);
+  letter-spacing: 0.06em;
+  margin-right: 12px;
+}
+.home-h span {
+  font-size: 12px;
+  color: var(--ink3);
+}
+.home-h-r {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.home-h-r a {
+  font-size: 13px;
+  color: var(--violet);
+}
+.home-h-r a:hover {
+  color: var(--cyan);
+}
+.home-canvas-wrap {
+  position: relative;
+  border: 1px solid var(--line);
+  background: var(--paper2);
+  line-height: 0;
+}
+#homeCanvas {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.scene-tip {
+  position: absolute;
+  z-index: 2;
+  max-width: 300px;
+  padding: 8px 12px;
+  background: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--blue) 30%, var(--line));
+  box-shadow: 0 10px 24px -14px rgba(20, 40, 70, 0.4);
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--ink2);
+  pointer-events: none;
+}
+.scene-tip b {
+  display: block;
+  font: 500 13px var(--fc);
+  color: var(--ink);
+}
+.home-legend {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 24px;
+  margin-top: 12px;
+}
+.home-legend li {
+  display: grid;
+  grid-template-columns: 4.5em minmax(0, 1fr);
+  gap: 10px;
+  padding: 7px 2px;
+  border-bottom: 1px solid var(--line2);
+  font-size: 13px;
+}
+.home-legend li > span {
+  color: var(--ink3);
+}
+.home-legend b {
+  font-weight: 400;
+  color: var(--ink2);
+}
+.home-legend b small {
+  color: var(--ink4);
+}
+.home-legend b [class^='hl-'] {
+  display: inline-block;
+  margin-right: 12px;
+  white-space: nowrap;
+}
+.home-legend b [class^='hl-']::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 5px;
+  vertical-align: 1px;
+  background: currentColor;
+}
+.hl-ok {
+  color: var(--cyan);
+}
+.hl-warn {
+  color: var(--amber);
+}
+.hl-bad {
+  color: var(--coral);
+}
+.hl-off {
+  color: var(--ink4);
+}
+
+@media (max-width: 1100px) {
+  .home-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .home-row .dg {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 680px) {
+  .home-canvas-wrap {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  #homeCanvas {
+    min-width: 620px;
+  }
+  .home-legend {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 520px) {
+  .home {
+    padding: 8px;
+  }
+  .home-row .dg {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

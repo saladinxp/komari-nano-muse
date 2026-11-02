@@ -1,0 +1,48 @@
+<section class="page" id="pg-billing">
+  <div class="ph">
+    <div>
+      <span class="kicker"><i></i>LEDGER</span>
+      <h1>Ledger</h1>
+      <div class="sub">费用 · 周期 · 续期</div>
+    </div>
+    <svg class="ph-art" viewBox="0 0 200 200" aria-hidden="true"></svg>
+  </div>
+  <div class="tiles ml-tiles" id="blTiles"></div>
+  <div class="ledger-grid">
+    <section class="card ledger-panel" aria-labelledby="blCalTitle">
+      <header class="ledger-head">
+        <div>
+          <h2 id="blCalTitle">续费日历</h2>
+          <span id="blCalSub">未来 12 个月每个月要续的金额</span>
+        </div>
+        <div class="pills mono" id="blCurrency" role="group" aria-label="续费日历币种" hidden></div>
+      </header>
+      <div class="ledger-chart" id="blCalendar"></div>
+    </section>
+    <section class="card ledger-panel" aria-labelledby="blMixTitle">
+      <header class="ledger-head">
+        <div>
+          <h2 id="blMixTitle">月均构成</h2>
+          <span id="blMixSub">按分组</span>
+        </div>
+      </header>
+      <div id="blMix"></div>
+    </section>
+  </div>
+  <div class="sec ledger-sec">
+    <div class="sec-h">
+      <div class="sec-t">
+        <h2 class="zh">账单明细</h2>
+        <span class="en">BILLING</span>
+      </div>
+      <div class="sec-ctl">
+        <div class="pills" id="blSort" role="group" aria-label="账单排序">
+          <button data-s="exp" class="on">按到期</button><button data-s="cost">按月均</button
+          ><button data-s="region">按地区</button>
+        </div>
+      </div>
+    </div>
+    <p class="ledger-note" id="blNote" hidden></p>
+    <div class="tbl-wrap ledger-table" id="blBody"></div>
+  </div>
+</section>

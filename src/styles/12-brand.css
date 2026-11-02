@@ -1,0 +1,227 @@
+/* Anime title identity: typography, a ribbon N, one small signal star. */
+@font-face {
+  font-family: 'NanoMuse Title';
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+  src: url('../../public/nanomuse-title.woff') format('woff');
+  unicode-range: U+5FC3, U+65AF, U+6838, U+7C73, U+7EB3, U+7F2A;
+}
+:root {
+  --identity-ink: #312947;
+  --identity-violet: #7755bf;
+  --identity-ice: #48acc5;
+}
+[data-theme='dark'] {
+  --identity-ink: #eee5ff;
+  --identity-violet: #bea3f2;
+  --identity-ice: #7cd9e7;
+}
+.muse-emblem {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.brand {
+  gap: 8px;
+}
+.brand .brand-mark {
+  width: clamp(40px, 2.5vw, 54px);
+  height: clamp(40px, 2.5vw, 54px);
+  margin-left: -4px;
+}
+.brand-wordmark {
+  min-width: 0;
+}
+.brand-mark > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.brand .brand-mark[hidden] {
+  display: none;
+}
+.brand b {
+  font-family: 'NanoMuse Title', 'Noto Serif SC', 'Noto Serif CJK SC', 'Songti SC', serif;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  line-height: 1.35;
+  color: var(--identity-ink);
+  transform: skewX(-7deg);
+  transform-origin: left bottom;
+  padding-right: 6px;
+}
+.brand small {
+  margin-top: 4px;
+  font: clamp(7px, 0.42vw, 10px) var(--fd);
+  letter-spacing: 0.18em;
+  color: var(--identity-violet);
+}
+.observatory {
+  position: relative;
+  isolation: isolate;
+}
+.surface-aurora {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+}
+/* The atmosphere comes from a small color field, not moving geometry. */
+.signal-scene {
+  display: none;
+}
+.top::after {
+  animation: none;
+}
+.brand b.system-title,
+.hero .hero-copy h1.cjk.system-title {
+  font-family: 'Noto Serif SC', 'Noto Serif CJK SC', 'Songti SC', 'SimSun', serif;
+}
+.hero-copy {
+  isolation: isolate;
+}
+.hero-signature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+  color: var(--identity-violet);
+  font: 10px var(--fd);
+  letter-spacing: 0.25em;
+}
+.signature-star {
+  width: 4px;
+  height: 4px;
+  background: var(--identity-ice);
+  transform: rotate(45deg);
+}
+.hero-title-lockup {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 0.7vw, 18px);
+  margin-top: clamp(20px, 2vw, 44px);
+  margin-left: -6px;
+}
+.hero-crest {
+  flex: none;
+  width: clamp(54px, 4.2vw, 96px);
+  height: clamp(54px, 4.2vw, 96px);
+}
+.hero .hero-copy h1 {
+  margin: 0;
+  padding: 0 8px 6px 0;
+  font-weight: 400;
+  line-height: 1.18;
+  letter-spacing: -0.06em;
+  color: var(--identity-ink);
+  transform: skewX(-7deg);
+  transform-origin: left bottom;
+  font-size: clamp(42px, 3.4vw, 82px);
+}
+.hero .hero-copy h1.cjk {
+  font-family: 'NanoMuse Title', 'Noto Serif SC', 'Noto Serif CJK SC', 'Songti SC', serif;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  font-size: clamp(37px, 2.9vw, 72px);
+}
+.hero .hero-copy h1 em {
+  font-weight: 300;
+  background: none;
+  color: var(--identity-violet);
+}
+.hero-logotype-sub {
+  margin-top: 12px;
+  padding-left: 3px;
+  font: 9px var(--fd);
+  letter-spacing: 0.42em;
+  color: var(--identity-violet);
+}
+.hero-copy .hero-sub {
+  margin-top: 27px;
+  color: var(--identity-ink);
+  letter-spacing: 0.12em;
+}
+.hero-copy .hero-quote {
+  max-width: 28em;
+}
+.hero-actions button {
+  background: linear-gradient(115deg, #805dc4, #6576c6 70%, #4c9fba);
+  box-shadow:
+    inset 0 1px #ffffff50,
+    0 4px 14px #7354c522;
+  border: 1px solid #8c7be633;
+}
+@media (max-width: 1279px) {
+  .hero-title-lockup {
+    gap: 6px;
+  }
+  .hero-crest {
+    width: 60px;
+    height: 60px;
+  }
+  .hero .hero-copy h1.cjk {
+    font-size: clamp(34px, 3.8vw, 50px);
+  }
+  .hero .hero-copy h1:not(.cjk) {
+    font-size: clamp(34px, 4.3vw, 56px);
+  }
+}
+@media (max-width: 680px) {
+  .brand .brand-mark {
+    width: 36px;
+    height: 36px;
+  }
+  .brand b {
+    font-size: 15px;
+    letter-spacing: 0.09em;
+    max-width: 140px;
+  }
+  .brand small {
+    font-size: 6px;
+    letter-spacing: 0.1em;
+  }
+  .hero-signature {
+    margin-top: 6px;
+    font-size: 8px;
+    letter-spacing: 0.2em;
+  }
+  .hero-title-lockup {
+    margin-top: 22px;
+    gap: 7px;
+  }
+  .hero-crest {
+    width: 48px;
+    height: 48px;
+  }
+  .hero .hero-copy h1.cjk {
+    font-size: clamp(29px, 8vw, 42px);
+    letter-spacing: 0.04em;
+  }
+  .hero .hero-copy h1:not(.cjk) {
+    font-size: clamp(32px, 9vw, 44px);
+  }
+  .hero-logotype-sub {
+    margin-top: 8px;
+    font-size: 7px;
+    letter-spacing: 0.32em;
+  }
+  .hero-copy .hero-sub {
+    margin-top: 22px;
+    letter-spacing: 0.06em;
+  }
+}
+@media (forced-colors: active) {
+  .hero .hero-copy h1 {
+    color: CanvasText;
+  }
+}
+
+@media (min-width: 1280px) {
+  .hero-copy .hero-actions {
+    margin-bottom: 12px;
+  }
+}

@@ -1,0 +1,137 @@
+.echo-tools {
+  margin: 0 0 22px;
+}
+.echo-tools[hidden],
+.echo-verify[hidden],
+#echoPresetAdmin[hidden],
+#echoCustomPicker[hidden] {
+  display: none;
+}
+.echo-tool-row {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.echo-tools details {
+  border: 1px solid var(--line);
+  padding: 10px 13px;
+  background: color-mix(in srgb, var(--blue) 3%, transparent);
+  font: 12px var(--fc);
+  color: var(--ink2);
+}
+.echo-tools summary {
+  cursor: pointer;
+}
+#echoTargetOptions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px 18px;
+  padding: 15px 0;
+  max-height: 250px;
+  overflow: auto;
+}
+#echoTargetOptions label {
+  display: flex;
+  gap: 7px;
+  align-items: baseline;
+  overflow-wrap: anywhere;
+}
+#echoTargetOptions input {
+  accent-color: var(--blue);
+}
+.echo-tools button:not(.pills button) {
+  padding: 7px 12px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--blue);
+  font: 11px var(--fc);
+  cursor: pointer;
+}
+.echo-tools button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+#echoPresetAdmin {
+  margin-top: 12px;
+}
+#echoPresetAdmin a {
+  display: inline-block;
+  margin: 12px;
+  color: var(--blue);
+  font-size: 11px;
+}
+#echoPresetList {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 15px 0;
+  list-style: none;
+}
+#echoPresetList li {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+#echoPresetList code {
+  font: 11px var(--fm);
+  color: var(--ink3);
+  overflow-wrap: anywhere;
+}
+.echo-preset-empty strong {
+  color: var(--ink3);
+}
+.echo-preset-empty .echo-target-meta {
+  margin-top: 12px;
+}
+.echo-identity .node-usage {
+  margin: 16px 0;
+  padding-top: 14px;
+}
+@media (max-width: 680px) {
+  #echoPresetList,
+  #echoTargetOptions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .echo-identity .node-usage {
+    margin: 10px 0;
+  }
+}
+
+#echoPresetList input {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  font: 11px var(--fm);
+  padding: 8px;
+}
+#echoPresetList small {
+  font: 10px/1.6 var(--fc);
+  color: var(--amber);
+}
+.echo-verify {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0;
+  font: 11px/1.7 var(--fc);
+  align-items: baseline;
+}
+#echoPresetReview table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font: 11px/1.7 var(--fc);
+  table-layout: fixed;
+}
+#echoPresetReview td,
+#echoPresetReview th {
+  padding: 9px;
+  border: 1px solid var(--line);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+#echoEnablePresets[hidden] {
+  display: none;
+}

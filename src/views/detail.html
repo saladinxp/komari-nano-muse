@@ -1,0 +1,39 @@
+<section class="page" id="pg-detail">
+  <div class="ph">
+    <div>
+      <a class="back" href="/" data-nav>返回总览</a>
+      <h1 id="detName">--</h1>
+      <div class="sub" id="detSub"></div>
+      <div class="meta" id="detMeta"></div>
+    </div>
+    <svg class="ph-art" viewBox="0 0 200 200" aria-hidden="true"></svg>
+  </div>
+  <section class="card traffic-panel" id="detTraffic" aria-label="流量与配额"></section>
+  <div class="home-row">
+    <div class="home card">
+      <div class="home-h" id="homeHead"></div>
+      <div class="home-canvas-wrap">
+        <canvas id="homeCanvas" role="img" aria-label="节点的家"></canvas>
+        <div class="scene-tip" id="homeTip" hidden></div>
+      </div>
+      <ul class="home-legend" id="homeLegend"></ul>
+    </div>
+    <div class="dg" id="detGauges"></div>
+  </div>
+  <div class="spec card" id="detSpec"></div>
+  <div class="sec">
+    <div class="sec-h">
+      <div class="sec-t">
+        <h2 id="detChartT">History</h2>
+        <span class="en" id="detChartE">负载曲线</span>
+      </div>
+      <div class="sec-ctl">
+        <div class="pills" id="detTabs">
+          <button data-t="load" class="on">负载</button><button data-t="ping">延迟</button>
+        </div>
+        <div class="pills mono" id="detHours"></div>
+      </div>
+    </div>
+    <div class="charts" id="detCharts"></div>
+  </div>
+</section>
