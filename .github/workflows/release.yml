@@ -1,14 +1,19 @@
 # Build the theme package and publish a GitHub Release.
-# Run it from the Actions tab (Run workflow) with the version in komari-theme.json, e.g. 2.1.0.
-# Release notes come from .github/release-notes/v<version>.md.
+# Runs when main gets new release notes (.github/release-notes/v<version>.md, version from
+# komari-theme.json) and skips a version that is already released; or from the Actions tab.
 name: Release
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/release-notes/**'
+      - '.github/workflows/release.yml'
   workflow_dispatch:
     inputs:
       version:
         description: 'Version to release (must match komari-theme.json), e.g. 2.1.0'
-        required: true
+        required: false
 
 permissions:
   contents: write
@@ -17,7 +22,6 @@ jobs:
   release:
     runs-on: ubuntu-latest
     env:
-      VERSION: ${{ inputs.version }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
@@ -27,13 +31,22 @@ jobs:
           node-version: 22
 
       - name: Check version
+        id: check
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          test "$(node -p "require('./komari-theme.json').version")" = "$VERSION"
+          VERSION="$(node -p "require('./komari-theme.json').version")"
+          test -z "$INPUT_VERSION" || test "$INPUT_VERSION" = "$VERSION"
           test "$(node -p "require('./package.json').version")" = "$VERSION"
           test -f ".github/release-notes/v$VERSION.md"
-          if gh release view "v$VERSION" >/dev/null 2>&1; then echo "v$VERSION already released"; exit 1; fi
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            echo "v$VERSION is already released, nothing to do"
+            echo "skip=1" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Build and package
+        if: steps.check.outputs.skip != '1'
         run: |
           npm ci
           npm run package
@@ -43,6 +56,7 @@ jobs:
           cp preview/NanoMuse-preview.html "NanoMuse-$VERSION-preview.html"
 
       - name: Publish release
+        if: steps.check.outputs.skip != '1'
         run: |
           gh release create "v$VERSION" \
             --target "$GITHUB_SHA" \
