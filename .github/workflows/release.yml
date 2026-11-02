@@ -1,6 +1,9 @@
 # Build the theme package and publish a GitHub Release.
 # Runs when main gets new release notes (.github/release-notes/v<version>.md, version from
 # komari-theme.json) and skips a version that is already released; or from the Actions tab.
+# Komari's "更新主题" downloads assets[0] of the latest release, so the theme zip must be the
+# first asset: it is uploaded on its own first, and the offline preview comes after it both by
+# upload order and by name (preview-NanoMuse-<version>.html).
 name: Release
 
 on:
@@ -41,8 +44,14 @@ jobs:
           test -f ".github/release-notes/v$VERSION.md"
           echo "VERSION=$VERSION" >> "$GITHUB_ENV"
           if gh release view "v$VERSION" >/dev/null 2>&1; then
-            echo "v$VERSION is already released, nothing to do"
             echo "skip=1" >> "$GITHUB_OUTPUT"
+            FIRST="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/v$VERSION" --jq '.assets[0].name')"
+            if [ "$FIRST" = "nanomuse-$VERSION.zip" ]; then
+              echo "v$VERSION is already released, nothing to do"
+            else
+              echo "v$VERSION is released but its first asset is $FIRST: reorder"
+              echo "reorder=1" >> "$GITHUB_OUTPUT"
+            fi
           fi
 
       - name: Build and package
@@ -53,7 +62,7 @@ jobs:
           # the committed dist/ must be exactly what the source builds
           git diff --exit-code -- dist/index.html
           sha256sum dist/index.html "release/nanomuse-$VERSION.zip"
-          cp preview/NanoMuse-preview.html "NanoMuse-$VERSION-preview.html"
+          cp preview/NanoMuse-preview.html "preview-NanoMuse-$VERSION.html"
 
       - name: Publish release
         if: steps.check.outputs.skip != '1'
@@ -62,5 +71,22 @@ jobs:
             --target "$GITHUB_SHA" \
             --title "纳米缪斯 $VERSION" \
             --notes-file ".github/release-notes/v$VERSION.md" \
-            "release/nanomuse-$VERSION.zip" \
-            "NanoMuse-$VERSION-preview.html"
+            "release/nanomuse-$VERSION.zip"
+          gh release upload "v$VERSION" "preview-NanoMuse-$VERSION.html"
+
+      - name: Put the theme zip first
+        if: steps.check.outputs.reorder == '1'
+        run: |
+          OLD="NanoMuse-$VERSION-preview.html"
+          NEW="preview-NanoMuse-$VERSION.html"
+          gh release download "v$VERSION" --pattern "$OLD" --dir reorder
+          mv "reorder/$OLD" "reorder/$NEW"
+          gh release delete-asset "v$VERSION" "$OLD" --yes
+          gh release upload "v$VERSION" "reorder/$NEW"
+          gh release edit "v$VERSION" --notes-file ".github/release-notes/v$VERSION.md"
+
+      - name: Check the first asset is the theme zip
+        run: |
+          FIRST="$(gh api "repos/$GITHUB_REPOSITORY/releases/tags/v$VERSION" --jq '.assets[0].name')"
+          echo "first asset: $FIRST"
+          test "$FIRST" = "nanomuse-$VERSION.zip"
