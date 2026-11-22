@@ -3,7 +3,7 @@
     <div>
       <span class="kicker"><i></i>TRAFFIC</span>
       <h1>Traffic</h1>
-      <div class="sub">流量 · 配额 · 吞吐趋势</div>
+      <div class="sub">流量 · 配额 · 吞吐趋势 · 24 小时排行</div>
     </div>
     <svg class="ph-art" viewBox="0 0 200 200" aria-hidden="true"></svg>
   </div>
@@ -20,6 +20,27 @@
     <p class="traffic-history-meta" id="trafficHistoryMeta">进入页面后读取历史</p>
     <div class="cv" id="trafficChart"></div>
   </div>
+  <section class="card traffic-panel traffic-day" aria-labelledby="dayTitle">
+    <div class="traffic-heading">
+      <h2 id="dayTitle">最近 24 小时</h2>
+      <span class="day-sum num" id="daySum"></span>
+    </div>
+    <p class="traffic-history-meta" id="dayNote">进入页面后读取</p>
+    <div class="day-grid">
+      <div class="day-col day-usage">
+        <h3>流量消耗<em>TOP 5</em></h3>
+        <ol class="day-list" id="dayUsage"></ol>
+      </div>
+      <div class="day-col">
+        <h3>平均 CPU<em>24H AVG</em></h3>
+        <ol class="day-list" id="dayCpu"></ol>
+      </div>
+      <div class="day-col">
+        <h3>平均内存<em>24H AVG</em></h3>
+        <ol class="day-list" id="dayMem"></ol>
+      </div>
+    </div>
+  </section>
   <div class="traffic-toolbar">
     <input class="search" id="trafficSearch" placeholder="搜索节点" aria-label="搜索流量节点" /><select
       id="trafficGroup"
@@ -27,6 +48,7 @@
     ></select
     ><select id="trafficSort" aria-label="流量排序">
       <option value="usage">配额用量优先</option>
+      <option value="day">24 小时用量优先</option>
       <option value="total">累计流量优先</option>
       <option value="live">实时吞吐优先</option>
     </select>

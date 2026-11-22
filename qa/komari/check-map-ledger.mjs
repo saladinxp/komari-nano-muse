@@ -9,7 +9,7 @@ const { chromium } = createRequire(import.meta.url)('playwright')
 const [base, state] = process.argv.slice(2)
 assert.match(base, /^http:\/\/127\.0\.0\.1:\d+$/)
 const clients = JSON.parse(readFileSync(state + '/clients.json', 'utf8'))
-const TARGETS = ['124.237.177.164', '110.242.74.102', '111.63.65.247', '8.8.8.8']
+const TARGETS = ['124.237.177.164', '106.11.253.83', '111.63.65.247', '8.8.8.8']
 const browser = await chromium.launch(),
   errors = [],
   failed = []

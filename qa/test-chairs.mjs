@@ -60,9 +60,12 @@ try {
         assert.match(sprite.art, /^chair-worker-/)
         checks++
       }
+  // 2.1.1: the home desk uses the stool-free chair poses on the home-comfort chair
+  // (geometry checked in qa/test-home-chair.mjs); the stool atlas is no longer drawn.
   const home = readFileSync('src/pages/home/scene.ts', 'utf8')
-  assert.match(home, /DESK_CAST/)
-  assert.doesNotMatch(home, /DUTY_CAST|drawChair/, 'home retains the original stool sprites')
+  assert.match(home, /DUTY_CAST/)
+  assert.match(home, /homeDeskSeat/)
+  assert.doesNotMatch(home, /STOOL|drawSheet/, 'home no longer draws the stool sprites')
   assert.match(
     readFileSync('src/pages/duty/scene.ts', 'utf8'),
     /w\.seated \? 0\.1 : -0\.1/,
@@ -83,7 +86,7 @@ try {
   console.log(
     'Chairs:',
     checks,
-    'character/desk placements: ground contacts, cushion joins, head clearance, footrests, depth ordering and unchanged home assets passed.',
+    'character/desk placements: ground contacts, cushion joins, head clearance, footrests, depth ordering and the home on its own chair passed.',
   )
 } finally {
   await server.close()

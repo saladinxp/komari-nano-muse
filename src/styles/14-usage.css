@@ -166,3 +166,190 @@
     font-size: 11px;
   }
 }
+
+/* ── last 24 hours: usage Top 5, average CPU and memory (2.1.1) ── */
+.day-sum {
+  font: 500 14px var(--fm);
+  color: var(--ink);
+  white-space: pre;
+}
+.day-sum small {
+  font: 11px var(--fc);
+  color: var(--ink3);
+  margin-right: 10px;
+}
+.day-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr) minmax(0, 1fr);
+  gap: 0;
+  margin-top: 6px;
+}
+.day-col {
+  min-width: 0;
+  padding: 4px 26px 0;
+  border-left: 1px solid var(--line2);
+}
+.day-col:first-child {
+  padding-left: 0;
+  border-left: 0;
+}
+.day-col:last-child {
+  padding-right: 0;
+}
+.day-col h3 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  font: 500 13px var(--fc);
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.day-col h3 em {
+  font: normal 9.5px var(--fm);
+  letter-spacing: 0.12em;
+  color: var(--ink4);
+}
+.day-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.day-list > li {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  gap: 10px;
+  padding: 12px 0;
+  border-top: 1px solid var(--line2);
+}
+.day-list > li:first-child {
+  border-top: 0;
+}
+.day-list > li.day-wait {
+  display: block;
+  padding: 18px 0;
+  font: 12px var(--fc);
+  color: var(--ink3);
+}
+.day-rank {
+  font: 11px/20px var(--fm);
+  color: var(--ink4);
+}
+.day-list > li:first-child .day-rank {
+  color: var(--blue);
+}
+.day-row {
+  min-width: 0;
+}
+.day-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+.day-line a {
+  font: 14px var(--fc);
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.day-line a:hover {
+  color: var(--blue);
+}
+.day-line b {
+  flex-shrink: 0;
+  font: 500 12.5px var(--fm);
+  color: var(--ink);
+}
+.day-line b em {
+  font-style: normal;
+  margin-left: 10px;
+  color: var(--ink2);
+}
+.day-line b i {
+  font-style: normal;
+}
+.day-line b i.up {
+  color: var(--blue);
+}
+.day-line b i.down {
+  color: var(--cyan);
+}
+.day-line b small {
+  font-size: 10px;
+  color: var(--ink3);
+  margin-left: 1px;
+}
+.day-row > small {
+  display: block;
+  margin-top: 6px;
+  font: 10.5px var(--fm);
+  color: var(--ink3);
+}
+/* Bars: straight, thin. Usage splits upload (blue) and download (cyan) within the node's
+   share of the top node; load uses the alert colours past 75 % / 100 % of the threshold. */
+.day-bar {
+  position: relative;
+  display: block;
+  height: 4px;
+  margin-top: 8px;
+  min-width: 2px;
+  background: var(--cyan);
+  transition: width 0.6s ease;
+}
+.day-bar.split > i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--blue);
+}
+.day-bar.w {
+  background: var(--amber);
+}
+.day-bar.h {
+  background: var(--coral);
+}
+.day-col:not(.day-usage) .day-bar:not(.w):not(.h) {
+  background: linear-gradient(90deg, var(--blue), var(--cyan));
+}
+.day-pair {
+  margin-top: 8px;
+  color: var(--ink3);
+}
+@media (max-width: 1100px) {
+  .day-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .day-usage {
+    grid-column: 1 / -1;
+    padding: 0 0 14px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--line2);
+  }
+  .day-usage + .day-col {
+    padding-left: 0;
+    border-left: 0;
+  }
+}
+@media (max-width: 680px) {
+  .day-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .day-col,
+  .day-usage + .day-col {
+    grid-column: auto;
+    padding: 0 0 14px;
+    margin-bottom: 10px;
+    border-left: 0;
+    border-bottom: 1px solid var(--line2);
+  }
+  .day-col:last-child {
+    border-bottom: 0;
+    margin-bottom: 0;
+  }
+  .day-line b em {
+    display: block;
+    margin: 2px 0 0;
+    text-align: right;
+  }
+}

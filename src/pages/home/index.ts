@@ -18,6 +18,7 @@ import { metrics } from '../../utils/metrics'
 import {
   activity,
   expiry,
+  darkScheme,
   isNight,
   type Lamp,
   lampTone,
@@ -262,7 +263,7 @@ function facts(): Record<string, [string, string]> {
         : `流量已用 ${snack.used.toFixed(0)}% · ${SNACK_LABEL[snack.frame]}`,
     ],
     calendar: ['挂历', e.date ? e.label + (e.urgent && e.days >= 0 ? ' · 房租快到期' : '') : '没有到期日'],
-    window: ['窗外', (isNight() ? '夜晚' : '白天') + '，按你的本地时间'],
+    window: ['窗外', darkScheme() ? '夜晚，深色配色' : (isNight() ? '夜晚' : '白天') + '，按你的本地时间'],
     ...(guest
       ? { guest: ['串门', `${esc(guest.name)} 的${esc(characterOf(guest.uuid).name)}也闲着，来一起打游戏`] }
       : {}),

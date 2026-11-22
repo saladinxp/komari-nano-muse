@@ -114,7 +114,7 @@ try {
   await a.click('[data-v="list"]')
   await a.click('#echoPresetAdmin summary')
   assert.equal(await a.inputValue('#echoTarget-telecom'), '124.237.177.164')
-  assert.equal(await a.inputValue('#echoTarget-unicom'), '110.242.74.102')
+  assert.equal(await a.inputValue('#echoTarget-unicom'), '106.11.253.83')
   assert.equal(await a.locator('#echoPresetVerification').isVisible(), false)
   await a.click('#echoReviewPresets')
   await a.waitForSelector('#echoPresetReview table')

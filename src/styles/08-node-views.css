@@ -164,6 +164,22 @@
   color: var(--ink3);
   flex-shrink: 0;
 }
+/* Komari colour tags ("10Gbps<green>"): the colour as text on a soft tint of itself.
+   Star Core cards and the node detail head (after the OS / CPU chips). */
+.ph .meta span.det-tag {
+  color: var(--ink2);
+}
+.core-tags span.tag-c,
+.ph .meta span.tag-c {
+  --tag: var(--tag-light);
+  color: var(--tag);
+  background: color-mix(in srgb, var(--tag) 10%, transparent);
+  border-color: color-mix(in srgb, var(--tag) 32%, transparent);
+}
+:root[data-theme='dark'] .core-tags span.tag-c,
+:root[data-theme='dark'] .ph .meta span.tag-c {
+  --tag: var(--tag-dark);
+}
 .nodes-large .nc-b {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

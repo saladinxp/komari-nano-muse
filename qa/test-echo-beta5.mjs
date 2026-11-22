@@ -19,7 +19,7 @@ const plain = v => JSON.parse(JSON.stringify(v))
 const targets = plain(c.configuredPresets())
 assert.deepEqual(
   targets.map(t => t.target),
-  ['124.237.177.164', '110.242.74.102', '111.63.65.247', '8.8.8.8'],
+  ['124.237.177.164', '106.11.253.83', '111.63.65.247', '8.8.8.8'],
 )
 assert.equal(c.requiresPresetVerification(targets), false, 'built-in user-selected targets need no checkbox')
 const oldTargets = ['219.141.136.10', '202.106.0.20', '221.179.155.161', '8.8.8.8']

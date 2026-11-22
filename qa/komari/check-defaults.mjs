@@ -134,7 +134,7 @@ try {
   await p.click('[data-v="list"]')
   await p.click('#echoPresetAdmin summary')
   assert.equal(await p.inputValue('#echoTarget-telecom'), '124.237.177.164')
-  assert.equal(await p.inputValue('#echoTarget-unicom'), '110.242.74.102')
+  assert.equal(await p.inputValue('#echoTarget-unicom'), '106.11.253.83')
   assert.equal(await p.inputValue('#echoTarget-mobile'), '111.63.65.247')
   assert.equal(await p.locator('#echoPresetVerification').isVisible(), false)
   await p.click('#echoReviewPresets')
@@ -171,7 +171,7 @@ try {
   }
   assert.deepEqual(
     Object.fromEntries(Object.entries(ids).map(([k, id]) => [k, after.find(t => t.id === id).target])),
-    { telecom: '124.237.177.164', unicom: '110.242.74.102', mobile: '111.63.65.247', google: '8.8.8.8' },
+    { telecom: '124.237.177.164', unicom: '106.11.253.83', mobile: '111.63.65.247', google: '8.8.8.8' },
   )
   assert.equal((await pub()).theme_settings.qa_preserve, 'existing setting')
   for (const t of before)

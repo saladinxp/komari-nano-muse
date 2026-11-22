@@ -2,6 +2,7 @@ import { needsAttention } from '../hero/console'
 import { nav } from '../router'
 import { echoCard, loadEcho, syncEchoGroup, updateEchoCaption, updateEchoLive, syncEchoTrends } from './echo'
 import { S, thr, visible } from '../state'
+import { parseTags, tagStyle } from '../utils/tags'
 import {
   $,
   daysLeft,
@@ -78,9 +79,15 @@ function filtered() {
           (S.lastSync && (S.status === 'online' ? S.online.has(n.uuid) : !S.online.has(n.uuid)))) &&
         (S.group === 'ALL' || n.group === S.group) &&
         (!q ||
-          [n.name, n.region, regionCode(n.region), n.os, n.tags].some(s =>
-            (s || '').toLowerCase().includes(q),
-          )),
+          [
+            n.name,
+            n.region,
+            regionCode(n.region),
+            n.os,
+            parseTags(n.tags)
+              .map(t => t.text)
+              .join(' '),
+          ].some(s => (s || '').toLowerCase().includes(q))),
     ),
   )
 }
@@ -220,11 +227,8 @@ function coreCard(n: KomariNode): string {
   ]
     .filter(Boolean)
     .join(' · ')
-  const tags = (n.tags || '')
-    .split(/[;,，；]/)
-    .map(s => s.trim())
-    .filter(Boolean)
-  return `${header(n)}<div class="nc-os" title="${esc(spec)}">${esc(spec) || '规格未提供'}</div>${tags.length ? '<div class="core-tags" title="' + esc(tags.join(' · ')) + '">' + tags.map(t => '<span>' + esc(t) + '</span>').join('') + '</div>' : ''}<div class="nc-b" data-resources></div><div data-core-facts></div><div class="core-network"><div class="nc-net" data-network></div><div class="net-history" data-net-history></div></div><div class="core-transfer" data-core-transfer></div><div class="core-quota" data-core-quota title="按节点累计计数对照配额，不等于本月账单"></div><div class="core-probes" data-core-pings></div><div class="nc-foot" data-node-state></div><div class="core-meta"><span>${expiry(n)}${validDate(n.expired_at) && price(n) ? ' · ' : ''}${esc(price(n))}</span><span data-node-age></span></div>`
+  const tags = parseTags(n.tags)
+  return `${header(n)}<div class="nc-os" title="${esc(spec)}">${esc(spec) || '规格未提供'}</div>${tags.length ? '<div class="core-tags" title="' + esc(tags.map(t => t.text).join(' · ')) + '">' + tags.map(t => (t.color ? `<span class="tag-c" style="${tagStyle(t)}">` : '<span>') + esc(t.text) + '</span>').join('') + '</div>' : ''}<div class="nc-b" data-resources></div><div data-core-facts></div><div class="core-network"><div class="nc-net" data-network></div><div class="net-history" data-net-history></div></div><div class="core-transfer" data-core-transfer></div><div class="core-quota" data-core-quota title="按节点累计计数对照配额，不等于本月账单"></div><div class="core-probes" data-core-pings></div><div class="nc-foot" data-node-state></div><div class="core-meta"><span>${expiry(n)}${validDate(n.expired_at) && price(n) ? ' · ' : ''}${esc(price(n))}</span><span data-node-age></span></div>`
 }
 function card(n: KomariNode, i: number): string {
   if (S.view === 'list') return echoCard(n, i)

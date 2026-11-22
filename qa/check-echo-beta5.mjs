@@ -138,7 +138,7 @@ try {
   await p.evaluate(() => {
     NM.ts.echo_preset_targets = JSON.stringify({
       telecom: '124.237.177.164',
-      unicom: '110.242.74.102',
+      unicom: '106.11.253.83',
       mobile: '111.63.65.247',
       google: '8.8.8.8',
     })

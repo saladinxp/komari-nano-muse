@@ -1,6 +1,10 @@
 /* Desk work art (ChatGPT art/desk-v2, manifest.json): the eight workers seated
-   on a stool with their back to the viewer, plus the empty stool and Nanomuse's
-   walk cycle. Back views are only for work at the desk; resting stays front-facing
+   on a stool with their back to the viewer, plus Nanomuse's walk cycle.
+
+   Since 2.1.1-beta.4 the stool atlases (desk-*.webp, desk-stool.webp) are no longer
+   shipped: the home desk uses the stool-free chair poses (cast/chair.ts, pages/home/
+   chair.ts). DESK_CAST stays as the size reference for a seated worker (`ratio`,
+   `head`, the typing frame) and the pose order; only MUSE_WALK is drawn from here. Back views are only for work at the desk; resting stays front-facing
    (docs/idle-behavior-update-v2.md).
 
    Frames are content rectangles in source PNG pixels on an equal grid; every
@@ -93,17 +97,6 @@ export const DESK_CAST: Record<string, DeskSheet> = {
     [1105, 1047, 298, 488],
   ]),
 }
-
-/** Empty stool left at a desk while its worker is away. */
-export const STOOL: SheetData = {
-  art: 'desk-stool',
-  scale: 0.6,
-  cell: 384,
-  foot: 256,
-  frames: [[127, 136, 131, 120]],
-}
-/** Height of the stool relative to a seated typing frame (120 px stool in ~470 px frames). */
-export const STOOL_SHARE = 120 / 470
 
 /** Nanomuse walking (front view), two frames with alternating legs; same cell and anchor as her standing frame. */
 export const MUSE_WALK: SheetData = {

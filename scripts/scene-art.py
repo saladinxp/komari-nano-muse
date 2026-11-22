@@ -10,10 +10,18 @@ Two sources:
                 git archive origin/codex/home-art-v1 art/home-v1 | tar -x -C /tmp/nm-art
                 python3 scripts/scene-art.py --home /tmp/nm-art/art/home-v1/art
 
-  desk poses  ChatGPT's desk-v2 PNG masters (branch codex/desk-art-v2):
+  desk poses  ChatGPT's desk-v2 PNG masters (branch codex/desk-art-v2); only
+              Nanomuse's walk cycle is still shipped (the stool poses were
+              dropped in 2.1.1-beta.4):
 
                 git archive origin/codex/desk-art-v2 art/desk-v2 | tar -x -C /tmp/nm-art
                 python3 scripts/scene-art.py --desk /tmp/nm-art/art/desk-v2/art
+
+  home chair  ChatGPT's home-comfort-v1 day / night chair masters (branch
+              codex/home-comfort-v1); --home-chair builds only these two:
+
+                git archive origin/codex/home-comfort-v1 art/home-comfort-v1 | tar -x -C /tmp/nm-art
+                python3 scripts/scene-art.py --home-chair /tmp/nm-art/art/home-comfort-v1
 
               Without --home / --desk only the duty-room files are rebuilt.
 
@@ -26,7 +34,8 @@ factors below must match:
   duty atlases  ATLASES in src/cast/roster.ts
   home atlases  HOME_ATLASES in src/pages/home/atlas.ts
   home crop     VIEW in src/pages/home/layout.ts
-  desk atlases  DESK_CAST, STOOL, MUSE_WALK in src/cast/desk.ts
+  muse walk     MUSE_WALK in src/cast/desk.ts
+  home chair    HOME_CHAIR in src/pages/home/chair.ts
 
 Usage:  python3 scripts/scene-art.py [--home DIR] [--desk DIR]
 """
@@ -82,12 +91,7 @@ HOME_ATLASES = {
 
 # ── desk poses (seated, back to the viewer) ──
 DESK_ATLASES = {
-    **{
-        f'desk-{k}': (f'character-{k}-desk-v1.png', 0.6)
-        for k in ('blue', 'orange', 'mint', 'aoi', 'chestnut', 'yuzu', 'seina', 'wheat')
-    },
     'muse-walk': ('nanomuse-walk-v2.png', 0.55),
-    'desk-stool': ('props-desk-stool-v1.png', 0.6),
 }
 
 
@@ -125,6 +129,16 @@ def home(src: Path) -> None:
         save(table, f'home-table-{t}', 90)
     for name, (file, scale) in HOME_ATLASES.items():
         save(scaled(Image.open(src / file).convert('RGBA'), scale), name, 82)
+
+
+HOME_CHAIR_SCALE = 0.4
+
+
+def home_chair(src: Path) -> None:
+    for t in ('day', 'night'):
+        img = Image.open(src / f'chair-{t}.png').convert('RGBA')
+        assert img.size == (1254, 1254), img.size
+        save(scaled(img, HOME_CHAIR_SCALE), f'home-chair-{t}', 84)
 
 
 def desk(src: Path) -> None:
@@ -232,9 +246,10 @@ def main() -> None:
     ap.add_argument('--desk', type=Path, help='directory with the desk-v2 PNG masters')
     ap.add_argument('--chair', type=Path, help='directory with chair-v1 PNG masters')
     ap.add_argument('--only-chair', action='store_true', help='build only the chair-v1 assets')
+    ap.add_argument('--home-chair', type=Path, help='directory with the home-comfort-v1 chair masters (builds only these)')
     args = ap.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
-    if not args.only_chair:
+    if not args.only_chair and not args.home_chair:
         duty()
     if args.home:
         home(args.home)
@@ -242,6 +257,8 @@ def main() -> None:
         desk(args.desk)
     if args.chair:
         chair(args.chair)
+    if args.home_chair:
+        home_chair(args.home_chair)
     total = sum(p.stat().st_size for p in OUT.glob('*.webp'))
     print(f'total {total / 1024:.0f} KB')
 

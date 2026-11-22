@@ -1,7 +1,9 @@
 /* Star Map 「回声星图」: totals, an auto-zoomed land map with one arc per node to the
    Echo default domestic targets (coloured by the same last-hour rules as the Echo
    trend), and region cards. Static SVG, drawn on open, on node status changes, on
-   new Echo data and on resize. Echo data is the overview's shared 60 s batch. */
+   new Echo data and on resize. Echo data is the overview's shared 60 s batch.
+   2.1.1: the visitor can zoom (buttons, Ctrl / pinch wheel, double click, two fingers)
+   and drag the map; the zoom is kept across redraws until 复位. */
 import { DOMESTIC_PRESET_KEYS, ECHO_SITES, type EchoSite } from '../data/echo-sites'
 import { WMAP_LAND } from '../data/geo'
 import { regionName } from '../data/places'
@@ -22,10 +24,15 @@ import {
   locate,
   median,
   nodeLink,
+  panBy,
   project,
   toScreen,
   worstLink,
+  zoomAt,
+  zoomedView,
+  zoomRange,
   type LinkQuality,
+  type MapZoom,
   type Point,
   type Rect,
 } from './map/model'
@@ -56,6 +63,9 @@ interface MapModel {
 }
 let model: MapModel | null = null
 let drawnWidth = 0
+/* Visitor zoom (null = auto) and the auto view of the last drawing, for the handlers. */
+let zoom: MapZoom | null = null
+let autoView: Rect | null = null
 
 const QUALITY_TEXT: Record<LinkQuality, string> = {
   stable: '稳定',
@@ -164,23 +174,48 @@ function measure(text: string, font = LABEL_FONT): number {
   ctx.font = font
   return Math.ceil(ctx.measureText(text).width) + 2
 }
+/* The stage keeps its zoom buttons and hint; only the map inside is redrawn, so a
+   focused button stays focused while it is pressed again. */
+const ZOOM_UI =
+  '<div class="sm-zoom" role="group" aria-label="星图缩放"><button type="button" data-zoom="in" title="放大" aria-label="放大">+</button><button type="button" data-zoom="out" title="缩小" aria-label="缩小">−</button><button type="button" data-zoom="reset" title="回到自动缩放" aria-label="回到自动缩放">复位</button></div><p class="sm-hint" aria-hidden="true">按住 Ctrl 再滚动来缩放 · 拖动可平移</p><div class="sm-map"></div>'
+function stage(): HTMLElement {
+  const box = $('mapC')
+  if (!box.querySelector('.sm-map')) box.innerHTML = ZOOM_UI
+  return box.querySelector('.sm-map')
+}
+function zoomButtons(view: Rect | null) {
+  const box = $('mapC'),
+    btn = (k: string) => box.querySelector<HTMLButtonElement>(`[data-zoom="${k}"]`)
+  box.classList.toggle('no-zoom', !view)
+  box.classList.toggle('zoomed', !!view && view.w < autoView.w - 0.01)
+  if (!view) return
+  const [lo, hi] = zoomRange(autoView),
+    z = autoView.w / view.w
+  btn('in').disabled = z >= hi - 1e-6
+  btn('out').disabled = z <= lo + 1e-6
+  btn('reset').disabled = !zoom
+}
 function drawMap(width: number) {
   if (!model) return
   drawnWidth = width
-  const box = $('mapC'),
+  const box = stage(),
     placed = model.nodes.filter(x => x.base),
     site = model.site,
     target = site ? project(site.at[0], site.at[1]) : null
   if (!placed.length) {
+    autoView = null
+    zoomButtons(null)
     box.innerHTML =
       '<p class="sm-empty">还没有可定位的节点<span>在节点名称里写城市、填写地区，或在主题设置的节点坐标里指定</span></p>'
     return
   }
   const linked = model.arcs ? placed.filter(x => x.link !== 'none') : []
-  const view = fitView([
+  autoView = fitView([
     ...placed.map(x => x.base),
     ...(linked.length && target ? [target, ...linked.map(x => arcApex(x.base, target))] : []),
   ])
+  const view = zoomedView(autoView, zoom)
+  zoomButtons(view)
   const height = (width * view.h) / view.w,
     k = width / view.w,
     phone = width < 560,
@@ -213,7 +248,9 @@ function drawMap(width: number) {
   }
   if (!phone) {
     const labels = clusterLabels(
-      placed.map(x => ({ id: x.n.uuid, code: x.code, name: x.n.name, ...scr(x.base) })),
+      placed
+        .map(x => ({ id: x.n.uuid, code: x.code, name: x.n.name, ...scr(x.base) }))
+        .filter(l => l.x >= 0 && l.x <= width && l.y >= 0 && l.y <= height),
       {
         avoid,
         bounds: { x: 2, y: 2, w: width - 4, h: height - 4 },
@@ -230,7 +267,7 @@ function drawMap(width: number) {
   box.innerHTML = s + '</svg>'
 }
 function keyAndCaption(m: MapModel) {
-  const area = '自动缩放到有节点的区域'
+  const area = '自动缩放到有节点的区域，可放大缩小、拖动'
   $('mapCaption').textContent = m.arcs
     ? `${area} · 每个节点一条弧线连到${m.site.name}三网目标，颜色是最近 1 小时回声`
     : !m.enabled
@@ -312,8 +349,148 @@ function rMap() {
   if (model.enabled) void loadEcho()
 }
 
+/* ── zoom and drag ── */
+let frame = 0
+function redraw() {
+  if (frame) return
+  frame = requestAnimationFrame(() => {
+    frame = 0
+    if (S.page === 'worldmap' && model) drawMap($('mapC').clientWidth || drawnWidth)
+  })
+}
+function setZoom(next: MapZoom | null) {
+  zoom = next
+  hideTip()
+  redraw()
+}
+function local(e: { clientX: number; clientY: number }): Point {
+  const r = $('mapC').querySelector('.sm-map').getBoundingClientRect()
+  return { x: e.clientX - r.left, y: e.clientY - r.top }
+}
+function centre(): Point {
+  const r = $('mapC').querySelector('.sm-map').getBoundingClientRect()
+  return { x: r.width / 2, y: r.height / 2 }
+}
+let hintTimer = 0
+function showHint() {
+  const box = $('mapC')
+  box.classList.add('hint')
+  clearTimeout(hintTimer)
+  hintTimer = window.setTimeout(() => box.classList.remove('hint'), 1400)
+}
+function bindZoom() {
+  const box = $('mapC')
+  box.addEventListener('click', e => {
+    const b = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-zoom]')
+    if (!b || !autoView) return
+    const k = b.dataset.zoom
+    setZoom(k === 'reset' ? null : zoomAt(autoView, zoom, k === 'in' ? 1.6 : 1 / 1.6, centre(), drawnWidth))
+  })
+  /* A plain wheel keeps scrolling the page; Ctrl / ⌘ + wheel and trackpad pinch
+     (which the browser sends as a Ctrl wheel) zoom at the pointer. */
+  box.addEventListener(
+    'wheel',
+    e => {
+      if (!autoView || !(e.target as HTMLElement).closest('.sm-map')) return
+      if (!e.ctrlKey && !e.metaKey) return showHint()
+      e.preventDefault()
+      const step = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY
+      setZoom(
+        zoomAt(autoView, zoom, Math.exp(-Math.max(-60, Math.min(60, step)) / 150), local(e), drawnWidth),
+      )
+    },
+    { passive: false },
+  )
+  box.addEventListener('dblclick', e => {
+    const t = e.target as HTMLElement
+    if (!autoView || !t.closest('.sm-map') || t.closest('.sm-node')) return
+    e.preventDefault()
+    setZoom(zoomAt(autoView, zoom, e.shiftKey ? 1 / 2 : 2, local(e), drawnWidth))
+  })
+  /* Drag: mouse any time, one finger only when zoomed in (so the page still scrolls);
+     two fingers pinch. A drag of more than 4 px swallows the click that follows. */
+  const points = new Map<number, Point>()
+  let last: Point | null = null,
+    spread = 0,
+    moved = false
+  const mid = () => {
+    const [a, b] = [...points.values()]
+    return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
+  }
+  const gap = () => {
+    const [a, b] = [...points.values()]
+    return Math.hypot(a.x - b.x, a.y - b.y)
+  }
+  box.addEventListener('pointerdown', e => {
+    if (!autoView || !(e.target as HTMLElement).closest('.sm-map')) return
+    if (e.pointerType === 'mouse' && e.button !== 0) return
+    if (!points.size) moved = false
+    if (e.pointerType === 'touch' && !box.classList.contains('zoomed') && points.size === 0) {
+      points.set(e.pointerId, local(e))
+      last = null
+      return
+    }
+    points.set(e.pointerId, local(e))
+    if (points.size === 1) last = local(e)
+    else if (points.size === 2) {
+      last = mid()
+      spread = gap()
+    }
+  })
+  box.addEventListener('pointermove', e => {
+    if (!points.has(e.pointerId) || !autoView) return
+    points.set(e.pointerId, local(e))
+    if (points.size === 2) {
+      const m = mid(),
+        g = gap()
+      let next = zoom
+      if (spread > 0 && g > 0) next = zoomAt(autoView, next, g / spread, m, drawnWidth)
+      if (last) next = panBy(autoView, next, m.x - last.x, m.y - last.y, drawnWidth)
+      last = m
+      spread = g
+      moved = true
+      setZoom(next)
+      return
+    }
+    if (!last) return
+    const p = local(e),
+      dx = p.x - last.x,
+      dy = p.y - last.y
+    if (!moved && Math.hypot(dx, dy) < 4) return
+    if (!moved) box.setPointerCapture?.(e.pointerId)
+    moved = true
+    last = p
+    box.classList.add('dragging')
+    setZoom(panBy(autoView, zoom, dx, dy, drawnWidth))
+  })
+  const end = (e: PointerEvent) => {
+    if (!points.delete(e.pointerId)) return
+    if (points.size === 1) {
+      last = [...points.values()][0]
+      spread = 0
+    } else if (!points.size) {
+      last = null
+      box.classList.remove('dragging')
+    }
+  }
+  box.addEventListener('pointerup', end)
+  box.addEventListener('pointercancel', end)
+  box.addEventListener(
+    'click',
+    e => {
+      if (!moved) return
+      moved = false
+      if ((e.target as HTMLElement).closest('[data-zoom]')) return
+      e.preventDefault()
+      e.stopPropagation()
+    },
+    true,
+  )
+}
+
 /* Event wiring, called once from main after the views are mounted. */
 function bindMap() {
+  bindZoom()
   bindTips($('pg-worldmap'), el => (el.dataset.tip === 'node' ? nodeTip(el.dataset.u) : null))
   onEchoData(() => {
     if (S.page === 'worldmap') rMap()

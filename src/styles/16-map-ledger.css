@@ -705,3 +705,79 @@
     font-size: 19px;
   }
 }
+
+/* 2.1.1 Star Map zoom: square buttons over the top-right corner, drag to pan.
+   One finger scrolls the page until the map is zoomed in. */
+.sm-map {
+  touch-action: pan-y;
+  cursor: grab;
+}
+.sm-stage.zoomed .sm-map {
+  touch-action: none;
+}
+.sm-stage.dragging .sm-map {
+  cursor: grabbing;
+}
+.sm-stage.dragging .sm-node {
+  cursor: grabbing;
+}
+.sm-zoom {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  display: flex;
+  border: 1px solid var(--line);
+  background: var(--paper);
+}
+.sm-stage.no-zoom .sm-zoom,
+.sm-stage.no-zoom .sm-hint {
+  display: none;
+}
+.sm-zoom button {
+  min-width: 30px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 0;
+  font: 500 14px var(--fm);
+  color: var(--ink2);
+  transition:
+    color 0.2s,
+    background 0.2s;
+}
+.sm-zoom button + button {
+  border-left: 1px solid var(--line);
+}
+.sm-zoom button[data-zoom='reset'] {
+  font: 500 11px var(--fc);
+  letter-spacing: 0.04em;
+}
+.sm-zoom button:hover:not(:disabled) {
+  color: var(--blue);
+  background: var(--blue-s);
+}
+.sm-zoom button:focus-visible {
+  outline: 1.5px solid var(--blue);
+  outline-offset: -2px;
+}
+.sm-zoom button:disabled {
+  color: var(--ink4);
+  cursor: default;
+}
+.sm-hint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  padding: 8px 14px;
+  font: 500 12px var(--fc);
+  color: var(--paper);
+  background: var(--ink);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.sm-stage.hint .sm-hint {
+  opacity: 0.86;
+}

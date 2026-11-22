@@ -60,7 +60,7 @@ memory.delete('echo-targets')
 assert.equal(preset.filterCustomTasks([{ id: 1 }]).length, 1)
 const targets = [
   { key: 'telecom', name: '电信 · 河北', target: '124.237.177.164' },
-  { key: 'unicom', name: '联通 · 河北', target: '110.242.74.102' },
+  { key: 'unicom', name: '联通 · 河北', target: '106.11.253.83' },
   { key: 'mobile', name: '移动 · 河北', target: '111.63.65.247' },
   { key: 'google', name: 'Google', target: '8.8.8.8' },
 ]

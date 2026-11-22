@@ -118,6 +118,61 @@ export function toScreen(p: Point, view: Rect, width: number): Point {
   return { x: (p.x - view.x) * k, y: (p.y - view.y) * k }
 }
 
+/* ── manual zoom ── */
+/* The visitor's zoom is kept relative to the auto view: z = auto width / shown width
+   (1 = auto, < 1 = zoomed out, > 1 = zoomed in), c = centre of the shown area in base
+   space. The shown area keeps the auto view's aspect, so the map never changes height,
+   and it always stays inside the world. */
+export interface MapZoom {
+  z: number
+  c: Point
+}
+/** Narrowest area a zoom may show, in base units (960 = the whole world, ~8° of longitude). */
+export const ZOOM_MIN_WIDTH = 20
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
+/** [zoomed all the way out (whole world fits), zoomed all the way in]. */
+export function zoomRange(auto: Rect): [number, number] {
+  const out = Math.max(auto.w / BASE_W, auto.h / BASE_H)
+  return [Math.min(1, out), Math.max(1, auto.w / ZOOM_MIN_WIDTH)]
+}
+export function zoomedView(auto: Rect, zoom: MapZoom | null): Rect {
+  if (!zoom) return auto
+  const [lo, hi] = zoomRange(auto),
+    z = clamp(zoom.z, lo, hi),
+    w = Math.min(BASE_W, auto.w / z),
+    h = Math.min(BASE_H, auto.h / z)
+  return {
+    x: clamp(zoom.c.x - w / 2, 0, BASE_W - w),
+    y: clamp(zoom.c.y - h / 2, 0, BASE_H - h),
+    w,
+    h,
+  }
+}
+/* What the view actually shows, after the limits: stored so panning at an edge or
+   zooming past a limit does not build up a hidden offset. */
+function settle(auto: Rect, zoom: MapZoom): MapZoom {
+  const v = zoomedView(auto, zoom)
+  return { z: auto.w / v.w, c: { x: v.x + v.w / 2, y: v.y + v.h / 2 } }
+}
+/** Zoom by `factor`, keeping the map point under screen point `at` where it is. */
+export function zoomAt(auto: Rect, zoom: MapZoom | null, factor: number, at: Point, width: number): MapZoom {
+  const v = zoomedView(auto, zoom),
+    [lo, hi] = zoomRange(auto),
+    z = clamp((auto.w / v.w) * factor, lo, hi),
+    w = auto.w / z,
+    h = auto.h / z,
+    before = v.w / width,
+    after = w / width,
+    p = { x: v.x + at.x * before, y: v.y + at.y * before }
+  return settle(auto, { z, c: { x: p.x - at.x * after + w / 2, y: p.y - at.y * after + h / 2 } })
+}
+/** Move the map by a drag of (dx, dy) screen pixels. */
+export function panBy(auto: Rect, zoom: MapZoom | null, dx: number, dy: number, width: number): MapZoom {
+  const v = zoomedView(auto, zoom),
+    k = v.w / width
+  return settle(auto, { z: auto.w / v.w, c: { x: v.x + v.w / 2 - dx * k, y: v.y + v.h / 2 - dy * k } })
+}
+
 /* ── arcs ── */
 /* Quadratic curve control point: bulges north (up) by a share of the distance;
    nearly north–south links bend west. Shape is scale-free, so base and screen agree. */

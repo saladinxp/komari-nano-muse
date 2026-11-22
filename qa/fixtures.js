@@ -71,7 +71,9 @@
     traffic_limit_type: 'sum',
     virtualization: 'KVM',
     arch: 'amd64',
-    tags: 'Production;NVMe',
+    /* Komari colour suffixes as in the default front end; an unknown one stays text. */
+    tags:
+      i === 0 ? '10Gbps<green>;2T<blue>;NVMe' : i === 1 ? 'Production<Red>;Beta<nope>' : 'Production;NVMe',
   }))
   const live = Object.fromEntries(
     nodes.map((n, i) => [
@@ -102,10 +104,13 @@
       },
     ]),
   )
-  /* `?scenario=nows` starts with the live socket refused (a reverse proxy without upgrade /
+  /* `?scenario=legacy` starts as a Komari without the metric store (no definitions).
+     `?scenario=nows` starts with the live socket refused (a reverse proxy without upgrade /
      Host forwarding), so the theme has to fall back to polling over HTTP from the first frame. */
   let online = nodes.slice(0, 15).map(n => n.uuid),
-    mode = new URLSearchParams(location.search).get('scenario') === 'nows' ? 'nows' : 'normal'
+    mode = ['nows', 'legacy'].includes(new URLSearchParams(location.search).get('scenario'))
+      ? new URLSearchParams(location.search).get('scenario')
+      : 'normal'
   /* built-in metric names of current Komari (internal/metricstore/metrics.go): no memory.total / disk.total */
   const METRIC_NAMES = [
     'cpu.usage',
@@ -133,7 +138,7 @@
   const echoPreset = new URLSearchParams(location.search).get('echo') === 'preset'
   const PRESET_TASKS = [
     { id: 4, key: 'telecom', name: '回声预设 · 电信 · 河北', target: '124.237.177.164' },
-    { id: 5, key: 'unicom', name: '回声预设 · 联通 · 河北', target: '110.242.74.102' },
+    { id: 5, key: 'unicom', name: '回声预设 · 联通 · 河北', target: '106.11.253.83' },
     { id: 6, key: 'mobile', name: '回声预设 · 移动 · 河北', target: '111.63.65.247' },
     { id: 7, key: 'google', name: '回声预设 · Google', target: '8.8.8.8' },
   ]
@@ -231,9 +236,19 @@
               Math.pow(Math.max(0, Math.sin(j * 0.24 + i * 0.5)), 18) * (i === 2 ? 65 : 26),
           ),
         )
+  /* Per-node traffic level, so the 24 h ranking and peaks differ between nodes; London 13
+     (the 92 % quota node) and Singapore 03 lead. A short burst at a node-specific hour. */
+  const netScale = i => (i === 12 ? 3.2 : i === 2 ? 2.4 : 0.25 + ((i * 37) % 17) / 9)
+  const burst = (i, x) => 1 + 5 * Math.pow(Math.max(0, Math.cos((x - ((i * 0.37) % 1)) * Math.PI * 2)), 60)
+  const outRate = (i, j, count) =>
+    1024 ** 2 * netScale(i) * (1 + Math.cos(j * 0.13) * 0.7) * burst(i, j / count)
+  const inRate = (i, j, count) =>
+    1024 ** 2 * netScale(i) * (3 + Math.sin(j * 0.13) * 2) * burst(i, (j + 7) / count)
   function series(params) {
     const count = params.max_points || 96,
-      hours = params.hours || 24
+      hours = params.hours || 24,
+      bucket = (hours * 3600) / count,
+      agg = k => (params.aggregation_by_metric || {})[k] || params.aggregation || 'avg'
     return nodes
       .filter(n => !params.entity_id || n.uuid === params.entity_id)
       .flatMap(n => {
@@ -246,7 +261,11 @@
             entity_id: n.uuid,
             metric_key: k,
             tags: task ? { task_id: String(task) } : {},
+            /* like Komari: report the aggregation applied to a downsampled series */
+            downsampled: true,
+            downsample_algorithm: agg(k),
             points: Array.from({ length: count }, (_, j) => ({
+              count: 3,
               time: new Date(
                 now -
                   hours * 36e5 +
@@ -257,22 +276,29 @@
                 k === 'cpu.usage'
                   ? cpu(i, j)
                   : k === 'memory.used'
-                    ? n.mem_total * (0.4 + Math.sin(j * 0.06) * 0.08)
+                    ? n.mem_total * (0.18 + ((i * 29) % 13) / 22 + Math.sin(j * 0.06 + i) * 0.06)
                     : k === 'disk.used'
                       ? n.disk_total * 0.38
                       : k === 'net.in.rate'
-                        ? 1024 ** 2 * (3 + Math.sin(j * 0.13) * 2)
+                        ? inRate(i, j, count)
                         : k === 'net.out.rate'
-                          ? 1024 ** 2 * (1 + Math.cos(j * 0.13) * 0.7)
-                          : k === 'connections.tcp'
-                            ? 80 + Math.round(Math.sin(j * 0.1) * 24)
-                            : k === 'connections.udp'
-                              ? 12
-                              : k === 'ping.latency_ms'
-                                ? pingValue(i, j, task, count)
-                                : k === 'ping.loss'
-                                  ? pingLoss(i, j, task, count)
-                                  : 0,
+                          ? outRate(i, j, count)
+                          : k === 'traffic.up'
+                            ? outRate(i, j, count) * bucket
+                            : k === 'traffic.down'
+                              ? inRate(i, j, count) * bucket
+                              : k === 'net.total.up' || k === 'net.total.down'
+                                ? /* Paris 14 (i 13) restarted two thirds in: its counter starts over */
+                                  (i === 13 && j >= (count * 2) / 3 ? 1 : 40) * 1024 ** 3 + j * 1e7
+                                : k === 'connections.tcp'
+                                  ? 80 + Math.round(Math.sin(j * 0.1) * 24)
+                                  : k === 'connections.udp'
+                                    ? 12
+                                    : k === 'ping.latency_ms'
+                                      ? pingValue(i, j, task, count)
+                                      : k === 'ping.loss'
+                                        ? pingLoss(i, j, task, count)
+                                        : 0,
             })),
           }))
         })

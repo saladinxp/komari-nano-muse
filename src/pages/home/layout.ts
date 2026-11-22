@@ -53,6 +53,9 @@ export const DESK: Point = { x: 330, y: 716 }
     size boost so the seated SD figure reads well against the big desk.
     The stool x follows from each character's head offset (cast/desk.ts). */
 export const DESK_SEAT = { y: 572, headX: 360, scale: 1.05 }
+/** On the home chair (2.1.1): where the typing hand rests on the painted keyboard
+    (keys span x 262–412, y 393–405). */
+export const KEYBOARD_HAND: Point = { x: 392, y: 402 }
 /** Taking the leader's call: turned toward the viewer beside the desk, clear of the plant. */
 export const CALL: Point = { x: 700, y: 650 }
 /** Sofa seats (bottom of a seated character), owner first. */

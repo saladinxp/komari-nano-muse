@@ -1,6 +1,9 @@
 /* Real tasks only, created after the administrator reviews the exact plan.
    Hebei CDN targets were selected by the user on 2026-11-01; reachability
-   remains subject to tests from the user's own nodes, not this environment. */
+   remains subject to tests from the user's own nodes, not this environment.
+   Unicom moved to 106.11.253.83 on 2026-11-09 (Alibaba Cloud CDN edge in Tangshan
+   on the Unicom network, chosen by the user): 110.242.74.102 still answers but its latency swings too much to serve as a reference line.
+   It is not listed as `legacy` because it is unstable, not dead. */
 import { getJson, rpc2 } from '../api/client'
 import { S } from '../state'
 import { $, esc, store } from '../utils/format'
@@ -8,7 +11,7 @@ import type { PingTaskDef, ThemeSettings } from '../types/komari'
 
 export const ECHO_PRESETS = [
   { key: 'telecom', name: '电信 · 河北', target: '124.237.177.164', legacy: '219.141.136.10' },
-  { key: 'unicom', name: '联通 · 河北', target: '110.242.74.102', legacy: '202.106.0.20' },
+  { key: 'unicom', name: '联通 · 河北', target: '106.11.253.83', legacy: '202.106.0.20' },
   { key: 'mobile', name: '移动 · 河北', target: '111.63.65.247', legacy: '' },
   { key: 'google', name: 'Google', target: '8.8.8.8', legacy: '' },
 ] as const

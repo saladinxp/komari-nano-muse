@@ -6,7 +6,7 @@ import { store } from './utils/format'
 const ASSETS = { sleep: '/char-sleep-cutout.webp', awake: '/char-awake-cutout.webp', fallback: '/char.png' }
 /* The offline preview runs from file:// and routes with location.hash. */
 const HASH_ROUTER = () => !!window.__NM_HASH_ROUTER__
-const VERSION = 'v2.1.0'
+const VERSION = 'v2.1.1'
 
 /* ── state ── */
 const VIEWS: Record<string, NodeView> = { card: 'large', large: 'large', medium: 'medium', list: 'list' }

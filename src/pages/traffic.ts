@@ -1,10 +1,11 @@
 import { hasMetricStore, queryMetrics } from '../api/client'
 import { chart } from '../charts/chart'
-import { S, visible } from '../state'
+import { S, thr, visible } from '../state'
+import { DAY_KEYS, DAY_QUERY, dayAverage, dayLabel, dayTraffic, type DayTotals } from '../utils/day-usage'
 import { $, esc, fB, fK, fS, store } from '../utils/format'
 import { metrics } from '../utils/metrics'
 import { usageBlock, usageOf, updateUsageBlocks } from '../utils/usage'
-import type { MetricSeries } from '../types/komari'
+import type { KomariNode, MetricSeries } from '../types/komari'
 
 let group = store.get('traffic-group', 'ALL'),
   query = '',
@@ -13,6 +14,14 @@ let group = store.get('traffic-group', 'ALL'),
 let pending = false,
   token = 0
 const cache = new Map<number, { at: number; series: MetricSeries[] }>()
+/* Last 24 hours (usage, average load): one query, kept for five minutes. With a full day of
+   data it is ~200 KB per node (8 metrics × 500 buckets, Komari does not compress), so it is
+   read on opening the page and then at most every 5 minutes while the tab is visible.
+   `null` = not loaded, 'none' = this Komari has no usable 24 h data, 'error' = the request failed. */
+const DAY_REFRESH = 5 * 60_000
+let day: { at: number; series: MetricSeries[] } | 'none' | 'error' | null = null,
+  dayPending = false,
+  dayTried = 0
 const availableHours = () => [1, 6, 24, 168].filter(h => h <= Math.max(1, S.recordHours))
 const historyKey = () =>
   hours +
@@ -80,14 +89,20 @@ export function rTraffic() {
     tile('实时吞吐', S.lastSync ? fS(rate) : '—', '仅在线节点 · 上下行合计')
   $('trafficScope').textContent =
     '按节点最近上报计数展示；配额在后台填写。按月用量需在 Agent 配置重置日。离线节点保留上次读数。'
+  const totals = dayTotals(list),
+    d24 = totals ? new Map(totals.nodes.map(x => [x.uuid, x])) : null
   list.sort((a, b) =>
-    sort === 'live'
-      ? (S.online.has(b.uuid) ? metrics(b).up + metrics(b).down : -1) -
-        (S.online.has(a.uuid) ? metrics(a).up + metrics(a).down : -1)
-      : sort === 'total'
-        ? (usageOf(b).total ?? -1) - (usageOf(a).total ?? -1)
-        : (usageOf(b).percent ?? -1) - (usageOf(a).percent ?? -1),
+    sort === 'day'
+      ? (d24?.get(b.uuid)?.total ?? -1) - (d24?.get(a.uuid)?.total ?? -1)
+      : sort === 'live'
+        ? (S.online.has(b.uuid) ? metrics(b).up + metrics(b).down : -1) -
+          (S.online.has(a.uuid) ? metrics(a).up + metrics(a).down : -1)
+        : sort === 'total'
+          ? (usageOf(b).total ?? -1) - (usageOf(a).total ?? -1)
+          : (usageOf(b).percent ?? -1) - (usageOf(a).percent ?? -1),
   )
+  renderDay(list, totals)
+  if (day !== 'none') void loadDay()
   const host = $('trafficNodes')
   if (!list.length) {
     host.innerHTML = '<div class="empty">' + (S._loaded ? '没有匹配的节点' : '等待节点数据') + '</div>'
@@ -106,7 +121,7 @@ export function rTraffic() {
       el = document.createElement('article')
       el.className = 'card traffic-node'
       el.dataset.trafficNode = n.uuid
-      el.innerHTML = `<div class="traffic-node-head"><a href="/detail/${encodeURIComponent(n.uuid)}" data-nav></a><span data-traffic-k="status"></span></div>${usageBlock(n)}<div class="traffic-node-pair"><span data-traffic-k="tu"></span><span data-traffic-k="td"></span></div><div class="traffic-node-pair"><span data-traffic-k="up"></span><span data-traffic-k="down"></span></div>`
+      el.innerHTML = `<div class="traffic-node-head"><a href="/detail/${encodeURIComponent(n.uuid)}" data-nav></a><span data-traffic-k="status"></span></div>${usageBlock(n)}<div class="traffic-node-pair"><span data-traffic-k="tu"></span><span data-traffic-k="td"></span></div><div class="traffic-node-pair day-pair"><span data-traffic-k="du"></span><span data-traffic-k="dd"></span></div><div class="traffic-node-pair"><span data-traffic-k="up"></span><span data-traffic-k="down"></span></div>`
     }
     const u = usageOf(n),
       m = metrics(n),
@@ -116,6 +131,8 @@ export function rTraffic() {
       status: online ? '在线' : '离线',
       tu: '↑ 累计 ' + (u.up == null ? '—' : fB(u.up)),
       td: '↓ 累计 ' + (u.down == null ? '—' : fB(u.down)),
+      du: '↑ 24h ' + (d24 ? fB(d24.get(n.uuid)?.up ?? 0) : '—'),
+      dd: '↓ 24h ' + (d24 ? fB(d24.get(n.uuid)?.down ?? 0) : '—'),
       up: '↑ ' + (online ? fS(m.up) : '—'),
       down: '↓ ' + (online ? fS(m.down) : '—'),
     }
@@ -193,9 +210,102 @@ export async function loadTrafficHistory(force = false) {
     if (S.page === 'traffic' && historyKey() !== key) void loadTrafficHistory()
   }
 }
+/* ── last 24 hours ── */
+function dayTotals(list: { uuid: string }[]): DayTotals | null {
+  return day && typeof day === 'object' ? dayTraffic(day.series, new Set(list.map(n => n.uuid))) : null
+}
+const nameOf = (uuid: string) => S.nodes.find(n => n.uuid === uuid)?.name || uuid.slice(0, 8)
+const link = (uuid: string) =>
+  `<a href="/detail/${encodeURIComponent(uuid)}" data-nav>${esc(nameOf(uuid))}</a>`
+const rank = (i: number) => `<span class="day-rank">${String(i + 1).padStart(2, '0')}</span>`
+const peak = (what: string, t: number) =>
+  t ? `<small>峰值 ${what} · ${dayLabel(t)}</small>` : '<small>峰值 —</small>'
+function put(id: string, html: string) {
+  const el = $(id)
+  if (el.innerHTML !== html) el.innerHTML = html
+}
+
+function renderDay(list: KomariNode[], totals: DayTotals | null) {
+  const wait = (text: string) => `<li class="day-wait">${text}</li>`
+  if (!day || day === 'error' || day === 'none') {
+    const text =
+      day === 'none'
+        ? '此版本 Komari 未提供 24 小时数据'
+        : day === 'error'
+          ? '暂时无法读取，稍后自动重试'
+          : '正在读取最近 24 小时…'
+    for (const id of ['dayUsage', 'dayCpu', 'dayMem']) put(id, wait(text))
+    put('daySum', '')
+    return
+  }
+  const ids = new Set(list.map(n => n.uuid)),
+    mem = new Map(list.map(n => [n.uuid, n.mem_total || 0]))
+  if (!totals || !totals.nodes.some(x => x.total > 0)) {
+    put('dayUsage', wait('最近 24 小时没有流量样本'))
+    put('daySum', '')
+  } else {
+    const top = totals.nodes.slice(0, 5),
+      max = top[0].total || 1
+    put('daySum', `<small>全部节点合计</small>↑ ${fB(totals.up)}  ↓ ${fB(totals.down)}`)
+    put(
+      'dayUsage',
+      top
+        .map(
+          (x, i) =>
+            `<li>${rank(i)}<div class="day-row"><div class="day-line">${link(x.uuid)}<b class="num"><i class="up">↑</i> ${fB(x.up)}<em><i class="down">↓</i> ${fB(x.down)}</em></b></div><i class="day-bar split" style="width:${((x.total / max) * 100).toFixed(1)}%"><i style="width:${x.total ? ((x.up / x.total) * 100).toFixed(1) : 0}%"></i></i>${peak(fS(x.peakRate), x.peakTime)}</div></li>`,
+        )
+        .join(''),
+    )
+  }
+  const load = (key: string, id: string, limit: number, toPercent: (u: string, v: number) => number) => {
+    const rows = dayAverage((day as { series: MetricSeries[] }).series, key, ids, toPercent).slice(0, 5)
+    put(
+      id,
+      rows.length
+        ? rows
+            .map((x, i) => {
+              const tone = x.value >= limit ? ' h' : x.value >= limit * 0.75 ? ' w' : ''
+              return `<li>${rank(i)}<div class="day-row"><div class="day-line">${link(x.uuid)}<b class="num">${x.value.toFixed(1)}<small>%</small></b></div><i class="day-bar${tone}" style="width:${Math.min(100, Math.max(0, x.value)).toFixed(1)}%"></i>${peak(x.peak.toFixed(1) + '%', x.peakTime)}</div></li>`
+            })
+            .join('')
+        : wait('最近 24 小时没有样本'),
+    )
+  }
+  load('cpu.usage', 'dayCpu', thr('cpu'), (_, v) => v)
+  load('memory.used', 'dayMem', thr('ram'), (u, v) => (mem.get(u) ? (v / mem.get(u)) * 100 : NaN))
+}
+
+async function loadDay(force = false) {
+  if (S.page !== 'traffic' || !S._loaded || dayPending) return
+  /* live updates call rTraffic often: re-read at most every 5 minutes, and not in a hidden tab */
+  if (!force && day !== null && (document.hidden || Date.now() - dayTried < DAY_REFRESH)) return
+  dayPending = true
+  dayTried = Date.now()
+  $('dayNote').textContent = '正在读取最近 24 小时…'
+  try {
+    if (!(await hasMetricStore())) day = 'none'
+    else {
+      const series = await queryMetrics(DAY_KEYS, DAY_QUERY)
+      day = series.some(s => s.metric_key === 'traffic.up' || s.metric_key === 'cpu.usage')
+        ? { at: Date.now(), series }
+        : 'none'
+    }
+  } catch (e) {
+    day = 'error'
+  } finally {
+    dayPending = false
+  }
+  $('dayNote').textContent =
+    day === 'none'
+      ? '需要带指标存储的 Komari（1.2.6 起）；累计计数与实时速率不受影响。'
+      : '与 Komari 后台同一算法：按每次上报的增量求和，计数器重置的那一段不计；峰值为单段上下行合计，时间按你的本地时间。'
+  rTraffic()
+}
+
 export function openTraffic() {
   rTraffic()
   void loadTrafficHistory()
+  void loadDay()
 }
 export function bindTraffic() {
   $('trafficGroup').addEventListener('change', e => {

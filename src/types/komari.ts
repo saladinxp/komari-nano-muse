@@ -118,6 +118,8 @@ export interface LiveRecord {
 export interface MetricPoint {
   time: string
   value: number | null
+  /** Samples in an aggregated bucket. */
+  count?: number
 }
 
 export interface MetricSeries {
@@ -128,6 +130,8 @@ export interface MetricSeries {
   /** Aggregated metric timestamps mark the beginning of each bucket. */
   interval_seconds?: number
   downsampled?: boolean
+  /** Aggregation the server actually applied to a downsampled series. */
+  downsample_algorithm?: string
 }
 
 /** Ping task definition from public:getPublicPingTasks or /api/records/ping. */

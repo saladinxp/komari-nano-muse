@@ -33,6 +33,7 @@ import {
 } from '../utils/format'
 import { metrics, trafficUsed } from '../utils/metrics'
 import { detailTraffic } from '../utils/usage'
+import { parseTags, tagStyle } from '../utils/tags'
 
 /* ══ detail ══ */
 /** Selectable history windows: [hours, label]. */
@@ -65,7 +66,13 @@ function openDetail() {
     ['KERNEL', n.kernel_version],
     ['GPU', n.gpu_name],
   ].filter(x => x[1])
-  $('detMeta').innerHTML = meta.map(([k, v]) => `<span>${k} <b>${esc(v)}</b></span>`).join('')
+  $('detMeta').innerHTML =
+    meta.map(([k, v]) => `<span>${k} <b>${esc(v)}</b></span>`).join('') +
+    parseTags(n.tags)
+      .map(
+        t => `<span class="det-tag${t.color ? ' tag-c' : ''}" style="${tagStyle(t)}">${esc(t.text)}</span>`,
+      )
+      .join('')
   openHome(n.uuid)
   uDetail()
   rDetCharts()

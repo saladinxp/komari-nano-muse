@@ -1,13 +1,13 @@
 {
   "name": "komari-nano-muse",
   "private": true,
-  "version": "2.1.0",
+  "version": "2.1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "typecheck": "tsc -p .",
     "build": "tsc -p . && vite build && BUILD_TARGET=preview vite build",
-    "test": "node qa/test-echo.mjs && node qa/test-duty.mjs && node qa/test-live.mjs && node qa/test-brand.mjs && node qa/test-basics.mjs && node qa/test-chairs.mjs && node qa/test-stellar.mjs && node qa/test-echo-trend.mjs && node qa/test-echo-beta5.mjs && node qa/test-ledger-beta6.mjs && node qa/test-map-beta6.mjs && node qa/test-echo-split.mjs && node qa/test-chart-smooth.mjs",
+    "test": "node qa/test-echo.mjs && node qa/test-duty.mjs && node qa/test-live.mjs && node qa/test-brand.mjs && node qa/test-basics.mjs && node qa/test-chairs.mjs && node qa/test-stellar.mjs && node qa/test-echo-trend.mjs && node qa/test-echo-beta5.mjs && node qa/test-ledger-beta6.mjs && node qa/test-map-beta6.mjs && node qa/test-echo-split.mjs && node qa/test-chart-smooth.mjs && node qa/test-map-zoom.mjs && node qa/test-home-chair.mjs && node qa/test-tags.mjs && node qa/test-day-usage.mjs",
     "format": "prettier --write \"src/**/*.{ts,css,html}\" qa index.html vite.config.js scripts",
     "package": "npm run build && node scripts/package.mjs"
   },

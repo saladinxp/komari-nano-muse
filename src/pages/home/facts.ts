@@ -44,8 +44,14 @@ export function expiry(n: KomariNode): Expiry {
   }
 }
 
-/** Window and lamps follow the visitor's local clock. */
+/** The visitor's local clock: night from 19:00 to 06:00. */
 export const isNight = (d = new Date()): boolean => d.getHours() < 6 || d.getHours() >= 19
+
+/** The room is at night with the dark colour scheme (like the duty room), and by
+    the visitor's clock in the light one. */
+export const roomNight = (dark: boolean, d = new Date()): boolean => dark || isNight(d)
+export const darkScheme = (): boolean =>
+  typeof document !== 'undefined' && document.documentElement.dataset.theme === 'dark'
 
 /** What an idle worker does: sofa time (snacks, games, TV) and now and then a trip
     out of the room (washroom, a walk). With a guest they stay and play together.

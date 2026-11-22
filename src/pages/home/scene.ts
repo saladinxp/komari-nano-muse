@@ -1,6 +1,6 @@
 /* Canvas renderer for one node's home.
 
-   Layers: background (day / night by the visitor's clock) → plant → monitors,
+   Layers: background (night with the dark colour scheme, else by the visitor's clock) → plant → monitors,
    network lamps, calendar, TV (real data) → desk phone → snack cabinet →
    owner, guest, Nanomuse (back to front) → coffee-table top → power-cut
    shade when offline → speech. Coordinates are background pixels (layout.ts). */
@@ -26,14 +26,17 @@ import {
   type Activity,
   activity,
   expiry,
-  isNight,
+  darkScheme,
+  roomNight,
   type Lamp,
   lampTone,
   plantStage,
   snackLevel,
 } from './facts'
-import { DESK_CAST, deskFrame, drawSheet, seatedScale, STOOL, STOOL_SHARE } from '../../cast/desk'
+import { DUTY_CAST, drawChairWorker } from '../../cast/chair'
+import { DESK_CAST, deskFrame, seatedScale } from '../../cast/desk'
 import { drawMuse, type MusePose } from '../../cast/muse'
+import { HOME_CHAIR, drawHomeChair, drawHomeChairBack, homeDeskSeat, type ChairPlace } from './chair'
 import { deskPose } from '../../cast/routine'
 import {
   CALENDAR,
@@ -215,7 +218,7 @@ export class HomeScene {
     const ctx = this.ctx,
       wall = Date.now(),
       t = now / 1000,
-      night = isNight(),
+      night = roomNight(darkScheme()),
       online = S.online.has(n.uuid),
       mood = moodOf(n.uuid, wall),
       m = metrics(n),
@@ -271,7 +274,7 @@ export class HomeScene {
     /* people, back to front */
     const actors: { y: number; draw: () => void }[] = []
     if (me && !(me.mode === 'desk' && me.there))
-      actors.push({ y: seat.y - 0.1, draw: () => this.stool(owner, seat) })
+      actors.push({ y: seat.y - 0.1, draw: () => this.emptyChair(seat, night) })
     this.ownerBox = null
     if (me && !(me.mode === 'out' && me.there))
       actors.push({ y: me.y, draw: () => this.owner(owner, mood, idleDo, me, wall, t, night) })
@@ -597,18 +600,42 @@ export class HomeScene {
     return { w: f[2] * k, h: f[3] * k }
   }
 
-  /** Stool feet at the desk for this character, head centred on the middle monitor. */
-  private deskSeat(c: Character): Point & { k: number } {
-    const s = DESK_CAST[c.key],
-      k = seatedScale(s, STAND * depthAt(DESK_SEAT.y) * DESK_SEAT.scale)
-    return { x: DESK_SEAT.headX - s.head * k, y: DESK_SEAT.y, k }
+  /** Working at the desk on the home chair. The stool-free worker (the duty room's
+      chair poses) keeps the size of the old stool pose, with the typing hand on the
+      painted keyboard. The chair hangs from the hip; x / y is where it stands on
+      the floor (the walking target). */
+  private deskSeat(c: Character): Point & { k: number; hip: Point; chair: ChairPlace } {
+    return homeDeskSeat(
+      DUTY_CAST[c.key],
+      seatedScale(DESK_CAST[c.key], STAND * depthAt(DESK_SEAT.y) * DESK_SEAT.scale),
+    )
   }
 
-  private stool(c: Character, seat: Point & { k: number }) {
-    const s = DESK_CAST[c.key],
-      sheet = art(STOOL.art),
-      k = (s.frames[0][3] * seat.k * STOOL_SHARE) / STOOL.frames[0][3]
-    drawSheet(this.ctx, sheet.ready ? sheet.img : null, STOOL, 0, seat.x, seat.y, k)
+  private chairArt(night: boolean) {
+    return art(night ? HOME_CHAIR.art.night : HOME_CHAIR.art.day)
+  }
+
+  private chairShadow(seat: { x: number; y: number; chair: ChairPlace }, night: boolean) {
+    const ctx = this.ctx
+    ctx.fillStyle = night ? 'rgba(0,0,0,.26)' : 'rgba(40,50,70,.14)'
+    ctx.beginPath()
+    ctx.ellipse(
+      seat.x + 40 * seat.chair.k,
+      seat.y - 30 * seat.chair.k,
+      330 * seat.chair.k,
+      70 * seat.chair.k,
+      0,
+      0,
+      Math.PI * 2,
+    )
+    ctx.fill()
+  }
+
+  /** The chair left at the desk while its worker is away. */
+  private emptyChair(seat: Point & { chair: ChairPlace }, night: boolean) {
+    const chair = this.chairArt(night)
+    this.chairShadow(seat, night)
+    if (chair.ready) drawHomeChair(this.ctx, chair.img, seat.chair)
   }
 
   /** Decide where the owner should be and walk there. Work and calls bring them
@@ -671,18 +698,21 @@ export class HomeScene {
       box = at(me.x, me.y + bob, this.dutyFrame(c, 'idle', me.x, me.y + bob, STAND * depthAt(me.y)))
     } else if (me.mode === 'desk') {
       const seat = this.deskSeat(c),
-        s = DESK_CAST[c.key],
-        sheet = art(s.art)
-      shadow(seat.x, seat.y, 46)
-      box = drawSheet(
+        s = DUTY_CAST[c.key],
+        sheet = art(s.art),
+        chair = this.chairArt(night)
+      this.chairShadow(seat, night)
+      if (chair.ready) drawHomeChair(ctx, chair.img, seat.chair)
+      box = drawChairWorker(
         ctx,
         sheet.ready ? sheet.img : null,
         s,
         deskFrame(deskPose(mood, wall, 0)),
-        seat.x,
-        seat.y,
+        seat.hip.x,
+        seat.hip.y,
         seat.k,
       )
+      if (chair.ready) drawHomeChairBack(ctx, chair.img, seat.chair)
       if (mood === 'alert' || mood === 'busy')
         sweat(ctx, box.x + box.w * 0.72, box.y + box.h * 0.12, t, mood === 'busy' ? 1 : 2, this.reduced)
     } else if (me.mode === 'call') {

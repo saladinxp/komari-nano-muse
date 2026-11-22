@@ -45,13 +45,27 @@ function hasMetricStore(): Promise<boolean> {
     server does not define are dropped first (e.g. memory.total, which current Komari lacks). */
 async function queryMetrics(
   keys: string[],
-  o: { hours?: number; max?: number; uuid?: string },
+  o: {
+    hours?: number
+    max?: number
+    uuid?: string
+    /** Per-bucket aggregation: default for every key, and per key (e.g. traffic.up: 'sum'). */
+    aggregation?: string
+    byMetric?: Record<string, string>
+    fill?: boolean
+  },
 ): Promise<MetricSeries[]> {
   const { names } = await metricStore()
   const known = names ? keys.filter(k => names.has(k)) : keys
   if (!known.length) return []
   const p: Record<string, unknown> = { metric_keys: known, max_points: o.max || 300, hours: o.hours || 1 }
   if (o.uuid) p.entity_id = o.uuid
+  if (o.aggregation) p.aggregation = o.aggregation
+  if (o.byMetric)
+    p.aggregation_by_metric = Object.fromEntries(
+      Object.entries(o.byMetric).filter(([k]) => known.includes(k)),
+    )
+  if (o.fill) p.fill_empty = true
   const r = await rpc2('public:queryMetrics', p)
   return unbiasPing((r && r.series) || [])
 }
